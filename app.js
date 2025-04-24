@@ -200,6 +200,7 @@ import {
         <div class="form-group">
           <label for="logoUrl">Logo URL</label>
           <input type="url" id="logoUrl" class="form-input" value="${track.logoUrl}">
+          <div class="track-form-image-preview" id="logoImagePreview" style="background-image: url('${track.logoUrl}')"></div>
         </div>
         <div class="form-group">
           <label for="trackShapeUrl">Track Shape Image URL</label>
@@ -217,9 +218,16 @@ import {
     const cancelBtn = modal.content.querySelector('#cancelTrackBtn');
     const trackShapeUrl = modal.content.querySelector('#trackShapeUrl');
     const trackImagePreview = modal.content.querySelector('#trackImagePreview');
+    const logoUrl = modal.content.querySelector('#logoUrl');
+    const logoImagePreview = modal.content.querySelector('#logoImagePreview');
   
+    // Add event listeners for both image previews
     trackShapeUrl.addEventListener('input', () => {
       trackImagePreview.style.backgroundImage = `url('${trackShapeUrl.value}')`;
+    });
+    
+    logoUrl.addEventListener('input', () => {
+      logoImagePreview.style.backgroundImage = `url('${logoUrl.value}')`;
     });
   
     cancelBtn.addEventListener('click', () => modal.close());
@@ -251,6 +259,7 @@ import {
   
     modal.show();
   }
+  
   
   async function duplicateTrack(trackId) {
     if (!tracks[trackId]) return;
@@ -289,8 +298,8 @@ import {
       dates: [],
       overtakingRules: 'eitherSide',
       noiseLimit: '',
-      schedule: [{ startTime: '09:00', endTime: '17:00', activity: 'Track Session', location: 'Main Track' }],
-      locations: [{ name: 'Reception', address: '' }],
+      schedule: [{ startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: 'Track Session', activity2: '', location: 'Main Track' }],
+      locations: [{ name: 'Reception', name2: '', address: '' }],
       notes: ''
     };
     
@@ -319,8 +328,8 @@ import {
         
         <div class="form-group">
           <label>Select Dates</label>
-          <div id="calendarContainer" class="mb-20"></div>
-          <div id="selectedDates" class="mb-20"></div>
+          <div id="calendarContainer" class="calendar mb-20"></div>
+          <div id="selectedDates" class="selected-dates-container mb-20"></div>
         </div>
         
         <div class="form-group">
@@ -351,9 +360,12 @@ import {
           <table class="schedule-table">
             <thead>
               <tr>
+                <th>Start Text (EN)</th>
+                <th>Start Text (2nd)</th>
                 <th>Start Time</th>
                 <th>End Time</th>
-                <th>Activity</th>
+                <th>Activity (EN)</th>
+                <th>Activity (2nd)</th>
                 <th>Location</th>
                 <th>Actions</th>
               </tr>
@@ -361,7 +373,7 @@ import {
             <tbody id="scheduleTableBody">
             </tbody>
           </table>
-          <button type="button" id="addScheduleRowBtn" class="add-row-btn">Add Row</button>
+          <button type="button" id="addScheduleRowBtn" class="add-row-btn">Add Schedule Row</button>
         </div>
         
         <div class="form-group">
@@ -369,7 +381,8 @@ import {
           <table class="schedule-table">
             <thead>
               <tr>
-                <th>Location Name</th>
+                <th>Location Name (EN)</th>
+                <th>Location Name (2nd)</th>
                 <th>Address</th>
                 <th>Actions</th>
               </tr>
@@ -430,13 +443,13 @@ import {
     });
     
     addScheduleRowBtn.addEventListener('click', () => {
-      const newRow = { startTime: '09:00', endTime: '17:00', activity: '', location: '' };
+      const newRow = { startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: '', activity2: '', location: '' };
       const currentSchedule = getScheduleFromTable(scheduleTableBody);
       renderScheduleTable(scheduleTableBody, [...currentSchedule, newRow]);
     });
     
     addLocationRowBtn.addEventListener('click', () => {
-      const newLocation = { name: '', address: '' };
+      const newLocation = { name: '', name2: '', address: '' };
       const currentLocations = getLocationsFromTable(locationsTableBody);
       renderLocationsTable(locationsTableBody, [...currentLocations, newLocation]);
     });
@@ -507,115 +520,128 @@ import {
     };
   }
   
-  function getScheduleFromTable(tableBody) {
-    return Array.from(tableBody.querySelectorAll('tr')).map(row => {
-      return {
-        startTime: row.querySelector('input[name="startTime"]').value,
-        endTime: row.querySelector('input[name="endTime"]').value,
-        activity: row.querySelector('input[name="activity"]').value,
-        location: row.querySelector('input[name="location"]').value
-      };
-    });
-  }
+function getScheduleFromTable(tableBody) {
+return Array.from(tableBody.querySelectorAll('tr')).map(row => {
+    return {
+    startText: row.querySelector('input[name="startText"]').value,
+    startText2: row.querySelector('input[name="startText2"]').value,
+    startTime: row.querySelector('input[name="startTime"]').value,
+    endTime: row.querySelector('input[name="endTime"]').value,
+    activity: row.querySelector('input[name="activity"]').value,
+    activity2: row.querySelector('input[name="activity2"]').value,
+    location: row.querySelector('input[name="location"]').value
+    };
+});
+}
+
+// Update getLocationsFromTable function to extract bilingual fields
+function getLocationsFromTable(tableBody) {
+return Array.from(tableBody.querySelectorAll('tr')).map(row => {
+    return {
+    name: row.querySelector('input[name="locationName"]').value,
+    name2: row.querySelector('input[name="locationName2"]').value,
+    address: row.querySelector('input[name="address"]').value
+    };
+});
+}
   
-  function getLocationsFromTable(tableBody) {
-    return Array.from(tableBody.querySelectorAll('tr')).map(row => {
-      return {
-        name: row.querySelector('input[name="locationName"]').value,
-        address: row.querySelector('input[name="address"]').value
-      };
-    });
-  }
-  
-  function renderScheduleTable(tableBody, scheduleItems) {
+function renderScheduleTable(tableBody, scheduleItems) {
     tableBody.innerHTML = '';
-    
+
     scheduleItems.forEach((item, index) => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
+        const row = document.createElement('tr');
+        row.innerHTML = `
+        <td><input type="text" name="startText" class="form-input" value="${item.startText || ''}" placeholder="Optional text (EN)"></td>
+        <td><input type="text" name="startText2" class="form-input" value="${item.startText2 || ''}" placeholder="Optional text (2nd lang)"></td>
         <td><input type="time" name="startTime" class="form-input" value="${item.startTime}" required></td>
-        <td><input type="time" name="endTime" class="form-input" value="${item.endTime}" required></td>
-        <td><input type="text" name="activity" class="form-input" value="${item.activity}" required></td>
+        <td><input type="time" name="endTime" class="form-input" value="${item.endTime}" placeholder="Optional"></td>
+        <td><input type="text" name="activity" class="form-input" value="${item.activity}" required placeholder="Activity (EN)"></td>
+        <td><input type="text" name="activity2" class="form-input" value="${item.activity2 || ''}" placeholder="Activity (2nd lang)"></td>
         <td><input type="text" name="location" class="form-input" value="${item.location}" required></td>
         <td>
-          <button type="button" class="delete-btn">Remove</button>
+            <button type="button" class="delete-btn">Remove</button>
         </td>
-      `;
-      
-      row.querySelector('.delete-btn').addEventListener('click', () => {
+        `;
+        
+        row.querySelector('.delete-btn').addEventListener('click', () => {
         if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last schedule item?')) {
-          row.remove();
+            row.remove();
         }
-      });
-      
-      tableBody.appendChild(row);
+        });
+        
+        tableBody.appendChild(row);
     });
-    
+
     // Add at least one row if empty
     if (tableBody.querySelectorAll('tr').length === 0) {
-      const row = document.createElement('tr');
-      row.innerHTML = `
+        const row = document.createElement('tr');
+        row.innerHTML = `
+        <td><input type="text" name="startText" class="form-input" placeholder="Optional text (EN)"></td>
+        <td><input type="text" name="startText2" class="form-input" placeholder="Optional text (2nd lang)"></td>
         <td><input type="time" name="startTime" class="form-input" value="09:00" required></td>
-        <td><input type="time" name="endTime" class="form-input" value="17:00" required></td>
-        <td><input type="text" name="activity" class="form-input" value="Track Session" required></td>
+        <td><input type="time" name="endTime" class="form-input" value="17:00" placeholder="Optional"></td>
+        <td><input type="text" name="activity" class="form-input" value="Track Session" required placeholder="Activity (EN)"></td>
+        <td><input type="text" name="activity2" class="form-input" placeholder="Activity (2nd lang)"></td>
         <td><input type="text" name="location" class="form-input" value="Main Track" required></td>
         <td>
-          <button type="button" class="delete-btn">Remove</button>
+            <button type="button" class="delete-btn">Remove</button>
         </td>
-      `;
-      
-      row.querySelector('.delete-btn').addEventListener('click', () => {
+        `;
+        
+        row.querySelector('.delete-btn').addEventListener('click', () => {
         if (confirm('Remove the last schedule item?')) {
-          row.remove();
+            row.remove();
         }
-      });
-      
-      tableBody.appendChild(row);
+        });
+        
+        tableBody.appendChild(row);
     }
-  }
+}
   
-  function renderLocationsTable(tableBody, locations) {
+function renderLocationsTable(tableBody, locations) {
     tableBody.innerHTML = '';
-    
+
     locations.forEach((location, index) => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td><input type="text" name="locationName" class="form-input" value="${location.name}" required></td>
+        const row = document.createElement('tr');
+        row.innerHTML = `
+        <td><input type="text" name="locationName" class="form-input" value="${location.name}" required placeholder="Location (EN)"></td>
+        <td><input type="text" name="locationName2" class="form-input" value="${location.name2 || ''}" placeholder="Location (2nd lang)"></td>
         <td><input type="text" name="address" class="form-input" value="${location.address}" required></td>
         <td>
-          <button type="button" class="delete-btn">Remove</button>
+            <button type="button" class="delete-btn">Remove</button>
         </td>
-      `;
-      
-      row.querySelector('.delete-btn').addEventListener('click', () => {
+        `;
+        
+        row.querySelector('.delete-btn').addEventListener('click', () => {
         if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last location?')) {
-          row.remove();
+            row.remove();
         }
-      });
-      
-      tableBody.appendChild(row);
+        });
+        
+        tableBody.appendChild(row);
     });
-    
+
     // Add at least one row if empty
     if (tableBody.querySelectorAll('tr').length === 0) {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td><input type="text" name="locationName" class="form-input" value="Reception" required></td>
+        const row = document.createElement('tr');
+        row.innerHTML = `
+        <td><input type="text" name="locationName" class="form-input" value="Reception" required placeholder="Location (EN)"></td>
+        <td><input type="text" name="locationName2" class="form-input" placeholder="Location (2nd lang)"></td>
         <td><input type="text" name="address" class="form-input" value="" required></td>
         <td>
-          <button type="button" class="delete-btn">Remove</button>
+            <button type="button" class="delete-btn">Remove</button>
         </td>
-      `;
-      
-      row.querySelector('.delete-btn').addEventListener('click', () => {
+        `;
+        
+        row.querySelector('.delete-btn').addEventListener('click', () => {
         if (confirm('Remove the last location?')) {
-          row.remove();
+            row.remove();
         }
-      });
-      
-      tableBody.appendChild(row);
+        });
+        
+        tableBody.appendChild(row);
     }
-  }
+}
   
 function initCalendar(container, selectedDatesContainer, initialSelectedDates = []) {
 // Current date for calendar
@@ -897,22 +923,150 @@ function updateSelectedDatesDisplay() {
       modal.show();
     }
     
-    async function duplicateInstruction(instructionId) {
-      if (!instructions[instructionId]) return;
-      
-      try {
-        const instruction = {
-          ...instructions[instructionId],
-          trackName: `${instructions[instructionId].trackName} (Copy)`
-        };
-        
-        await saveInstruction(instruction);
-        await loadInstructions();
-        showToast('Instruction duplicated successfully!', 'success');
-      } catch (error) {
-        showToast('Error duplicating instruction: ' + error.message, 'error');
-      }
+async function showInstructionPreview(instruction) {
+    const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
+    
+    const modal = createModal('Instruction Preview');
+    
+    // Format dates for display
+    const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
+    
+    let overtakingText = '';
+    switch (instruction.overtakingRules) {
+        case 'leftSideOnly':
+        overtakingText = 'Left Side Only';
+        break;
+        case 'rightSideOnly':
+        overtakingText = 'Right Side Only';
+        break;
+        case 'eitherSide':
+        overtakingText = 'Either Side';
+        break;
     }
+    
+    // Create schedule table HTML with bilingual support
+    const scheduleTableHTML = `
+        <table class="schedule-table-preview">
+        <thead>
+            <tr>
+            <th>Start</th>
+            <th>End</th>
+            <th>Activity</th>
+            <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${instruction.schedule.map(item => `
+            <tr>
+                <td>
+                ${item.startText ? `<div>${item.startText}</div>` : ''}
+                ${item.startText2 ? `<div class="secondary-language">${item.startText2}</div>` : ''}
+                <div>${item.startTime}</div>
+                </td>
+                <td>${item.endTime}</td>
+                <td>
+                <div>${item.activity}</div>
+                ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                </td>
+                <td>${item.location}</td>
+            </tr>
+            `).join('')}
+        </tbody>
+        </table>
+    `;
+    
+    // Create locations table HTML with bilingual support
+    const locationsTableHTML = `
+        <table class="schedule-table-preview">
+        <thead>
+            <tr>
+            <th>Location Name</th>
+            <th>Address</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${instruction.locations.map(location => `
+            <tr>
+                <td>
+                <div>${location.name}</div>
+                ${location.name2 ? `<div class="secondary-language">${location.name2}</div>` : ''}
+                </td>
+                <td>${location.address}</td>
+            </tr>
+            `).join('')}
+        </tbody>
+        </table>
+    `;
+    
+    modal.content.innerHTML = `
+        <div class="instruction-preview">
+        <div class="instruction-header">
+            <div class="instruction-title">${instruction.trackName} - Final Instructions</div>
+            <div class="instruction-dates">${formattedDates}</div>
+        </div>
+        
+        ${trackDetails ? `
+            <div class="track-card">
+            ${trackDetails.trackShapeUrl ? `
+                <div class="track-image" style="background-image: url('${trackDetails.trackShapeUrl}')"></div>
+            ` : ''}
+            <div class="track-info">
+                <h3>${trackDetails.name}</h3>
+                ${trackDetails.logoUrl ? `
+                <div class="track-logo" style="background-image: url('${trackDetails.logoUrl}'); height: 60px; background-size: contain; background-repeat: no-repeat; background-position: left center; margin-bottom: 10px;"></div>
+                ` : ''}
+                <div class="track-stats">
+                <div class="stat-item">
+                    <strong>Noise Limit:</strong> ${instruction.noiseLimit} dB
+                </div>
+                <div class="stat-item">
+                    <strong>Length:</strong> ${trackDetails.length} km
+                </div>
+                <div class="stat-item">
+                    <strong>Location:</strong> ${trackDetails.location}
+                </div>
+                <div class="stat-item">
+                    <strong>Corners:</strong> ${trackDetails.corners}
+                </div>
+                </div>
+            </div>
+            </div>
+        ` : ''}
+        
+        <div class="instruction-section">
+            <h4>Overtaking Rules</h4>
+            <p>${overtakingText}</p>
+        </div>
+        
+        <div class="instruction-section">
+            <h4>Daily Schedule</h4>
+            ${scheduleTableHTML}
+        </div>
+        
+        <div class="instruction-section">
+            <h4>Important Locations</h4>
+            ${locationsTableHTML}
+        </div>
+        
+        ${instruction.notes ? `
+            <div class="instruction-section">
+            <h4>Additional Notes</h4>
+            <div class="notes-section">
+                ${instruction.notes.replace(/\n/g, '<br>')}
+            </div>
+            </div>
+        ` : ''}
+        </div>
+        
+        <div class="form-buttons">
+        <button type="button" id="closePreviewBtn" class="delete-btn">Close</button>
+        </div>
+    `;
+    
+    modal.content.querySelector('#closePreviewBtn').addEventListener('click', () => modal.close());
+    
+    modal.show();
+}
     
     async function previewInstruction(instructionId) {
       if (!instructions[instructionId]) return;
