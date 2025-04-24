@@ -479,8 +479,13 @@ async function showInstructionModal(instructionId = null) {
   );
   
   try {
-    // Pass instructionId directly (not the event object)
-    await saveInstruction(formData, instructionId); // Removed the || null part
+    if (instructionId) {
+      // Editing an existing instruction - pass the ID
+      await saveInstruction(formData, instructionId);
+    } else {
+      // Creating a new instruction - don't pass an ID
+      await saveInstruction(formData);
+    }
     await loadInstructions();
     modal.close();
     showToast(`Instruction successfully ${instructionId ? 'updated' : 'created'}!`, 'success');
