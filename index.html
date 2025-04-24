@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Instructions App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="https://rsrbooking.com/assets/rsr-nurburg+spa-logo.svg" alt="App Logo">
+        </div>
+        <nav class="main-nav">
+            <button id="instructionsBtn">Final Instructions</button>
+            <button id="tracksBtn">Manage Tracks</button>
+        </nav>
+        <div class="theme-toggle">
+            <input type="checkbox" id="themeToggle">
+            <label for="themeToggle" class="theme-toggle-label">
+                <span class="theme-icon sun">☀</span>
+                <span class="theme-icon moon">☾</span>
+            </label>
+        </div>
+    </header>
+
+    <main>
+        <!-- Final Instructions Section -->
+        <div id="instructions" class="section">
+            <h1>Final Instructions</h1>
+            <button id="createInstructionBtn" class="edit-btn">Create New Instruction</button>
+            <div class="table-container">
+                <table id="instructionsTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Manage Tracks Section -->
+        <div id="tracks" class="section">
+            <h1>Manage Tracks</h1>
+            <button id="addTrackBtn" class="edit-btn">Add New Track</button>
+            <div class="table-container">
+                <table id="tracksTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Noise Limit</th>
+                            <th>Length</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 Final Instructions App. All rights reserved.</p>
+    </footer>
+
+    <!-- App Scripts - Using ES modules -->
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
