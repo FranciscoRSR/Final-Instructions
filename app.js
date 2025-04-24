@@ -643,7 +643,7 @@ function renderLocationsTable(tableBody, locations) {
   }
 }
   
-  function initCalendar(container, selectedDatesContainer, initialSelectedDates = []) {
+function initCalendar(container, selectedDatesContainer, initialSelectedDates = []) {
     // Current date for calendar
     let currentDate = new Date();
     let currentMonth = currentDate.getMonth();
@@ -734,12 +734,13 @@ function renderLocationsTable(tableBody, locations) {
     }
     
     function updateSelectedDatesDisplay() {
-      selectedDatesContainer.innerHTML = '';
+        selectedDatesContainer.innerHTML = '';
+        
+        if (selectedDates.length === 0) {
+          selectedDatesContainer.innerHTML = '<p>No dates selected.</p>';
+          return;
+        }
       
-      if (selectedDates.length === 0) {
-        selectedDatesContainer.innerHTML = '<p>No dates selected.</p>';
-        return;}
-    
         // Sort dates chronologically
         selectedDates.sort();
         
