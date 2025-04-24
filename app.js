@@ -321,19 +321,19 @@ import {
     };
   }
   
-  function getScheduleFromTable(tableBody) {
-  return Array.from(tableBody.querySelectorAll('tr')).map(row => {
-    return {
-      startText: row.querySelector('input[name="startText"]').value,
-      startText2: row.querySelector('input[name="startText2"]').value,
-      startTime: row.querySelector('input[name="startTime"]').value,
-      endTime: row.querySelector('input[name="endTime"]').value,
-      activity: row.querySelector('input[name="activity"]').value,
-      activity2: row.querySelector('input[name="activity2"]').value,
-      location: row.querySelector('input[name="location"]').value
-    };
-  });
+function getScheduleFromTable(tableBody) {
+    return Array.from(tableBody.querySelectorAll('tr')).map(row => {
+      const daySelect = row.querySelector('select[name="scheduleDay"]');
+      return {
+        day: daySelect ? daySelect.value : 'all',
+        startTime: row.querySelector('input[name="startTime"]').value,
+        endTime: row.querySelector('input[name="endTime"]').value,
+        activity: row.querySelector('input[name="activity"]').value,
+        location: row.querySelector('input[name="location"]').value
+      };
+    });
 }
+  
 
 async function showInstructionModal(instructionId = null) {
     let instruction = {
@@ -462,29 +462,50 @@ async function showInstructionModal(instructionId = null) {
     const calendarContainer = modal.content.querySelector('#calendarContainer');
     const selectedDatesContainer = modal.content.querySelector('#selectedDates');
     
-    // Initialize calendar
-    initCalendar(calendarContainer, selectedDatesContainer, selectedDates);
-    
-    // Populate schedule table
-    renderScheduleTable(scheduleTableBody, instruction.schedule || []);
-    
-    // Populate locations table
-    renderLocationsTable(locationsTableBody, instruction.locations || []);
-    
-    // Event listeners
-    trackSelect.addEventListener('change', async () => {
-      const trackId = trackSelect.value;
-      if (trackId) {
-        try {
-          const track = await getTrack(trackId);
-          if (track) {
-            noiseLimit.value = track.noiseLimit;
-          }
-        } catch (error) {
-          console.error('Error loading track details:', error);
+// Initialize calendar
+initCalendar(calendarContainer, selectedDatesContainer, selectedDates);
+
+function updateScheduleTableHeader() {
+  const scheduleTable = instructionForm.querySelector('.schedule-table');
+  const hasMultipleDates = selectedDates.length > 0;
+  
+  // Update header row to include day column if there are dates selected
+  const headerRow = scheduleTable.querySelector('thead tr');
+  
+  if (headerRow) {
+    if (hasMultipleDates && !headerRow.querySelector('th:first-child').textContent.includes('Day')) {
+      const dayHeader = document.createElement('th');
+      dayHeader.textContent = 'Day';
+      headerRow.insertBefore(dayHeader, headerRow.firstChild);
+    } else if (!hasMultipleDates && headerRow.querySelector('th:first-child').textContent.includes('Day')) {
+      headerRow.removeChild(headerRow.querySelector('th:first-child'));
+    }
+  }
+  
+  // Re-render schedule table with updated dates
+  renderScheduleTable(scheduleTableBody, getScheduleFromTable(scheduleTableBody), selectedDates);
+}
+
+// Populate schedule table
+renderScheduleTable(scheduleTableBody, instruction.schedule || [], selectedDates);
+
+// Populate locations table
+renderLocationsTable(locationsTableBody, instruction.locations || []);
+
+// Event listeners
+trackSelect.addEventListener('change', async () => {
+    const trackId = trackSelect.value;
+    if (trackId) {
+    try {
+        const track = await getTrack(trackId);
+        if (track) {
+        noiseLimit.value = track.noiseLimit;
         }
-      }
-    });
+    } catch (error) {
+        console.error('Error loading track details:', error);
+    }
+    }
+});
     
     addScheduleRowBtn.addEventListener('click', () => {
       const newRow = { startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: '', activity2: '', location: '' };
@@ -545,58 +566,86 @@ async function showInstructionModal(instructionId = null) {
     });
   }
   
-  function renderScheduleTable(tableBody, scheduleItems) {
-  tableBody.innerHTML = '';
-  
-  scheduleItems.forEach((item, index) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td><input type="text" name="startText" class="form-input" value="${item.startText || ''}" placeholder="Optional text (EN)"></td>
-      <td><input type="text" name="startText2" class="form-input" value="${item.startText2 || ''}" placeholder="Optional text (2nd lang)"></td>
-      <td><input type="time" name="startTime" class="form-input" value="${item.startTime}" required></td>
-      <td><input type="time" name="endTime" class="form-input" value="${item.endTime}" placeholder="Optional"></td>
-      <td><input type="text" name="activity" class="form-input" value="${item.activity}" required placeholder="Activity (EN)"></td>
-      <td><input type="text" name="activity2" class="form-input" value="${item.activity2 || ''}" placeholder="Activity (2nd lang)"></td>
-      <td><input type="text" name="location" class="form-input" value="${item.location}" required></td>
-      <td>
-        <button type="button" class="delete-btn">Remove</button>
-      </td>
-    `;
-    
-    row.querySelector('.delete-btn').addEventListener('click', () => {
-      if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last schedule item?')) {
-        row.remove();
-      }
+function renderScheduleTable(tableBody, scheduleItems, selectedDates) {
+    tableBody.innerHTML = '';
+
+    scheduleItems.forEach((item, index) => {
+        const row = document.createElement('tr');
+        
+        // Create day selection dropdown if multiple dates are selected
+        let daySelectionHTML = '';
+        if (selectedDates && selectedDates.length > 0) {
+        daySelectionHTML = `
+            <select name="scheduleDay" class="form-input">
+            <option value="all" ${!item.day || item.day === 'all' ? 'selected' : ''}>All Days</option>
+            ${selectedDates.map((date, i) => {
+                const dateObj = new Date(date);
+                const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                return `<option value="${date}" ${item.day === date ? 'selected' : ''}>${formattedDate}</option>`;
+            }).join('')}
+            </select>
+        `;
+        }
+        
+        row.innerHTML = `
+        ${selectedDates && selectedDates.length > 0 ? `<td>${daySelectionHTML}</td>` : ''}
+        <td><input type="time" name="startTime" class="form-input" value="${item.startTime}" required></td>
+        <td><input type="time" name="endTime" class="form-input" value="${item.endTime}" required></td>
+        <td><input type="text" name="activity" class="form-input" value="${item.activity}" required></td>
+        <td><input type="text" name="location" class="form-input" value="${item.location}" required></td>
+        <td>
+            <button type="button" class="delete-btn">Remove</button>
+        </td>
+        `;
+        
+        row.querySelector('.delete-btn').addEventListener('click', () => {
+        if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last schedule item?')) {
+            row.remove();
+        }
+        });
+        
+        tableBody.appendChild(row);
     });
-    
-    tableBody.appendChild(row);
-  });
-  
-  // Add at least one row if empty
-  if (tableBody.querySelectorAll('tr').length === 0) {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td><input type="text" name="startText" class="form-input" placeholder="Optional text (EN)"></td>
-      <td><input type="text" name="startText2" class="form-input" placeholder="Optional text (2nd lang)"></td>
-      <td><input type="time" name="startTime" class="form-input" value="09:00" required></td>
-      <td><input type="time" name="endTime" class="form-input" value="17:00" placeholder="Optional"></td>
-      <td><input type="text" name="activity" class="form-input" value="Track Session" required placeholder="Activity (EN)"></td>
-      <td><input type="text" name="activity2" class="form-input" placeholder="Activity (2nd lang)"></td>
-      <td><input type="text" name="location" class="form-input" value="Main Track" required></td>
-      <td>
-        <button type="button" class="delete-btn">Remove</button>
-      </td>
-    `;
-    
-    row.querySelector('.delete-btn').addEventListener('click', () => {
-      if (confirm('Remove the last schedule item?')) {
-        row.remove();
-      }
-    });
-    
-    tableBody.appendChild(row);
-  }
-}
+
+    // Add at least one row if empty
+    if (tableBody.querySelectorAll('tr').length === 0) {
+        const row = document.createElement('tr');
+        
+        // Create day selection dropdown if multiple dates are selected
+        let daySelectionHTML = '';
+        if (selectedDates && selectedDates.length > 0) {
+        daySelectionHTML = `
+            <select name="scheduleDay" class="form-input">
+            <option value="all" selected>All Days</option>
+            ${selectedDates.map((date, i) => {
+                const dateObj = new Date(date);
+                const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                return `<option value="${date}">${formattedDate}</option>`;
+            }).join('')}
+            </select>
+        `;
+        }
+        
+        row.innerHTML = `
+        ${selectedDates && selectedDates.length > 0 ? `<td>${daySelectionHTML}</td>` : ''}
+        <td><input type="time" name="startTime" class="form-input" value="09:00" required></td>
+        <td><input type="time" name="endTime" class="form-input" value="17:00" required></td>
+        <td><input type="text" name="activity" class="form-input" value="Track Session" required></td>
+        <td><input type="text" name="location" class="form-input" value="Main Track" required></td>
+        <td>
+            <button type="button" class="delete-btn">Remove</button>
+        </td>
+        `;
+        
+        row.querySelector('.delete-btn').addEventListener('click', () => {
+        if (confirm('Remove the last schedule item?')) {
+            row.remove();
+        }
+        });
+        
+        tableBody.appendChild(row);
+    }
+}  
 
 function renderLocationsTable(tableBody, locations) {
   tableBody.innerHTML = '';
@@ -769,8 +818,11 @@ function initCalendar(container, selectedDatesContainer, initialSelectedDates = 
               if (calendarDate) {
                 calendarDate.classList.remove('selected');
               }
-              
+
               updateSelectedDatesDisplay();
+              if (typeof updateScheduleTableHeader === 'function') {
+                updateScheduleTableHeader();
+              }
             }
           });
           
