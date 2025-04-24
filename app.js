@@ -154,79 +154,78 @@ import {
   
   // Track Functions
   async function showTrackModal(trackId = null) {
-  let track = {
-    name: '',
-    noiseLimit: 100,
-    location: '',
-    builtYear: 2000,
-    length: 0,
-    corners: 0,
-    logoUrl: '',
-    trackShapeUrl: ''
-  };
-
+  let track = { name: '', noiseLimit: 100, location: '', builtYear: 2000, length: 0, corners: 0, logoUrl: '', trackShapeUrl: '' };
+  
   if (trackId && tracks[trackId]) {
     track = { ...tracks[trackId] };
   }
-
+  
   const modal = createModal('Track Details');
-
+  
   modal.content.innerHTML = `
     <form id="trackForm" class="track-form-grid">
       <div class="form-group">
         <label for="trackName">Track Name</label>
         <input type="text" id="trackName" class="form-input" value="${track.name}" required>
       </div>
+      
       <div class="form-group">
         <label for="noiseLimit">Noise Limit (dB)</label>
         <input type="number" id="noiseLimit" class="form-input" value="${track.noiseLimit}" required>
       </div>
+      
       <div class="form-group">
         <label for="location">Location</label>
         <input type="text" id="location" class="form-input" value="${track.location}" required>
       </div>
+      
       <div class="form-group">
         <label for="builtYear">Built Year</label>
         <input type="number" id="builtYear" class="form-input" value="${track.builtYear}" required>
       </div>
+      
       <div class="form-group">
         <label for="length">Length (km)</label>
         <input type="number" id="length" step="0.01" class="form-input" value="${track.length}" required>
       </div>
+      
       <div class="form-group">
         <label for="corners">Number of Corners</label>
         <input type="number" id="corners" class="form-input" value="${track.corners}" required>
       </div>
+      
       <div class="form-group">
         <label for="logoUrl">Logo URL</label>
         <input type="url" id="logoUrl" class="form-input" value="${track.logoUrl}">
       </div>
+      
       <div class="form-group">
         <label for="trackShapeUrl">Track Shape Image URL</label>
         <input type="url" id="trackShapeUrl" class="form-input" value="${track.trackShapeUrl}">
         <div class="track-form-image-preview" id="trackImagePreview" style="background-image: url('${track.trackShapeUrl}')"></div>
       </div>
+      
       <div class="form-buttons" style="grid-column: span 2;">
         <button type="button" id="cancelTrackBtn" class="delete-btn">Cancel</button>
         <button type="submit" class="edit-btn">Save Track</button>
       </div>
     </form>
   `;
-
+  
   const trackForm = modal.content.querySelector('#trackForm');
   const cancelBtn = modal.content.querySelector('#cancelTrackBtn');
   const trackShapeUrl = modal.content.querySelector('#trackShapeUrl');
   const trackImagePreview = modal.content.querySelector('#trackImagePreview');
-
+  
   trackShapeUrl.addEventListener('input', () => {
     trackImagePreview.style.backgroundImage = `url('${trackShapeUrl.value}')`;
   });
-
+  
   cancelBtn.addEventListener('click', () => modal.close());
-
+  
   trackForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-
+    
     const updatedTrack = {
       name: trackForm.querySelector('#trackName').value,
       noiseLimit: parseInt(trackForm.querySelector('#noiseLimit').value),
@@ -237,10 +236,9 @@ import {
       logoUrl: trackForm.querySelector('#logoUrl').value,
       trackShapeUrl: trackForm.querySelector('#trackShapeUrl').value
     };
-
+    
     try {
-      // Explicitly pass trackId or null
-      await saveTrack(updatedTrack, trackId || null);
+      await saveTrack(updatedTrack, trackId); // Use the trackId from function parameter
       await loadTracks();
       modal.close();
       showToast(`Track successfully ${trackId ? 'updated' : 'created'}!`, 'success');
@@ -248,7 +246,7 @@ import {
       showToast('Error saving track: ' + error.message, 'error');
     }
   });
-
+  
   modal.show();
 }
   
