@@ -643,31 +643,31 @@ function renderLocationsTable(tableBody, locations) {
     }
 }
   
-    function initCalendar(container, selectedDatesContainer, initialSelectedDates = []) {
+function initCalendar(container, selectedDatesContainer, initialSelectedDates = []) {
     // Current date for calendar
     let currentDate = new Date();
     let currentMonth = currentDate.getMonth();
     let currentYear = currentDate.getFullYear();
-
+    
     // Store selected dates
     let selectedDates = [...initialSelectedDates];
-
+    
     // Render calendar
     function renderCalendar() {
-        const firstDay = new Date(currentYear, currentMonth, 1);
-        const lastDay = new Date(currentYear, currentMonth + 1, 0);
-        const daysInMonth = lastDay.getDate();
-        const startingDay = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
-        
-        container.innerHTML = `
+      const firstDay = new Date(currentYear, currentMonth, 1);
+      const lastDay = new Date(currentYear, currentMonth + 1, 0);
+      const daysInMonth = lastDay.getDate();
+      const startingDay = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      
+      container.innerHTML = `
         <div class="calendar">
-            <div class="calendar-header">
+          <div class="calendar-header">
             <button type="button" id="prevMonth" class="edit-btn">&lt;</button>
             <h3>${new Date(currentYear, currentMonth).toLocaleDateString('default', { month: 'long', year: 'numeric' })}</h3>
             <button type="button" id="nextMonth" class="edit-btn">&gt;</button>
-            </div>
-            
-            <div class="calendar-days">
+          </div>
+          
+          <div class="calendar-days">
             <div class="calendar-day">Sun</div>
             <div class="calendar-day">Mon</div>
             <div class="calendar-day">Tue</div>
@@ -675,23 +675,23 @@ function renderLocationsTable(tableBody, locations) {
             <div class="calendar-day">Thu</div>
             <div class="calendar-day">Fri</div>
             <div class="calendar-day">Sat</div>
-            </div>
-            
-            <div class="calendar-dates" id="calendarDates"></div>
+          </div>
+          
+          <div class="calendar-dates" id="calendarDates"></div>
         </div>
-        `;
-        
-        const calendarDates = container.querySelector('#calendarDates');
-        
-        // Add empty cells for days before the first day of month
-        for (let i = 0; i < startingDay; i++) {
+      `;
+      
+      const calendarDates = container.querySelector('#calendarDates');
+      
+      // Add empty cells for days before the first day of month
+      for (let i = 0; i < startingDay; i++) {
         const emptyDay = document.createElement('div');
         emptyDay.className = 'calendar-date disabled';
         calendarDates.appendChild(emptyDay);
-        }
-        
-        // Add days of month
-        for (let day = 1; day <= daysInMonth; day++) {
+      }
+      
+      // Add days of month
+      for (let day = 1; day <= daysInMonth; day++) {
         const dateCell = document.createElement('div');
         dateCell.className = 'calendar-date';
         dateCell.textContent = day;
@@ -701,60 +701,60 @@ function renderLocationsTable(tableBody, locations) {
         
         // Check if date is selected
         if (selectedDates.includes(dateStr)) {
-            dateCell.classList.add('selected');
+          dateCell.classList.add('selected');
         }
         
         dateCell.addEventListener('click', () => {
-            const index = selectedDates.indexOf(dateStr);
-            if (index === -1) {
+          const index = selectedDates.indexOf(dateStr);
+          if (index === -1) {
             selectedDates.push(dateStr);
             dateCell.classList.add('selected');
-            } else {
+          } else {
             selectedDates.splice(index, 1);
             dateCell.classList.remove('selected');
-            }
-            updateSelectedDatesDisplay();
+          }
+          updateSelectedDatesDisplay();
         });
         
         calendarDates.appendChild(dateCell);
-        }
-        
-        // Event listeners for month navigation
-        container.querySelector('#prevMonth').addEventListener('click', () => {
+      }
+      
+      // Event listeners for month navigation
+      container.querySelector('#prevMonth').addEventListener('click', () => {
         currentMonth--;
         if (currentMonth < 0) {
-            currentMonth = 11;
-            currentYear--;
+          currentMonth = 11;
+          currentYear--;
         }
         renderCalendar();
-        });
-        
-        container.querySelector('#nextMonth').addEventListener('click', () => {
+      });
+      
+      container.querySelector('#nextMonth').addEventListener('click', () => {
         currentMonth++;
         if (currentMonth > 11) {
-            currentMonth = 0;
-            currentYear++;
+          currentMonth = 0;
+          currentYear++;
         }
         renderCalendar();
-        });
-        
-        updateSelectedDatesDisplay();
+      });
+      
+      updateSelectedDatesDisplay();
     }
-
+    
     function updateSelectedDatesDisplay() {
-        selectedDatesContainer.innerHTML = '';
-        
-        if (selectedDates.length === 0) {
+      selectedDatesContainer.innerHTML = '';
+      
+      if (selectedDates.length === 0) {
         selectedDatesContainer.innerHTML = '<p>No dates selected.</p>';
         return;
-        }
-
-        // Sort dates chronologically
-        selectedDates.sort();
-        
-        selectedDatesContainer.innerHTML = '<p><strong>Selected Dates:</strong></p>';
-        
-        selectedDates.forEach(dateStr => {
+      }
+    
+      // Sort dates chronologically
+      selectedDates.sort();
+      
+      selectedDatesContainer.innerHTML = '<p><strong>Selected Dates:</strong></p>';
+      
+      selectedDates.forEach(dateStr => {
         const datePill = document.createElement('span');
         datePill.className = 'selected-date';
         datePill.dataset.date = dateStr;
@@ -766,30 +766,30 @@ function renderLocationsTable(tableBody, locations) {
         removeBtn.innerHTML = '&times;';
         removeBtn.className = 'remove-date-btn';
         removeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const index = selectedDates.indexOf(dateStr);
-            if (index !== -1) {
+          e.stopPropagation();
+          const index = selectedDates.indexOf(dateStr);
+          if (index !== -1) {
             selectedDates.splice(index, 1);
             datePill.remove();
             
             // Update calendar UI
             const calendarDate = container.querySelector(`.calendar-date[data-date="${dateStr}"]`);
             if (calendarDate) {
-                calendarDate.classList.remove('selected');
+              calendarDate.classList.remove('selected');
             }
             
             updateSelectedDatesDisplay();
-            }
+          }
         });
         
         datePill.appendChild(removeBtn);
         selectedDatesContainer.appendChild(datePill);
-        });
-        }
-
-        // Initialize calendar
-        renderCalendar();
-}
+      });
+    }
+    
+    // Initialize calendar
+    renderCalendar();
+}  
 
 async function showInstructionPreview(instruction) {
     const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
