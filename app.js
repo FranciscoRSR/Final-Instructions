@@ -835,150 +835,231 @@ function initCalendar(container, selectedDatesContainer, initialSelectedDates = 
       renderCalendar();
     }
     
-    async function showInstructionPreview(instruction) {
-        const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
-        
-        const modal = createModal('Instruction Preview');
-        
-        // Format dates for display
-        const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
-        
-        let overtakingText = '';
-        switch (instruction.overtakingRules) {
-          case 'leftSideOnly':
-            overtakingText = 'Left Side Only';
-            break;
-          case 'rightSideOnly':
-            overtakingText = 'Right Side Only';
-            break;
-          case 'eitherSide':
-            overtakingText = 'Either Side';
-            break;
+async function showInstructionPreview(instruction) {
+    const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
+    
+    const modal = createModal('Instruction Preview');
+    
+    // Format dates for display
+    const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
+    
+    // Get overtaking rules text  
+    let overtakingText = '';
+    switch (instruction.overtakingRules) {
+        case 'leftSideOnly':
+        overtakingText = 'Left Side Only';
+        break;
+        case 'rightSideOnly':
+        overtakingText = 'Right Side Only';
+        break;
+        case 'eitherSide':
+        overtakingText = 'Either Side';
+        break;
+    }
+    
+    // Group schedule items by day
+    const scheduleByDay = {};
+    const allDaysSchedule = [];
+    
+    // Sort dates chronologically
+    const sortedDates = [...instruction.dates].sort();
+    
+    // First add items marked for all days
+    instruction.schedule.forEach(item => {
+        if (!item.day || item.day === 'all') {
+        allDaysSchedule.push(item);
+        } else {
+        if (!scheduleByDay[item.day]) {
+            scheduleByDay[item.day] = [];
         }
-        
-        // Create schedule table HTML with bilingual support
-        const scheduleTableHTML = `
-          <table class="schedule-table-preview">
+        scheduleByDay[item.day].push(item);
+        }
+    });
+    
+    // Create schedule HTML sections
+    let scheduleHTML = '';
+    
+    // Add all-days schedule if exists
+    if (allDaysSchedule.length > 0) {
+        scheduleHTML += `
+        <div class="instruction-section">
+            <h4>General Daily Schedule (All Days)</h4>
+            <table class="schedule-table-preview">
             <thead>
-              <tr>
-                <th>Start</th>
-                <th>End</th>
+                <tr>
+                <th>Start Time</th>
+                <th>End Time</th>
                 <th>Activity</th>
                 <th>Location</th>
-              </tr>
+                </tr>
             </thead>
             <tbody>
-              ${instruction.schedule.map(item => `
+                ${allDaysSchedule.map(item => `
                 <tr>
-                  <td>
-                    ${item.startText ? `<div>${item.startText}</div>` : ''}
-                    ${item.startText2 ? `<div class="secondary-language">${item.startText2}</div>` : ''}
-                    <div>${item.startTime}</div>
-                  </td>
-                  <td>${item.endTime}</td>
-                  <td>
-                    <div>${item.activity}</div>
-                    ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
-                  </td>
-                  <td>${item.location}</td>
+                    <td>${item.startTime}</td>
+                    <td>${item.endTime}</td>
+                    <td>${item.activity}</td>
+                    <td>${item.location}</td>
                 </tr>
-              `).join('')}
+                `).join('')}
             </tbody>
-          </table>
+            </table>
+        </div>
         `;
+    }
+    
+    // Add day-specific schedules
+    if (instruction.dates.length > 1) {
+        sortedDates.forEach((date, index) => {
+        const dateObj = new Date(date);
+        const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        const daySchedule = scheduleByDay[date] || [];
         
-        // Create locations table HTML with bilingual support
-        const locationsTableHTML = `
-          <table class="schedule-table-preview">
-            <thead>
-              <tr>
-                <th>Location Name</th>
-                <th>Address</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${instruction.locations.map(location => `
+        if (daySchedule.length > 0) {
+            scheduleHTML += `
+            <div class="instruction-section">
+                <h4>Schedule Day ${index + 1} (${formattedDate})</h4>
+                <table class="schedule-table-preview">
+                <thead>
+                    <tr>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Activity</th>
+                    <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${daySchedule.map(item => `
+                    <tr>
+                        <td>${item.startTime}</td>
+                        <td>${item.endTime}</td>
+                        <td>${item.activity}</td>
+                        <td>${item.location}</td>
+                    </tr>
+                    `).join('')}
+                </tbody>
+                </table>
+            </div>
+            `;
+        }
+        });
+    } else if (instruction.dates.length === 1) {
+        // Single day schedule - combine with all days schedule if needed
+        const date = instruction.dates[0];
+        const daySchedule = scheduleByDay[date] || [];
+        
+        if (daySchedule.length > 0) {
+        scheduleHTML += `
+            <div class="instruction-section">
+            <h4>Schedule</h4>
+            <table class="schedule-table-preview">
+                <thead>
                 <tr>
-                  <td>
-                    <div>${location.name}</div>
-                    ${location.name2 ? `<div class="secondary-language">${location.name2}</div>` : ''}
-                  </td>
-                  <td>${location.address}</td>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Activity</th>
+                    <th>Location</th>
                 </tr>
-              `).join('')}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                ${daySchedule.map(item => `
+                    <tr>
+                    <td>${item.startTime}</td>
+                    <td>${item.endTime}</td>
+                    <td>${item.activity}</td>
+                    <td>${item.location}</td>
+                    </tr>
+                `).join('')}
+                </tbody>
+            </table>
+            </div>
         `;
+        }
+    }
+    
+    // Create locations table HTML
+    const locationsTableHTML = `
+        <table class="schedule-table-preview">
+        <thead>
+            <tr>
+            <th>Location Name</th>
+            <th>Address</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${instruction.locations.map(location => `
+            <tr>
+                <td>${location.name}</td>
+                <td>${location.address}</td>
+            </tr>
+            `).join('')}
+        </tbody>
+        </table>
+    `;
+    
+    modal.content.innerHTML = `
+        <div class="instruction-preview">
+        <div class="instruction-header">
+            <div class="instruction-title">${instruction.trackName} - Final Instructions</div>
+            <div class="instruction-dates">${formattedDates}</div>
+        </div>
         
-        modal.content.innerHTML = `
-          <div class="instruction-preview">
-            <div class="instruction-header">
-              <div class="instruction-title">${instruction.trackName} - Final Instructions</div>
-              <div class="instruction-dates">${formattedDates}</div>
-            </div>
-            
-            ${trackDetails ? `
-              <div class="track-card">
-                ${trackDetails.trackShapeUrl ? `
-                  <div class="track-image" style="background-image: url('${trackDetails.trackShapeUrl}')"></div>
-                ` : ''}
-                <div class="track-info">
-                  <h3>${trackDetails.name}</h3>
-                  ${trackDetails.logoUrl ? `
-                    <div class="track-logo" style="background-image: url('${trackDetails.logoUrl}'); height: 60px; background-size: contain; background-repeat: no-repeat; background-position: left center; margin-bottom: 10px;"></div>
-                  ` : ''}
-                  <div class="track-stats">
-                    <div class="stat-item">
-                      <strong>Noise Limit:</strong> ${instruction.noiseLimit} dB
-                    </div>
-                    <div class="stat-item">
-                      <strong>Length:</strong> ${trackDetails.length} km
-                    </div>
-                    <div class="stat-item">
-                      <strong>Location:</strong> ${trackDetails.location}
-                    </div>
-                    <div class="stat-item">
-                      <strong>Corners:</strong> ${trackDetails.corners}
-                    </div>
-                  </div>
-                </div>
-              </div>
+        ${trackDetails ? `
+            <div class="track-card">
+            ${trackDetails.trackShapeUrl ? `
+                <div class="track-image" style="background-image: url('${trackDetails.trackShapeUrl}')"></div>
             ` : ''}
-            
-            <div class="instruction-section">
-              <h4>Overtaking Rules</h4>
-              <p>${overtakingText}</p>
-            </div>
-            
-            <div class="instruction-section">
-              <h4>Daily Schedule</h4>
-              ${scheduleTableHTML}
-            </div>
-            
-            <div class="instruction-section">
-              <h4>Important Locations</h4>
-              ${locationsTableHTML}
-            </div>
-            
-            ${instruction.notes ? `
-              <div class="instruction-section">
-                <h4>Additional Notes</h4>
-                <div class="notes-section">
-                  ${instruction.notes.replace(/\n/g, '<br>')}
+            <div class="track-info">
+                <h3>${trackDetails.name}</h3>
+                <div class="track-stats">
+                <div class="stat-item">
+                    <strong>Noise Limit:</strong> ${instruction.noiseLimit} dB
                 </div>
-              </div>
-            ` : ''}
-          </div>
-          
-          <div class="form-buttons">
-            <button type="button" id="closePreviewBtn" class="delete-btn">Close</button>
-          </div>
-        `;
+                <div class="stat-item">
+                    <strong>Length:</strong> ${trackDetails.length} km
+                </div>
+                <div class="stat-item">
+                    <strong>Location:</strong> ${trackDetails.location}
+                </div>
+                <div class="stat-item">
+                    <strong>Corners:</strong> ${trackDetails.corners}
+                </div>
+                </div>
+            </div>
+            </div>
+        ` : ''}
         
-        modal.content.querySelector('#closePreviewBtn').addEventListener('click', () => modal.close());
+        <div class="instruction-section">
+            <h4>Overtaking Rules</h4>
+            <p>${overtakingText}</p>
+        </div>
         
-        modal.show();
-      }
+        ${scheduleHTML}
+        
+        <div class="instruction-section">
+            <h4>Important Locations</h4>
+            ${locationsTableHTML}
+        </div>
+        
+        ${instruction.notes ? `
+            <div class="instruction-section">
+            <h4>Additional Notes</h4>
+            <div class="notes-section">
+                ${instruction.notes.replace(/\n/g, '<br>')}
+            </div>
+            </div>
+        ` : ''}
+        </div>
+        
+        <div class="form-buttons">
+        <button type="button" id="closePreviewBtn" class="delete-btn">Close</button>
+        </div>
+    `;
+    
+    modal.content.querySelector('#closePreviewBtn').addEventListener('click', () => modal.close());
+    
+    modal.show();
+}
       
     async function duplicateInstruction(instructionId) {
       if (!instructions[instructionId]) return;
