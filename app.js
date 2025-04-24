@@ -469,25 +469,25 @@ async function showInstructionModal(instructionId = null) {
   });
   
   instructionForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = getInstructionFormData(
-      instructionForm, 
-      scheduleTableBody,
-      locationsTableBody,
-      selectedDatesContainer
-    );
-    
-    try {
-      // Pass instructionId explicitly, ensuring it's either a string or null
-      await saveInstruction(formData, instructionId || null);
-      await loadInstructions();
-      modal.close();
-      showToast(`Instruction successfully ${instructionId ? 'updated' : 'created'}!`, 'success');
-    } catch (error) {
-      showToast('Error saving instruction: ' + error.message, 'error');
-    }
-  });
+  e.preventDefault();
+  
+  const formData = getInstructionFormData(
+    instructionForm, 
+    scheduleTableBody,
+    locationsTableBody,
+    selectedDatesContainer
+  );
+  
+  try {
+    // Pass instructionId directly (not the event object)
+    await saveInstruction(formData, instructionId); // Removed the || null part
+    await loadInstructions();
+    modal.close();
+    showToast(`Instruction successfully ${instructionId ? 'updated' : 'created'}!`, 'success');
+  } catch (error) {
+    showToast('Error saving instruction: ' + error.message, 'error');
+  }
+});
 
   modal.show();
 }
