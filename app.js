@@ -478,7 +478,7 @@ async function showInstructionModal(instructionId = null) {
     );
     
     try {
-      await saveInstruction(formData, instructionId);
+      await saveInstruction(formData, instructionId ? instructionId : undefined);
       await loadInstructions();
       modal.close();
       showToast(`Instruction successfully ${instructionId ? 'updated' : 'created'}!`, 'success');
