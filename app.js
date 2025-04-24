@@ -224,28 +224,29 @@ import {
   cancelBtn.addEventListener('click', () => modal.close());
   
   trackForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const updatedTrack = {
-      name: trackForm.querySelector('#trackName').value,
-      noiseLimit: parseInt(trackForm.querySelector('#noiseLimit').value),
-      location: trackForm.querySelector('#location').value,
-      builtYear: parseInt(trackForm.querySelector('#builtYear').value),
-      length: parseFloat(trackForm.querySelector('#length').value),
-      corners: parseInt(trackForm.querySelector('#corners').value),
-      logoUrl: trackForm.querySelector('#logoUrl').value,
-      trackShapeUrl: trackForm.querySelector('#trackShapeUrl').value
-    };
-    
-    try {
-      await saveTrack(updatedTrack, trackId); // Use the trackId from function parameter
-      await loadTracks();
-      modal.close();
-      showToast(`Track successfully ${trackId ? 'updated' : 'created'}!`, 'success');
-    } catch (error) {
-      showToast('Error saving track: ' + error.message, 'error');
-    }
-  });
+  e.preventDefault();
+
+  const updatedTrack = {
+    name: trackForm.querySelector('#trackName').value,
+    noiseLimit: parseInt(trackForm.querySelector('#noiseLimit').value),
+    location: trackForm.querySelector('#location').value,
+    builtYear: parseInt(trackForm.querySelector('#builtYear').value),
+    length: parseFloat(trackForm.querySelector('#length').value),
+    corners: parseInt(trackForm.querySelector('#corners').value),
+    logoUrl: trackForm.querySelector('#logoUrl').value,
+    trackShapeUrl: trackForm.querySelector('#trackShapeUrl').value
+  };
+
+  try {
+    // Only pass trackId if we're editing an existing track
+    await saveTrack(updatedTrack, trackId ? trackId : undefined);
+    await loadTracks();
+    modal.close();
+    showToast(`Track successfully ${trackId ? 'updated' : 'created'}!`, 'success');
+  } catch (error) {
+    showToast('Error saving track: ' + error.message, 'error');
+  }
+});
   
   modal.show();
 }
