@@ -611,7 +611,7 @@ tr:hover {
 
 .schedule-table-preview {
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .schedule-table-preview th {
@@ -831,4 +831,52 @@ button {
 .main-nav button.active {
     background-color: var(--primary-color);
     transform: translateY(-2px);
+}
+
+/* Additional styles for multi-day schedules */
+.instruction-section + .instruction-section {
+    margin-top: 25px;
+}
+
+.instruction-section h4 {
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    font-size: 1.1em;
+}
+
+.day-label {
+    display: inline-block;
+    padding: 3px 10px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 12px;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+.schedule-table-preview tbody tr:nth-child(even) {
+    background-color: var(--input-background);
+}
+
+.schedule-table-preview td, .schedule-table-preview th {
+    padding: 10px 15px;
+}
+
+/* Day selection in schedule form */
+select[name="scheduleDay"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--input-background);
+    color: var(--text-color);
+    transition: var(--transition);
+}
+
+select[name="scheduleDay"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
 }
