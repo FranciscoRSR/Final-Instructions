@@ -154,111 +154,111 @@ import {
   
   // Track Functions
   async function showTrackModal(trackId = null) {
-  let track = {
-    name: '',
-    noiseLimit: 100,
-    location: '',
-    builtYear: 2000,
-    length: 0,
-    corners: 0,
-    logoUrl: '',
-    trackShapeUrl: ''
-  };
-
-  if (trackId && tracks[trackId]) {
-    track = { ...tracks[trackId] };
-  }
-
-  const modal = createModal('Track Details');
-
-  modal.content.innerHTML = `
-    <form id="trackForm" class="track-form-grid">
-      <div class="form-group">
-        <label for="trackName">Track Name</label>
-        <input type="text" id="trackName" class="form-input" value="${track.name}" required>
-      </div>
-      <div class="form-group">
-        <label for="noiseLimit">Noise Limit (dB)</label>
-        <input type="number" id="noiseLimit" class="form-input" value="${track.noiseLimit}" required>
-      </div>
-      <div class="form-group">
-        <label for="location">Location</label>
-        <input type="text" id="location" class="form-input" value="${track.location}" required>
-      </div>
-      <div class="form-group">
-        <label for="builtYear">Built Year</label>
-        <input type="number" id="builtYear" class="form-input" value="${track.builtYear}" required>
-      </div>
-      <div class="form-group">
-        <label for="length">Length (km)</label>
-        <input type="number" id="length" step="0.01" class="form-input" value="${track.length}" required>
-      </div>
-      <div class="form-group">
-        <label for="corners">Number of Corners</label>
-        <input type="number" id="corners" class="form-input" value="${track.corners}" required>
-      </div>
-      <div class="form-group">
-        <label for="logoUrl">Logo URL</label>
-        <input type="url" id="logoUrl" class="form-input" value="${track.logoUrl}">
-        <div class="track-form-image-preview" id="logoImagePreview" style="background-image: url('${track.logoUrl}')"></div>
-      </div>
-      <div class="form-group">
-        <label for="trackShapeUrl">Track Shape Image URL</label>
-        <input type="url" id="trackShapeUrl" class="form-input" value="${track.trackShapeUrl}">
-        <div class="track-form-image-preview" id="trackImagePreview" style="background-image: url('${track.trackShapeUrl}')"></div>
-      </div>
-      <div class="form-buttons" style="grid-column: span 2;">
-        <button type="button" id="cancelTrackBtn" class="delete-btn">Cancel</button>
-        <button type="submit" class="edit-btn">Save Track</button>
-      </div>
-    </form>
-  `;
-
-  const trackForm = modal.content.querySelector('#trackForm');
-  const cancelBtn = modal.content.querySelector('#cancelTrackBtn');
-  const trackShapeUrl = modal.content.querySelector('#trackShapeUrl');
-  const trackImagePreview = modal.content.querySelector('#trackImagePreview');
-  const logoUrl = modal.content.querySelector('#logoUrl');
-  const logoImagePreview = modal.content.querySelector('#logoImagePreview');
-
-  // Add event listeners for both image previews
-  trackShapeUrl.addEventListener('input', () => {
-    trackImagePreview.style.backgroundImage = `url('${trackShapeUrl.value}')`;
-  });
-  
-  logoUrl.addEventListener('input', () => {
-    logoImagePreview.style.backgroundImage = `url('${logoUrl.value}')`;
-  });
-
-  cancelBtn.addEventListener('click', () => modal.close());
-
-  trackForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const updatedTrack = {
-      name: trackForm.querySelector('#trackName').value,
-      noiseLimit: parseInt(trackForm.querySelector('#noiseLimit').value),
-      location: trackForm.querySelector('#location').value,
-      builtYear: parseInt(trackForm.querySelector('#builtYear').value),
-      length: parseFloat(trackForm.querySelector('#length').value),
-      corners: parseInt(trackForm.querySelector('#corners').value),
-      logoUrl: trackForm.querySelector('#logoUrl').value,
-      trackShapeUrl: trackForm.querySelector('#trackShapeUrl').value
+    let track = {
+      name: '',
+      noiseLimit: 100,
+      location: '',
+      builtYear: 2000,
+      length: 0,
+      corners: 0,
+      logoUrl: '',
+      trackShapeUrl: ''
     };
-
-    try {
-      // Explicitly pass trackId or null
-      await saveTrack(updatedTrack, trackId || null);
-      await loadTracks();
-      modal.close();
-      showToast(`Track successfully ${trackId ? 'updated' : 'created'}!`, 'success');
-    } catch (error) {
-      showToast('Error saving track: ' + error.message, 'error');
+  
+    if (trackId && tracks[trackId]) {
+      track = { ...tracks[trackId] };
     }
-  });
-
-  modal.show();
-}
+  
+    const modal = createModal('Track Details');
+  
+    modal.content.innerHTML = `
+      <form id="trackForm" class="track-form-grid">
+        <div class="form-group">
+          <label for="trackName">Track Name</label>
+          <input type="text" id="trackName" class="form-input" value="${track.name}" required>
+        </div>
+        <div class="form-group">
+          <label for="noiseLimit">Noise Limit (dB)</label>
+          <input type="number" id="noiseLimit" class="form-input" value="${track.noiseLimit}" required>
+        </div>
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input type="text" id="location" class="form-input" value="${track.location}" required>
+        </div>
+        <div class="form-group">
+          <label for="builtYear">Built Year</label>
+          <input type="number" id="builtYear" class="form-input" value="${track.builtYear}" required>
+        </div>
+        <div class="form-group">
+          <label for="length">Length (km)</label>
+          <input type="number" id="length" step="0.01" class="form-input" value="${track.length}" required>
+        </div>
+        <div class="form-group">
+          <label for="corners">Number of Corners</label>
+          <input type="number" id="corners" class="form-input" value="${track.corners}" required>
+        </div>
+        <div class="form-group">
+          <label for="logoUrl">Logo URL</label>
+          <input type="url" id="logoUrl" class="form-input" value="${track.logoUrl}">
+          <div class="track-form-image-preview" id="logoImagePreview" style="background-image: url('${track.logoUrl}')"></div>
+        </div>
+        <div class="form-group">
+          <label for="trackShapeUrl">Track Shape Image URL</label>
+          <input type="url" id="trackShapeUrl" class="form-input" value="${track.trackShapeUrl}">
+          <div class="track-form-image-preview" id="trackImagePreview" style="background-image: url('${track.trackShapeUrl}')"></div>
+        </div>
+        <div class="form-buttons" style="grid-column: span 2;">
+          <button type="button" id="cancelTrackBtn" class="delete-btn">Cancel</button>
+          <button type="submit" class="edit-btn">Save Track</button>
+        </div>
+      </form>
+    `;
+  
+    const trackForm = modal.content.querySelector('#trackForm');
+    const cancelBtn = modal.content.querySelector('#cancelTrackBtn');
+    const trackShapeUrl = modal.content.querySelector('#trackShapeUrl');
+    const trackImagePreview = modal.content.querySelector('#trackImagePreview');
+    const logoUrl = modal.content.querySelector('#logoUrl');
+    const logoImagePreview = modal.content.querySelector('#logoImagePreview');
+  
+    // Add event listeners for both image previews
+    trackShapeUrl.addEventListener('input', () => {
+      trackImagePreview.style.backgroundImage = `url('${trackShapeUrl.value}')`;
+    });
+    
+    logoUrl.addEventListener('input', () => {
+      logoImagePreview.style.backgroundImage = `url('${logoUrl.value}')`;
+    });
+  
+    cancelBtn.addEventListener('click', () => modal.close());
+  
+    trackForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+  
+      const updatedTrack = {
+        name: trackForm.querySelector('#trackName').value,
+        noiseLimit: parseInt(trackForm.querySelector('#noiseLimit').value),
+        location: trackForm.querySelector('#location').value,
+        builtYear: parseInt(trackForm.querySelector('#builtYear').value),
+        length: parseFloat(trackForm.querySelector('#length').value),
+        corners: parseInt(trackForm.querySelector('#corners').value),
+        logoUrl: trackForm.querySelector('#logoUrl').value,
+        trackShapeUrl: trackForm.querySelector('#trackShapeUrl').value
+      };
+  
+      try {
+        // Explicitly pass trackId or null
+        await saveTrack(updatedTrack, trackId || null);
+        await loadTracks();
+        modal.close();
+        showToast(`Track successfully ${trackId ? 'updated' : 'created'}!`, 'success');
+      } catch (error) {
+        showToast('Error saving track: ' + error.message, 'error');
+      }
+    });
+  
+    modal.show();
+  }  
   
   async function duplicateTrack(trackId) {
     if (!tracks[trackId]) return;
@@ -290,7 +290,6 @@ import {
   }
   
   // Instruction Functions
-  async function showInstructionModal(instructionId = null) {
 
   
   function getInstructionFormData(form, scheduleTableBody, locationsTableBody, selectedDatesContainer) {
@@ -336,16 +335,215 @@ import {
   });
 }
 
+async function showInstructionModal(instructionId = null) {
+    let instruction = {
+      trackId: '',
+      trackName: '',
+      dates: [],
+      overtakingRules: 'eitherSide',
+      noiseLimit: '',
+      schedule: [{ startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: 'Track Session', activity2: '', location: 'Main Track' }],
+      locations: [{ name: 'Reception', name2: '', address: '' }],
+      notes: ''
+    };
+    
+    if (instructionId && instructions[instructionId]) {
+      instruction = { ...instructions[instructionId] };
+    }
+    
+    // Format dates for calendar
+    const selectedDates = instruction.dates || [];
+    
+    const modal = createModal('Final Instruction Details');
+    
+    const trackOptions = Object.entries(tracks).map(([id, track]) => 
+      `<option value="${id}" ${instruction.trackId === id ? 'selected' : ''}>${track.name}</option>`
+    ).join('');
+    
+    modal.content.innerHTML = `
+      <form id="instructionForm">
+        <div class="form-group">
+          <label for="trackSelect">Select Track</label>
+          <select id="trackSelect" class="form-input" required>
+            <option value="">-- Select Track --</option>
+            ${trackOptions}
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Select Dates</label>
+          <div id="calendarContainer" class="calendar mb-20"></div>
+          <div id="selectedDates" class="selected-dates-container mb-20"></div>
+        </div>
+        
+        <div class="form-group">
+          <label>Overtaking Rules</label>
+          <div class="overtaking-options">
+            <div class="overtaking-option">
+              <input type="radio" id="leftSideOnly" name="overtakingRules" value="leftSideOnly" ${instruction.overtakingRules === 'leftSideOnly' ? 'checked' : ''}>
+              <label for="leftSideOnly">Left Side Only</label>
+            </div>
+            <div class="overtaking-option">
+              <input type="radio" id="rightSideOnly" name="overtakingRules" value="rightSideOnly" ${instruction.overtakingRules === 'rightSideOnly' ? 'checked' : ''}>
+              <label for="rightSideOnly">Right Side Only</label>
+            </div>
+            <div class="overtaking-option">
+              <input type="radio" id="eitherSide" name="overtakingRules" value="eitherSide" ${instruction.overtakingRules === 'eitherSide' ? 'checked' : ''}>
+              <label for="eitherSide">Either Side</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="noiseLimit">Noise Limit (dB)</label>
+          <input type="number" id="noiseLimit" class="form-input" value="${instruction.noiseLimit || ''}" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Schedule</label>
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th>Start Text (EN)</th>
+                <th>Start Text (2nd)</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Activity (EN)</th>
+                <th>Activity (2nd)</th>
+                <th>Location</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="scheduleTableBody">
+            </tbody>
+          </table>
+          <button type="button" id="addScheduleRowBtn" class="add-row-btn">Add Schedule Row</button>
+        </div>
+        
+        <div class="form-group">
+          <label>Important Locations</label>
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th>Location Name (EN)</th>
+                <th>Location Name (2nd)</th>
+                <th>Address</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="locationsTableBody">
+            </tbody>
+          </table>
+          <button type="button" id="addLocationRowBtn" class="add-row-btn">Add Location</button>
+        </div>
+        
+        <div class="form-group">
+          <label for="notes">Additional Notes</label>
+          <textarea id="notes" class="form-input" rows="5">${instruction.notes || ''}</textarea>
+        </div>
+        
+        <div class="form-buttons">
+          <button type="button" id="cancelInstructionBtn" class="delete-btn">Cancel</button>
+          <button type="button" id="previewInstructionBtn" class="preview-btn">Preview</button>
+          <button type="submit" class="edit-btn">Save</button>
+        </div>
+      </form>
+    `;
+    
+    const instructionForm = modal.content.querySelector('#instructionForm');
+    const cancelBtn = modal.content.querySelector('#cancelInstructionBtn');
+    const previewBtn = modal.content.querySelector('#previewInstructionBtn');
+    const scheduleTableBody = modal.content.querySelector('#scheduleTableBody');
+    const locationsTableBody = modal.content.querySelector('#locationsTableBody');
+    const addScheduleRowBtn = modal.content.querySelector('#addScheduleRowBtn');
+    const addLocationRowBtn = modal.content.querySelector('#addLocationRowBtn');
+    const trackSelect = modal.content.querySelector('#trackSelect');
+    const noiseLimit = modal.content.querySelector('#noiseLimit');
+    const calendarContainer = modal.content.querySelector('#calendarContainer');
+    const selectedDatesContainer = modal.content.querySelector('#selectedDates');
+    
+    // Initialize calendar
+    initCalendar(calendarContainer, selectedDatesContainer, selectedDates);
+    
+    // Populate schedule table
+    renderScheduleTable(scheduleTableBody, instruction.schedule || []);
+    
+    // Populate locations table
+    renderLocationsTable(locationsTableBody, instruction.locations || []);
+    
+    // Event listeners
+    trackSelect.addEventListener('change', async () => {
+      const trackId = trackSelect.value;
+      if (trackId) {
+        try {
+          const track = await getTrack(trackId);
+          if (track) {
+            noiseLimit.value = track.noiseLimit;
+          }
+        } catch (error) {
+          console.error('Error loading track details:', error);
+        }
+      }
+    });
+    
+    addScheduleRowBtn.addEventListener('click', () => {
+      const newRow = { startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: '', activity2: '', location: '' };
+      const currentSchedule = getScheduleFromTable(scheduleTableBody);
+      renderScheduleTable(scheduleTableBody, [...currentSchedule, newRow]);
+    });
+    
+    addLocationRowBtn.addEventListener('click', () => {
+      const newLocation = { name: '', name2: '', address: '' };
+      const currentLocations = getLocationsFromTable(locationsTableBody);
+      renderLocationsTable(locationsTableBody, [...currentLocations, newLocation]);
+    });
+    
+    cancelBtn.addEventListener('click', () => modal.close());
+    
+    previewBtn.addEventListener('click', () => {
+      const formData = getInstructionFormData(
+        instructionForm, 
+        scheduleTableBody,
+        locationsTableBody,
+        selectedDatesContainer
+      );
+      
+      // Open preview in a new modal
+      showInstructionPreview(formData);
+    });
+    
+    instructionForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = getInstructionFormData(
+        instructionForm, 
+        scheduleTableBody,
+        locationsTableBody,
+        selectedDatesContainer
+      );
+      
+      try {
+        await saveInstruction(formData, instructionId);
+        await loadInstructions();
+        modal.close();
+        showToast(`Instruction successfully ${instructionId ? 'updated' : 'created'}!`, 'success');
+      } catch (error) {
+        showToast('Error saving instruction: ' + error.message, 'error');
+      }
+    });
+    
+    modal.show();
+  }
   
   function getLocationsFromTable(tableBody) {
-  return Array.from(tableBody.querySelectorAll('tr')).map(row => {
-    return {
-      name: row.querySelector('input[name="locationName"]').value,
-      name2: row.querySelector('input[name="locationName2"]').value,
-      address: row.querySelector('input[name="address"]').value
-    };
-  });
-
+    return Array.from(tableBody.querySelectorAll('tr')).map(row => {
+      return {
+        name: row.querySelector('input[name="locationName"]').value,
+        name2: row.querySelector('input[name="locationName2"]').value,
+        address: row.querySelector('input[name="address"]').value
+      };
+    });
+  }
   
   function renderScheduleTable(tableBody, scheduleItems) {
   tableBody.innerHTML = '';
@@ -585,28 +783,150 @@ function renderLocationsTable(tableBody, locations) {
     }
     
     async function showInstructionPreview(instruction) {
-      const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
-      
-      const modal = createModal('Instruction Preview');
-      
-      // Format dates for display
-      const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
-      
-      let overtakingText = '';
-      switch (instruction.overtakingRules) {
-        case 'leftSideOnly':
-          overtakingText = 'Left Side Only';
-          break;
-        case 'rightSideOnly':
-          overtakingText = 'Right Side Only';
-          break;
-        case 'eitherSide':
-          overtakingText = 'Either Side';
-          break;
+        const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
+        
+        const modal = createModal('Instruction Preview');
+        
+        // Format dates for display
+        const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
+        
+        let overtakingText = '';
+        switch (instruction.overtakingRules) {
+          case 'leftSideOnly':
+            overtakingText = 'Left Side Only';
+            break;
+          case 'rightSideOnly':
+            overtakingText = 'Right Side Only';
+            break;
+          case 'eitherSide':
+            overtakingText = 'Either Side';
+            break;
+        }
+        
+        // Create schedule table HTML with bilingual support
+        const scheduleTableHTML = `
+          <table class="schedule-table-preview">
+            <thead>
+              <tr>
+                <th>Start</th>
+                <th>End</th>
+                <th>Activity</th>
+                <th>Location</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${instruction.schedule.map(item => `
+                <tr>
+                  <td>
+                    ${item.startText ? `<div>${item.startText}</div>` : ''}
+                    ${item.startText2 ? `<div class="secondary-language">${item.startText2}</div>` : ''}
+                    <div>${item.startTime}</div>
+                  </td>
+                  <td>${item.endTime}</td>
+                  <td>
+                    <div>${item.activity}</div>
+                    ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                  </td>
+                  <td>${item.location}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+        
+        // Create locations table HTML with bilingual support
+        const locationsTableHTML = `
+          <table class="schedule-table-preview">
+            <thead>
+              <tr>
+                <th>Location Name</th>
+                <th>Address</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${instruction.locations.map(location => `
+                <tr>
+                  <td>
+                    <div>${location.name}</div>
+                    ${location.name2 ? `<div class="secondary-language">${location.name2}</div>` : ''}
+                  </td>
+                  <td>${location.address}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+        
+        modal.content.innerHTML = `
+          <div class="instruction-preview">
+            <div class="instruction-header">
+              <div class="instruction-title">${instruction.trackName} - Final Instructions</div>
+              <div class="instruction-dates">${formattedDates}</div>
+            </div>
+            
+            ${trackDetails ? `
+              <div class="track-card">
+                ${trackDetails.trackShapeUrl ? `
+                  <div class="track-image" style="background-image: url('${trackDetails.trackShapeUrl}')"></div>
+                ` : ''}
+                <div class="track-info">
+                  <h3>${trackDetails.name}</h3>
+                  ${trackDetails.logoUrl ? `
+                    <div class="track-logo" style="background-image: url('${trackDetails.logoUrl}'); height: 60px; background-size: contain; background-repeat: no-repeat; background-position: left center; margin-bottom: 10px;"></div>
+                  ` : ''}
+                  <div class="track-stats">
+                    <div class="stat-item">
+                      <strong>Noise Limit:</strong> ${instruction.noiseLimit} dB
+                    </div>
+                    <div class="stat-item">
+                      <strong>Length:</strong> ${trackDetails.length} km
+                    </div>
+                    <div class="stat-item">
+                      <strong>Location:</strong> ${trackDetails.location}
+                    </div>
+                    <div class="stat-item">
+                      <strong>Corners:</strong> ${trackDetails.corners}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+            
+            <div class="instruction-section">
+              <h4>Overtaking Rules</h4>
+              <p>${overtakingText}</p>
+            </div>
+            
+            <div class="instruction-section">
+              <h4>Daily Schedule</h4>
+              ${scheduleTableHTML}
+            </div>
+            
+            <div class="instruction-section">
+              <h4>Important Locations</h4>
+              ${locationsTableHTML}
+            </div>
+            
+            ${instruction.notes ? `
+              <div class="instruction-section">
+                <h4>Additional Notes</h4>
+                <div class="notes-section">
+                  ${instruction.notes.replace(/\n/g, '<br>')}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+          
+          <div class="form-buttons">
+            <button type="button" id="closePreviewBtn" class="delete-btn">Close</button>
+          </div>
+        `;
+        
+        modal.content.querySelector('#closePreviewBtn').addEventListener('click', () => modal.close());
+        
+        modal.show();
       }
-
-    // Create schedule table HTML
-    
+      
     async function duplicateInstruction(instructionId) {
       if (!instructions[instructionId]) return;
       
@@ -698,4 +1018,4 @@ function renderLocationsTable(tableBody, locations) {
       showInstructionModal,
       showTrackModal,
       previewInstruction
-    };
+    }
