@@ -154,111 +154,102 @@ import {
   
   // Track Functions
   async function showTrackModal(trackId = null) {
-    let track = {
-      name: '',
-      noiseLimit: 100,
-      location: '',
-      builtYear: 2000,
-      length: 0,
-      corners: 0,
-      logoUrl: '',
-      trackShapeUrl: ''
-    };
+  let track = { name: '', noiseLimit: 100, location: '', builtYear: 2000, length: 0, corners: 0, logoUrl: '', trackShapeUrl: '' };
   
-    if (trackId && tracks[trackId]) {
-      track = { ...tracks[trackId] };
-    }
+  if (trackId && tracks[trackId]) {
+    track = { ...tracks[trackId] };
+  }
   
-    const modal = createModal('Track Details');
+  const modal = createModal('Track Details');
   
-    modal.content.innerHTML = `
-      <form id="trackForm" class="track-form-grid">
-        <div class="form-group">
-          <label for="trackName">Track Name</label>
-          <input type="text" id="trackName" class="form-input" value="${track.name}" required>
-        </div>
-        <div class="form-group">
-          <label for="noiseLimit">Noise Limit (dB)</label>
-          <input type="number" id="noiseLimit" class="form-input" value="${track.noiseLimit}" required>
-        </div>
-        <div class="form-group">
-          <label for="location">Location</label>
-          <input type="text" id="location" class="form-input" value="${track.location}" required>
-        </div>
-        <div class="form-group">
-          <label for="builtYear">Built Year</label>
-          <input type="number" id="builtYear" class="form-input" value="${track.builtYear}" required>
-        </div>
-        <div class="form-group">
-          <label for="length">Length (km)</label>
-          <input type="number" id="length" step="0.01" class="form-input" value="${track.length}" required>
-        </div>
-        <div class="form-group">
-          <label for="corners">Number of Corners</label>
-          <input type="number" id="corners" class="form-input" value="${track.corners}" required>
-        </div>
-        <div class="form-group">
-          <label for="logoUrl">Logo URL</label>
-          <input type="url" id="logoUrl" class="form-input" value="${track.logoUrl}">
-          <div class="track-form-image-preview" id="logoImagePreview" style="background-image: url('${track.logoUrl}')"></div>
-        </div>
-        <div class="form-group">
-          <label for="trackShapeUrl">Track Shape Image URL</label>
-          <input type="url" id="trackShapeUrl" class="form-input" value="${track.trackShapeUrl}">
-          <div class="track-form-image-preview" id="trackImagePreview" style="background-image: url('${track.trackShapeUrl}')"></div>
-        </div>
-        <div class="form-buttons" style="grid-column: span 2;">
-          <button type="button" id="cancelTrackBtn" class="delete-btn">Cancel</button>
-          <button type="submit" class="edit-btn">Save Track</button>
-        </div>
-      </form>
-    `;
+  modal.content.innerHTML = `
+    <form id="trackForm" class="track-form-grid">
+      <div class="form-group">
+        <label for="trackName">Track Name</label>
+        <input type="text" id="trackName" class="form-input" value="${track.name}" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="noiseLimit">Noise Limit (dB)</label>
+        <input type="number" id="noiseLimit" class="form-input" value="${track.noiseLimit}" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" id="location" class="form-input" value="${track.location}" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="builtYear">Built Year</label>
+        <input type="number" id="builtYear" class="form-input" value="${track.builtYear}" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="length">Length (km)</label>
+        <input type="number" id="length" step="0.01" class="form-input" value="${track.length}" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="corners">Number of Corners</label>
+        <input type="number" id="corners" class="form-input" value="${track.corners}" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="logoUrl">Logo URL</label>
+        <input type="url" id="logoUrl" class="form-input" value="${track.logoUrl}">
+      </div>
+      
+      <div class="form-group">
+        <label for="trackShapeUrl">Track Shape Image URL</label>
+        <input type="url" id="trackShapeUrl" class="form-input" value="${track.trackShapeUrl}">
+        <div class="track-form-image-preview" id="trackImagePreview" style="background-image: url('${track.trackShapeUrl}')"></div>
+      </div>
+      
+      <div class="form-buttons" style="grid-column: span 2;">
+        <button type="button" id="cancelTrackBtn" class="delete-btn">Cancel</button>
+        <button type="submit" class="edit-btn">Save Track</button>
+      </div>
+    </form>
+  `;
   
-    const trackForm = modal.content.querySelector('#trackForm');
-    const cancelBtn = modal.content.querySelector('#cancelTrackBtn');
-    const trackShapeUrl = modal.content.querySelector('#trackShapeUrl');
-    const trackImagePreview = modal.content.querySelector('#trackImagePreview');
-    const logoUrl = modal.content.querySelector('#logoUrl');
-    const logoImagePreview = modal.content.querySelector('#logoImagePreview');
+  const trackForm = modal.content.querySelector('#trackForm');
+  const cancelBtn = modal.content.querySelector('#cancelTrackBtn');
+  const trackShapeUrl = modal.content.querySelector('#trackShapeUrl');
+  const trackImagePreview = modal.content.querySelector('#trackImagePreview');
   
-    // Add event listeners for both image previews
-    trackShapeUrl.addEventListener('input', () => {
-      trackImagePreview.style.backgroundImage = `url('${trackShapeUrl.value}')`;
-    });
-    
-    logoUrl.addEventListener('input', () => {
-      logoImagePreview.style.backgroundImage = `url('${logoUrl.value}')`;
-    });
+  trackShapeUrl.addEventListener('input', () => {
+    trackImagePreview.style.backgroundImage = `url('${trackShapeUrl.value}')`;
+  });
   
-    cancelBtn.addEventListener('click', () => modal.close());
+  cancelBtn.addEventListener('click', () => modal.close());
   
-    trackForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
+  trackForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const updatedTrack = {
+    name: trackForm.querySelector('#trackName').value,
+    noiseLimit: parseInt(trackForm.querySelector('#noiseLimit').value),
+    location: trackForm.querySelector('#location').value,
+    builtYear: parseInt(trackForm.querySelector('#builtYear').value),
+    length: parseFloat(trackForm.querySelector('#length').value),
+    corners: parseInt(trackForm.querySelector('#corners').value),
+    logoUrl: trackForm.querySelector('#logoUrl').value,
+    trackShapeUrl: trackForm.querySelector('#trackShapeUrl').value
+  };
+
+  try {
+    // Only pass trackId if we're editing an existing track
+    await saveTrack(updatedTrack, trackId ? trackId : undefined);
+    await loadTracks();
+    modal.close();
+    showToast(`Track successfully ${trackId ? 'updated' : 'created'}!`, 'success');
+  } catch (error) {
+    showToast('Error saving track: ' + error.message, 'error');
+  }
+});
   
-      const updatedTrack = {
-        name: trackForm.querySelector('#trackName').value,
-        noiseLimit: parseInt(trackForm.querySelector('#noiseLimit').value),
-        location: trackForm.querySelector('#location').value,
-        builtYear: parseInt(trackForm.querySelector('#builtYear').value),
-        length: parseFloat(trackForm.querySelector('#length').value),
-        corners: parseInt(trackForm.querySelector('#corners').value),
-        logoUrl: trackForm.querySelector('#logoUrl').value,
-        trackShapeUrl: trackForm.querySelector('#trackShapeUrl').value
-      };
-  
-      try {
-        // Explicitly pass trackId or null
-        await saveTrack(updatedTrack, trackId || null);
-        await loadTracks();
-        modal.close();
-        showToast(`Track successfully ${trackId ? 'updated' : 'created'}!`, 'success');
-      } catch (error) {
-        showToast('Error saving track: ' + error.message, 'error');
-      }
-    });
-  
-    modal.show();
-  }  
+  modal.show();
+}
   
   async function duplicateTrack(trackId) {
     if (!tracks[trackId]) return;
@@ -290,60 +281,15 @@ import {
   }
   
   // Instruction Functions
-
-  
-  function getInstructionFormData(form, scheduleTableBody, locationsTableBody, selectedDatesContainer) {
-    const trackId = form.querySelector('#trackSelect').value;
-    const trackName = form.querySelector('#trackSelect').options[form.querySelector('#trackSelect').selectedIndex].text;
-    const overtakingRules = form.querySelector('input[name="overtakingRules"]:checked').value;
-    const noiseLimit = form.querySelector('#noiseLimit').value;
-    const notes = form.querySelector('#notes').value;
-    
-    // Get selected dates
-    const selectedDates = Array.from(selectedDatesContainer.querySelectorAll('.selected-date'))
-      .map(el => el.dataset.date);
-    
-    // Get schedule
-    const schedule = getScheduleFromTable(scheduleTableBody);
-    
-    // Get locations
-    const locations = getLocationsFromTable(locationsTableBody);
-    
-    return {
-      trackId,
-      trackName,
-      dates: selectedDates,
-      overtakingRules,
-      noiseLimit,
-      schedule,
-      locations,
-      notes
-    };
-  }
-  
-function getScheduleFromTable(tableBody) {
-    return Array.from(tableBody.querySelectorAll('tr')).map(row => {
-      const daySelect = row.querySelector('select[name="scheduleDay"]');
-      return {
-        day: daySelect ? daySelect.value : 'all',
-        startTime: row.querySelector('input[name="startTime"]').value,
-        endTime: row.querySelector('input[name="endTime"]').value,
-        activity: row.querySelector('input[name="activity"]').value,
-        location: row.querySelector('input[name="location"]').value
-      };
-    });
-}
-  
-
-async function showInstructionModal(instructionId = null) {
+  async function showInstructionModal(instructionId = null) {
     let instruction = {
       trackId: '',
       trackName: '',
       dates: [],
       overtakingRules: 'eitherSide',
       noiseLimit: '',
-      schedule: [{ startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: 'Track Session', activity2: '', location: 'Main Track' }],
-      locations: [{ name: 'Reception', name2: '', address: '' }],
+      schedule: [{ startTime: '09:00', endTime: '17:00', activity: 'Track Session', location: 'Main Track' }],
+      locations: [{ name: 'Reception', address: '' }],
       notes: ''
     };
     
@@ -372,8 +318,8 @@ async function showInstructionModal(instructionId = null) {
         
         <div class="form-group">
           <label>Select Dates</label>
-          <div id="calendarContainer" class="calendar mb-20"></div>
-          <div id="selectedDates" class="selected-dates-container mb-20"></div>
+          <div id="calendarContainer" class="mb-20"></div>
+          <div id="selectedDates" class="mb-20"></div>
         </div>
         
         <div class="form-group">
@@ -404,12 +350,9 @@ async function showInstructionModal(instructionId = null) {
           <table class="schedule-table">
             <thead>
               <tr>
-                <th>Start Text (EN)</th>
-                <th>Start Text (2nd)</th>
                 <th>Start Time</th>
                 <th>End Time</th>
-                <th>Activity (EN)</th>
-                <th>Activity (2nd)</th>
+                <th>Activity</th>
                 <th>Location</th>
                 <th>Actions</th>
               </tr>
@@ -417,7 +360,7 @@ async function showInstructionModal(instructionId = null) {
             <tbody id="scheduleTableBody">
             </tbody>
           </table>
-          <button type="button" id="addScheduleRowBtn" class="add-row-btn">Add Schedule Row</button>
+          <button type="button" id="addScheduleRowBtn" class="add-row-btn">Add Row</button>
         </div>
         
         <div class="form-group">
@@ -425,8 +368,7 @@ async function showInstructionModal(instructionId = null) {
           <table class="schedule-table">
             <thead>
               <tr>
-                <th>Location Name (EN)</th>
-                <th>Location Name (2nd)</th>
+                <th>Location Name</th>
                 <th>Address</th>
                 <th>Actions</th>
               </tr>
@@ -462,59 +404,38 @@ async function showInstructionModal(instructionId = null) {
     const calendarContainer = modal.content.querySelector('#calendarContainer');
     const selectedDatesContainer = modal.content.querySelector('#selectedDates');
     
-// Initialize calendar
-initCalendar(calendarContainer, selectedDatesContainer, selectedDates);
-
-function updateScheduleTableHeader() {
-  const scheduleTable = instructionForm.querySelector('.schedule-table');
-  const hasMultipleDates = selectedDates.length > 0;
-  
-  // Update header row to include day column if there are dates selected
-  const headerRow = scheduleTable.querySelector('thead tr');
-  
-  if (headerRow) {
-    if (hasMultipleDates && !headerRow.querySelector('th:first-child').textContent.includes('Day')) {
-      const dayHeader = document.createElement('th');
-      dayHeader.textContent = 'Day';
-      headerRow.insertBefore(dayHeader, headerRow.firstChild);
-    } else if (!hasMultipleDates && headerRow.querySelector('th:first-child').textContent.includes('Day')) {
-      headerRow.removeChild(headerRow.querySelector('th:first-child'));
-    }
-  }
-  
-  // Re-render schedule table with updated dates
-  renderScheduleTable(scheduleTableBody, getScheduleFromTable(scheduleTableBody), selectedDates);
-}
-
-// Populate schedule table
-renderScheduleTable(scheduleTableBody, instruction.schedule || [], selectedDates);
-
-// Populate locations table
-renderLocationsTable(locationsTableBody, instruction.locations || []);
-
-// Event listeners
-trackSelect.addEventListener('change', async () => {
-    const trackId = trackSelect.value;
-    if (trackId) {
-    try {
-        const track = await getTrack(trackId);
-        if (track) {
-        noiseLimit.value = track.noiseLimit;
+    // Initialize calendar
+    initCalendar(calendarContainer, selectedDatesContainer, selectedDates);
+    
+    // Populate schedule table
+    renderScheduleTable(scheduleTableBody, instruction.schedule || []);
+    
+    // Populate locations table
+    renderLocationsTable(locationsTableBody, instruction.locations || []);
+    
+    // Event listeners
+    trackSelect.addEventListener('change', async () => {
+      const trackId = trackSelect.value;
+      if (trackId) {
+        try {
+          const track = await getTrack(trackId);
+          if (track) {
+            noiseLimit.value = track.noiseLimit;
+          }
+        } catch (error) {
+          console.error('Error loading track details:', error);
         }
-    } catch (error) {
-        console.error('Error loading track details:', error);
-    }
-    }
-});
+      }
+    });
     
     addScheduleRowBtn.addEventListener('click', () => {
-      const newRow = { startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: '', activity2: '', location: '' };
+      const newRow = { startTime: '09:00', endTime: '17:00', activity: '', location: '' };
       const currentSchedule = getScheduleFromTable(scheduleTableBody);
       renderScheduleTable(scheduleTableBody, [...currentSchedule, newRow]);
     });
     
     addLocationRowBtn.addEventListener('click', () => {
-      const newLocation = { name: '', name2: '', address: '' };
+      const newLocation = { name: '', address: '' };
       const currentLocations = getLocationsFromTable(locationsTableBody);
       renderLocationsTable(locationsTableBody, [...currentLocations, newLocation]);
     });
@@ -556,143 +477,146 @@ trackSelect.addEventListener('change', async () => {
     modal.show();
   }
   
+  function getInstructionFormData(form, scheduleTableBody, locationsTableBody, selectedDatesContainer) {
+    const trackId = form.querySelector('#trackSelect').value;
+    const trackName = form.querySelector('#trackSelect').options[form.querySelector('#trackSelect').selectedIndex].text;
+    const overtakingRules = form.querySelector('input[name="overtakingRules"]:checked').value;
+    const noiseLimit = form.querySelector('#noiseLimit').value;
+    const notes = form.querySelector('#notes').value;
+    
+    // Get selected dates
+    const selectedDates = Array.from(selectedDatesContainer.querySelectorAll('.selected-date'))
+      .map(el => el.dataset.date);
+    
+    // Get schedule
+    const schedule = getScheduleFromTable(scheduleTableBody);
+    
+    // Get locations
+    const locations = getLocationsFromTable(locationsTableBody);
+    
+    return {
+      trackId,
+      trackName,
+      dates: selectedDates,
+      overtakingRules,
+      noiseLimit,
+      schedule,
+      locations,
+      notes
+    };
+  }
+  
+  function getScheduleFromTable(tableBody) {
+    return Array.from(tableBody.querySelectorAll('tr')).map(row => {
+      return {
+        startTime: row.querySelector('input[name="startTime"]').value,
+        endTime: row.querySelector('input[name="endTime"]').value,
+        activity: row.querySelector('input[name="activity"]').value,
+        location: row.querySelector('input[name="location"]').value
+      };
+    });
+  }
+  
   function getLocationsFromTable(tableBody) {
     return Array.from(tableBody.querySelectorAll('tr')).map(row => {
       return {
         name: row.querySelector('input[name="locationName"]').value,
-        name2: row.querySelector('input[name="locationName2"]').value,
         address: row.querySelector('input[name="address"]').value
       };
     });
   }
   
-function renderScheduleTable(tableBody, scheduleItems, selectedDates) {
+  function renderScheduleTable(tableBody, scheduleItems) {
     tableBody.innerHTML = '';
-
+    
     scheduleItems.forEach((item, index) => {
-        const row = document.createElement('tr');
-        
-        // Create day selection dropdown if multiple dates are selected
-        let daySelectionHTML = '';
-        if (selectedDates && selectedDates.length > 0) {
-        daySelectionHTML = `
-            <select name="scheduleDay" class="form-input">
-            <option value="all" ${!item.day || item.day === 'all' ? 'selected' : ''}>All Days</option>
-            ${selectedDates.map((date, i) => {
-                const dateObj = new Date(date);
-                const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                return `<option value="${date}" ${item.day === date ? 'selected' : ''}>${formattedDate}</option>`;
-            }).join('')}
-            </select>
-        `;
-        }
-        
-        row.innerHTML = `
-        ${selectedDates && selectedDates.length > 0 ? `<td>${daySelectionHTML}</td>` : ''}
+      const row = document.createElement('tr');
+      row.innerHTML = `
         <td><input type="time" name="startTime" class="form-input" value="${item.startTime}" required></td>
         <td><input type="time" name="endTime" class="form-input" value="${item.endTime}" required></td>
         <td><input type="text" name="activity" class="form-input" value="${item.activity}" required></td>
         <td><input type="text" name="location" class="form-input" value="${item.location}" required></td>
         <td>
-            <button type="button" class="delete-btn">Remove</button>
+          <button type="button" class="delete-btn">Remove</button>
         </td>
-        `;
-        
-        row.querySelector('.delete-btn').addEventListener('click', () => {
+      `;
+      
+      row.querySelector('.delete-btn').addEventListener('click', () => {
         if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last schedule item?')) {
-            row.remove();
+          row.remove();
         }
-        });
-        
-        tableBody.appendChild(row);
+      });
+      
+      tableBody.appendChild(row);
     });
-
+    
     // Add at least one row if empty
     if (tableBody.querySelectorAll('tr').length === 0) {
-        const row = document.createElement('tr');
-        
-        // Create day selection dropdown if multiple dates are selected
-        let daySelectionHTML = '';
-        if (selectedDates && selectedDates.length > 0) {
-        daySelectionHTML = `
-            <select name="scheduleDay" class="form-input">
-            <option value="all" selected>All Days</option>
-            ${selectedDates.map((date, i) => {
-                const dateObj = new Date(date);
-                const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                return `<option value="${date}">${formattedDate}</option>`;
-            }).join('')}
-            </select>
-        `;
-        }
-        
-        row.innerHTML = `
-        ${selectedDates && selectedDates.length > 0 ? `<td>${daySelectionHTML}</td>` : ''}
+      const row = document.createElement('tr');
+      row.innerHTML = `
         <td><input type="time" name="startTime" class="form-input" value="09:00" required></td>
         <td><input type="time" name="endTime" class="form-input" value="17:00" required></td>
         <td><input type="text" name="activity" class="form-input" value="Track Session" required></td>
         <td><input type="text" name="location" class="form-input" value="Main Track" required></td>
         <td>
-            <button type="button" class="delete-btn">Remove</button>
+          <button type="button" class="delete-btn">Remove</button>
         </td>
-        `;
-        
-        row.querySelector('.delete-btn').addEventListener('click', () => {
+      `;
+      
+      row.querySelector('.delete-btn').addEventListener('click', () => {
         if (confirm('Remove the last schedule item?')) {
-            row.remove();
+          row.remove();
         }
-        });
-        
-        tableBody.appendChild(row);
+      });
+      
+      tableBody.appendChild(row);
     }
-}  
-
-function renderLocationsTable(tableBody, locations) {
-  tableBody.innerHTML = '';
-  
-  locations.forEach((location, index) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td><input type="text" name="locationName" class="form-input" value="${location.name}" required placeholder="Location (EN)"></td>
-      <td><input type="text" name="locationName2" class="form-input" value="${location.name2 || ''}" placeholder="Location (2nd lang)"></td>
-      <td><input type="text" name="address" class="form-input" value="${location.address}" required></td>
-      <td>
-        <button type="button" class="delete-btn">Remove</button>
-      </td>
-    `;
-    
-    row.querySelector('.delete-btn').addEventListener('click', () => {
-      if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last location?')) {
-        row.remove();
-      }
-    });
-    
-    tableBody.appendChild(row);
-  });
-  
-  // Add at least one row if empty
-  if (tableBody.querySelectorAll('tr').length === 0) {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td><input type="text" name="locationName" class="form-input" value="Reception" required placeholder="Location (EN)"></td>
-      <td><input type="text" name="locationName2" class="form-input" placeholder="Location (2nd lang)"></td>
-      <td><input type="text" name="address" class="form-input" value="" required></td>
-      <td>
-        <button type="button" class="delete-btn">Remove</button>
-      </td>
-    `;
-    
-    row.querySelector('.delete-btn').addEventListener('click', () => {
-      if (confirm('Remove the last location?')) {
-        row.remove();
-      }
-    });
-    
-    tableBody.appendChild(row);
   }
-}
   
-function initCalendar(container, selectedDatesContainer, initialSelectedDates = []) {
+  function renderLocationsTable(tableBody, locations) {
+    tableBody.innerHTML = '';
+    
+    locations.forEach((location, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" name="locationName" class="form-input" value="${location.name}" required></td>
+        <td><input type="text" name="address" class="form-input" value="${location.address}" required></td>
+        <td>
+          <button type="button" class="delete-btn">Remove</button>
+        </td>
+      `;
+      
+      row.querySelector('.delete-btn').addEventListener('click', () => {
+        if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last location?')) {
+          row.remove();
+        }
+      });
+      
+      tableBody.appendChild(row);
+    });
+    
+    // Add at least one row if empty
+    if (tableBody.querySelectorAll('tr').length === 0) {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" name="locationName" class="form-input" value="Reception" required></td>
+        <td><input type="text" name="address" class="form-input" value="" required></td>
+        <td>
+          <button type="button" class="delete-btn">Remove</button>
+        </td>
+      `;
+      
+      row.querySelector('.delete-btn').addEventListener('click', () => {
+        if (confirm('Remove the last location?')) {
+          row.remove();
+        }
+      });
+      
+      tableBody.appendChild(row);
+    }
+  }
+  
+  function initCalendar(container, selectedDatesContainer, initialSelectedDates = []) {
     // Current date for calendar
     let currentDate = new Date();
     let currentMonth = currentDate.getMonth();
@@ -783,13 +707,12 @@ function initCalendar(container, selectedDatesContainer, initialSelectedDates = 
     }
     
     function updateSelectedDatesDisplay() {
-        selectedDatesContainer.innerHTML = '';
-        
-        if (selectedDates.length === 0) {
-          selectedDatesContainer.innerHTML = '<p>No dates selected.</p>';
-          return;
-        }
+      selectedDatesContainer.innerHTML = '';
       
+      if (selectedDates.length === 0) {
+        selectedDatesContainer.innerHTML = '<p>No dates selected.</p>';
+        return;}
+    
         // Sort dates chronologically
         selectedDates.sort();
         
@@ -818,11 +741,8 @@ function initCalendar(container, selectedDatesContainer, initialSelectedDates = 
               if (calendarDate) {
                 calendarDate.classList.remove('selected');
               }
-
+              
               updateSelectedDatesDisplay();
-              if (typeof updateScheduleTableHeader === 'function') {
-                updateScheduleTableHeader();
-              }
             }
           });
           
@@ -835,232 +755,138 @@ function initCalendar(container, selectedDatesContainer, initialSelectedDates = 
       renderCalendar();
     }
     
-async function showInstructionPreview(instruction) {
-    const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
-    
-    const modal = createModal('Instruction Preview');
-    
-    // Format dates for display
-    const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
-    
-    // Get overtaking rules text  
-    let overtakingText = '';
-    switch (instruction.overtakingRules) {
+    async function showInstructionPreview(instruction) {
+      const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
+      
+      const modal = createModal('Instruction Preview');
+      
+      // Format dates for display
+      const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
+      
+      let overtakingText = '';
+      switch (instruction.overtakingRules) {
         case 'leftSideOnly':
-        overtakingText = 'Left Side Only';
-        break;
+          overtakingText = 'Left Side Only';
+          break;
         case 'rightSideOnly':
-        overtakingText = 'Right Side Only';
-        break;
+          overtakingText = 'Right Side Only';
+          break;
         case 'eitherSide':
-        overtakingText = 'Either Side';
-        break;
-    }
-    
-    // Group schedule items by day
-    const scheduleByDay = {};
-    const allDaysSchedule = [];
-    
-    // Sort dates chronologically
-    const sortedDates = [...instruction.dates].sort();
-    
-    // First add items marked for all days
-    instruction.schedule.forEach(item => {
-        if (!item.day || item.day === 'all') {
-        allDaysSchedule.push(item);
-        } else {
-        if (!scheduleByDay[item.day]) {
-            scheduleByDay[item.day] = [];
-        }
-        scheduleByDay[item.day].push(item);
-        }
-    });
-    
-    // Create schedule HTML sections
-    let scheduleHTML = '';
-    
-    // Add all-days schedule if exists
-    if (allDaysSchedule.length > 0) {
-        scheduleHTML += `
-        <div class="instruction-section">
-            <h4>General Daily Schedule (All Days)</h4>
-            <table class="schedule-table-preview">
-            <thead>
-                <tr>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Activity</th>
-                <th>Location</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${allDaysSchedule.map(item => `
-                <tr>
-                    <td>${item.startTime}</td>
-                    <td>${item.endTime}</td>
-                    <td>${item.activity}</td>
-                    <td>${item.location}</td>
-                </tr>
-                `).join('')}
-            </tbody>
-            </table>
-        </div>
-        `;
-    }
-    
-    // Add day-specific schedules
-    if (instruction.dates.length > 1) {
-        sortedDates.forEach((date, index) => {
-        const dateObj = new Date(date);
-        const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-        const daySchedule = scheduleByDay[date] || [];
-        
-        if (daySchedule.length > 0) {
-            scheduleHTML += `
-            <div class="instruction-section">
-                <h4>Schedule Day ${index + 1} (${formattedDate})</h4>
-                <table class="schedule-table-preview">
-                <thead>
-                    <tr>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Activity</th>
-                    <th>Location</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${daySchedule.map(item => `
-                    <tr>
-                        <td>${item.startTime}</td>
-                        <td>${item.endTime}</td>
-                        <td>${item.activity}</td>
-                        <td>${item.location}</td>
-                    </tr>
-                    `).join('')}
-                </tbody>
-                </table>
-            </div>
-            `;
-        }
-        });
-    } else if (instruction.dates.length === 1) {
-        // Single day schedule - combine with all days schedule if needed
-        const date = instruction.dates[0];
-        const daySchedule = scheduleByDay[date] || [];
-        
-        if (daySchedule.length > 0) {
-        scheduleHTML += `
-            <div class="instruction-section">
-            <h4>Schedule</h4>
-            <table class="schedule-table-preview">
-                <thead>
-                <tr>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Activity</th>
-                    <th>Location</th>
-                </tr>
-                </thead>
-                <tbody>
-                ${daySchedule.map(item => `
-                    <tr>
-                    <td>${item.startTime}</td>
-                    <td>${item.endTime}</td>
-                    <td>${item.activity}</td>
-                    <td>${item.location}</td>
-                    </tr>
-                `).join('')}
-                </tbody>
-            </table>
-            </div>
-        `;
-        }
-    }
-    
-    // Create locations table HTML
-    const locationsTableHTML = `
+          overtakingText = 'Either Side';
+          break;
+      }
+      
+      // Create schedule table HTML
+      const scheduleTableHTML = `
         <table class="schedule-table-preview">
-        <thead>
+          <thead>
             <tr>
-            <th>Location Name</th>
-            <th>Address</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+              <th>Activity</th>
+              <th>Location</th>
             </tr>
-        </thead>
-        <tbody>
-            ${instruction.locations.map(location => `
+          </thead>
+          <tbody>
+            ${instruction.schedule.map(item => `
+              <tr>
+                <td>${item.startTime}</td>
+                <td>${item.endTime}</td>
+                <td>${item.activity}</td>
+                <td>${item.location}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      
+      // Create locations table HTML
+      const locationsTableHTML = `
+        <table class="schedule-table-preview">
+          <thead>
             <tr>
+              <th>Location Name</th>
+              <th>Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${instruction.locations.map(location => `
+              <tr>
                 <td>${location.name}</td>
                 <td>${location.address}</td>
-            </tr>
+              </tr>
             `).join('')}
-        </tbody>
+          </tbody>
         </table>
-    `;
-    
-    modal.content.innerHTML = `
+      `;
+      
+      modal.content.innerHTML = `
         <div class="instruction-preview">
-        <div class="instruction-header">
+          <div class="instruction-header">
             <div class="instruction-title">${instruction.trackName} - Final Instructions</div>
             <div class="instruction-dates">${formattedDates}</div>
-        </div>
-        
-        ${trackDetails ? `
+          </div>
+          
+          ${trackDetails ? `
             <div class="track-card">
-            ${trackDetails.trackShapeUrl ? `
+              ${trackDetails.trackShapeUrl ? `
                 <div class="track-image" style="background-image: url('${trackDetails.trackShapeUrl}')"></div>
-            ` : ''}
-            <div class="track-info">
+              ` : ''}
+              <div class="track-info">
                 <h3>${trackDetails.name}</h3>
                 <div class="track-stats">
-                <div class="stat-item">
+                  <div class="stat-item">
                     <strong>Noise Limit:</strong> ${instruction.noiseLimit} dB
-                </div>
-                <div class="stat-item">
+                  </div>
+                  <div class="stat-item">
                     <strong>Length:</strong> ${trackDetails.length} km
-                </div>
-                <div class="stat-item">
+                  </div>
+                  <div class="stat-item">
                     <strong>Location:</strong> ${trackDetails.location}
-                </div>
-                <div class="stat-item">
+                  </div>
+                  <div class="stat-item">
                     <strong>Corners:</strong> ${trackDetails.corners}
+                  </div>
                 </div>
-                </div>
+              </div>
             </div>
-            </div>
-        ` : ''}
-        
-        <div class="instruction-section">
+          ` : ''}
+          
+          <div class="instruction-section">
             <h4>Overtaking Rules</h4>
             <p>${overtakingText}</p>
-        </div>
-        
-        ${scheduleHTML}
-        
-        <div class="instruction-section">
+          </div>
+          
+          <div class="instruction-section">
+            <h4>Daily Schedule</h4>
+            ${scheduleTableHTML}
+          </div>
+          
+          <div class="instruction-section">
             <h4>Important Locations</h4>
             ${locationsTableHTML}
-        </div>
-        
-        ${instruction.notes ? `
+          </div>
+          
+          ${instruction.notes ? `
             <div class="instruction-section">
-            <h4>Additional Notes</h4>
-            <div class="notes-section">
+              <h4>Additional Notes</h4>
+              <div class="notes-section">
                 ${instruction.notes.replace(/\n/g, '<br>')}
+              </div>
             </div>
-            </div>
-        ` : ''}
+          ` : ''}
         </div>
         
         <div class="form-buttons">
-        <button type="button" id="closePreviewBtn" class="delete-btn">Close</button>
+          <button type="button" id="closePreviewBtn" class="delete-btn">Close</button>
         </div>
-    `;
-    
-    modal.content.querySelector('#closePreviewBtn').addEventListener('click', () => modal.close());
-    
-    modal.show();
-}
+      `;
       
+      modal.content.querySelector('#closePreviewBtn').addEventListener('click', () => modal.close());
+      
+      modal.show();
+    }
+    
     async function duplicateInstruction(instructionId) {
       if (!instructions[instructionId]) return;
       
@@ -1152,4 +978,4 @@ async function showInstructionPreview(instruction) {
       showInstructionModal,
       showTrackModal,
       previewInstruction
-    }
+    };
