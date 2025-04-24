@@ -291,6 +291,7 @@ async function confirmDeleteTrack(trackId) {
   
 // Instruction Functions
 async function showInstructionModal(instructionId = null) {
+  let currentInstructionId = instructionId; // Explicitly store the ID
   let instruction = {
     trackId: '',
     trackName: '',
@@ -478,7 +479,8 @@ async function showInstructionModal(instructionId = null) {
     );
     
     try {
-      await saveInstruction(formData, instructionId ? instructionId : undefined);
+      // Pass instructionId explicitly, ensuring it's either a string or null
+      await saveInstruction(formData, instructionId || null);
       await loadInstructions();
       modal.close();
       showToast(`Instruction successfully ${instructionId ? 'updated' : 'created'}!`, 'success');
@@ -486,7 +488,7 @@ async function showInstructionModal(instructionId = null) {
       showToast('Error saving instruction: ' + error.message, 'error');
     }
   });
-  
+
   modal.show();
 }
   
