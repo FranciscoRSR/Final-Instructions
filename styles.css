@@ -279,18 +279,40 @@ tr:hover {
 
 /* Calendar */
 .calendar {
-    background-color: var(--content-background);
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    padding: 15px;
-    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-top: 10px;
 }
 
 .calendar-header {
+    grid-column: span 7;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+}
+
+.calendar-dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    grid-column: span 7;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    grid-column: span 7;
+}
+
+.calendar-day {
+    padding: 8px;
+    text-align: center;
+    font-weight: bold;
+    background-color: var(--input-background);
+    border-radius: 4px;
 }
 
 .calendar-header h3 {
@@ -330,10 +352,9 @@ tr:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    margin: 3px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition);
 }
 
 .calendar-date:hover {
