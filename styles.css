@@ -293,20 +293,6 @@ tr:hover {
     margin-bottom: 10px;
 }
 
-.calendar-dates {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    grid-column: span 7;
-}
-
-.calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    grid-column: span 7;
-}
-
 .calendar-day {
     padding: 8px;
     text-align: center;
@@ -315,62 +301,28 @@ tr:hover {
     border-radius: 4px;
 }
 
-.calendar-header h3 {
-    font-size: 18px;
-    color: var(--primary-color);
-}
-
-.calendar-header button {
-    background-color: var(--secondary-color);
-    color: white;
-    border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition);
-}
-
-.calendar-header button:hover {
-    background-color: var(--primary-color);
-    transform: scale(1.1);
-}
-
-.calendar-day {
-    font-weight: 600;
-    color: var(--primary-color);
-    text-align: center;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border-color);
-}
-
 .calendar-date {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
+    padding: 8px;
+    text-align: center;
     cursor: pointer;
+    border-radius: 4px;
     transition: var(--transition);
 }
 
 .calendar-date:hover {
-    background-color: var(--secondary-hover);
+    background-color: var(--primary-color);
     color: white;
-    transform: scale(1.1);
 }
 
 .calendar-date.selected {
     background-color: var(--primary-color);
     color: white;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-
+.calendar-date.disabled {
+    color: var(--border-color);
+    pointer-events: none;
+}
 
 /* Overtaking Rules */
 .overtaking-options {
@@ -422,32 +374,11 @@ tr:hover {
 }
 
 .add-row-btn {
+    margin-top: 10px;
     background-color: var(--success-color);
     color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    font-size: 16px;
-    margin-top: 15px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    width: auto;
-}
-.add-row-btn:before {
-    content: "+";
-    font-size: 18px;
-    margin-right: 8px;
-    font-weight: bold;
 }
 
-.add-row-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    background-color: var(--primary-color);
-}
 /* Toast Notifications */
 .toastify {
     padding: 12px 20px;
@@ -729,43 +660,28 @@ tr:hover {
 .text-center { text-align: center; }
 .hidden { display: none !important; }
 
-.selected-dates-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 15px;
-}
-
 .selected-date {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 14px;
     display: inline-flex;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: var(--transition);
-}
-
-.selected-date:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    background-color: var(--primary-color);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin: 5px;
+    font-size: 14px;
 }
 
 .remove-date-btn {
     background: none;
     border: none;
     color: white;
-    margin-left: 8px;
+    margin-left: 5px;
+    cursor: pointer;
     font-size: 16px;
     line-height: 1;
-    opacity: 0.8;
-    transition: var(--transition);
 }
 
 .remove-date-btn:hover {
-    opacity: 1;
     transform: scale(1.2);
 }
 
