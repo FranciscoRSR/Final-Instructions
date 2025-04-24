@@ -200,7 +200,6 @@ import {
         <div class="form-group">
           <label for="logoUrl">Logo URL</label>
           <input type="url" id="logoUrl" class="form-input" value="${track.logoUrl}">
-          <div class="track-form-image-preview" id="logoImagePreview" style="background-image: url('${track.logoUrl}')"></div>
         </div>
         <div class="form-group">
           <label for="trackShapeUrl">Track Shape Image URL</label>
@@ -218,16 +217,9 @@ import {
     const cancelBtn = modal.content.querySelector('#cancelTrackBtn');
     const trackShapeUrl = modal.content.querySelector('#trackShapeUrl');
     const trackImagePreview = modal.content.querySelector('#trackImagePreview');
-    const logoUrl = modal.content.querySelector('#logoUrl');
-    const logoImagePreview = modal.content.querySelector('#logoImagePreview');
   
-    // Add event listeners for both image previews
     trackShapeUrl.addEventListener('input', () => {
       trackImagePreview.style.backgroundImage = `url('${trackShapeUrl.value}')`;
-    });
-    
-    logoUrl.addEventListener('input', () => {
-      logoImagePreview.style.backgroundImage = `url('${logoUrl.value}')`;
     });
   
     cancelBtn.addEventListener('click', () => modal.close());
@@ -258,7 +250,7 @@ import {
     });
   
     modal.show();
-  }  
+  }
   
   async function duplicateTrack(trackId) {
     if (!tracks[trackId]) return;
@@ -290,60 +282,15 @@ import {
   }
   
   // Instruction Functions
-
-  
-  function getInstructionFormData(form, scheduleTableBody, locationsTableBody, selectedDatesContainer) {
-    const trackId = form.querySelector('#trackSelect').value;
-    const trackName = form.querySelector('#trackSelect').options[form.querySelector('#trackSelect').selectedIndex].text;
-    const overtakingRules = form.querySelector('input[name="overtakingRules"]:checked').value;
-    const noiseLimit = form.querySelector('#noiseLimit').value;
-    const notes = form.querySelector('#notes').value;
-    
-    // Get selected dates
-    const selectedDates = Array.from(selectedDatesContainer.querySelectorAll('.selected-date'))
-      .map(el => el.dataset.date);
-    
-    // Get schedule
-    const schedule = getScheduleFromTable(scheduleTableBody);
-    
-    // Get locations
-    const locations = getLocationsFromTable(locationsTableBody);
-    
-    return {
-      trackId,
-      trackName,
-      dates: selectedDates,
-      overtakingRules,
-      noiseLimit,
-      schedule,
-      locations,
-      notes
-    };
-  }
-  
-function getScheduleFromTable(tableBody) {
-    return Array.from(tableBody.querySelectorAll('tr')).map(row => {
-      const daySelect = row.querySelector('select[name="scheduleDay"]');
-      return {
-        day: daySelect ? daySelect.value : 'all',
-        startTime: row.querySelector('input[name="startTime"]').value,
-        endTime: row.querySelector('input[name="endTime"]').value,
-        activity: row.querySelector('input[name="activity"]').value,
-        location: row.querySelector('input[name="location"]').value
-      };
-    });
-}
-  
-
-async function showInstructionModal(instructionId = null) {
+  async function showInstructionModal(instructionId = null) {
     let instruction = {
       trackId: '',
       trackName: '',
       dates: [],
       overtakingRules: 'eitherSide',
       noiseLimit: '',
-      schedule: [{ startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: 'Track Session', activity2: '', location: 'Main Track' }],
-      locations: [{ name: 'Reception', name2: '', address: '' }],
+      schedule: [{ startTime: '09:00', endTime: '17:00', activity: 'Track Session', location: 'Main Track' }],
+      locations: [{ name: 'Reception', address: '' }],
       notes: ''
     };
     
@@ -372,8 +319,8 @@ async function showInstructionModal(instructionId = null) {
         
         <div class="form-group">
           <label>Select Dates</label>
-          <div id="calendarContainer" class="calendar mb-20"></div>
-          <div id="selectedDates" class="selected-dates-container mb-20"></div>
+          <div id="calendarContainer" class="mb-20"></div>
+          <div id="selectedDates" class="mb-20"></div>
         </div>
         
         <div class="form-group">
@@ -404,12 +351,9 @@ async function showInstructionModal(instructionId = null) {
           <table class="schedule-table">
             <thead>
               <tr>
-                <th>Start Text (EN)</th>
-                <th>Start Text (2nd)</th>
                 <th>Start Time</th>
                 <th>End Time</th>
-                <th>Activity (EN)</th>
-                <th>Activity (2nd)</th>
+                <th>Activity</th>
                 <th>Location</th>
                 <th>Actions</th>
               </tr>
@@ -417,7 +361,7 @@ async function showInstructionModal(instructionId = null) {
             <tbody id="scheduleTableBody">
             </tbody>
           </table>
-          <button type="button" id="addScheduleRowBtn" class="add-row-btn">Add Schedule Row</button>
+          <button type="button" id="addScheduleRowBtn" class="add-row-btn">Add Row</button>
         </div>
         
         <div class="form-group">
@@ -425,8 +369,7 @@ async function showInstructionModal(instructionId = null) {
           <table class="schedule-table">
             <thead>
               <tr>
-                <th>Location Name (EN)</th>
-                <th>Location Name (2nd)</th>
+                <th>Location Name</th>
                 <th>Address</th>
                 <th>Actions</th>
               </tr>
@@ -462,59 +405,38 @@ async function showInstructionModal(instructionId = null) {
     const calendarContainer = modal.content.querySelector('#calendarContainer');
     const selectedDatesContainer = modal.content.querySelector('#selectedDates');
     
-// Initialize calendar
-initCalendar(calendarContainer, selectedDatesContainer, selectedDates);
-
-function updateScheduleTableHeader() {
-  const scheduleTable = instructionForm.querySelector('.schedule-table');
-  const hasMultipleDates = selectedDates.length > 0;
-  
-  // Update header row to include day column if there are dates selected
-  const headerRow = scheduleTable.querySelector('thead tr');
-  
-  if (headerRow) {
-    if (hasMultipleDates && !headerRow.querySelector('th:first-child').textContent.includes('Day')) {
-      const dayHeader = document.createElement('th');
-      dayHeader.textContent = 'Day';
-      headerRow.insertBefore(dayHeader, headerRow.firstChild);
-    } else if (!hasMultipleDates && headerRow.querySelector('th:first-child').textContent.includes('Day')) {
-      headerRow.removeChild(headerRow.querySelector('th:first-child'));
-    }
-  }
-  
-  // Re-render schedule table with updated dates
-  renderScheduleTable(scheduleTableBody, getScheduleFromTable(scheduleTableBody), selectedDates);
-}
-
-// Populate schedule table
-renderScheduleTable(scheduleTableBody, instruction.schedule || [], selectedDates);
-
-// Populate locations table
-renderLocationsTable(locationsTableBody, instruction.locations || []);
-
-// Event listeners
-trackSelect.addEventListener('change', async () => {
-    const trackId = trackSelect.value;
-    if (trackId) {
-    try {
-        const track = await getTrack(trackId);
-        if (track) {
-        noiseLimit.value = track.noiseLimit;
+    // Initialize calendar
+    initCalendar(calendarContainer, selectedDatesContainer, selectedDates);
+    
+    // Populate schedule table
+    renderScheduleTable(scheduleTableBody, instruction.schedule || []);
+    
+    // Populate locations table
+    renderLocationsTable(locationsTableBody, instruction.locations || []);
+    
+    // Event listeners
+    trackSelect.addEventListener('change', async () => {
+      const trackId = trackSelect.value;
+      if (trackId) {
+        try {
+          const track = await getTrack(trackId);
+          if (track) {
+            noiseLimit.value = track.noiseLimit;
+          }
+        } catch (error) {
+          console.error('Error loading track details:', error);
         }
-    } catch (error) {
-        console.error('Error loading track details:', error);
-    }
-    }
-});
+      }
+    });
     
     addScheduleRowBtn.addEventListener('click', () => {
-      const newRow = { startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: '', activity2: '', location: '' };
+      const newRow = { startTime: '09:00', endTime: '17:00', activity: '', location: '' };
       const currentSchedule = getScheduleFromTable(scheduleTableBody);
       renderScheduleTable(scheduleTableBody, [...currentSchedule, newRow]);
     });
     
     addLocationRowBtn.addEventListener('click', () => {
-      const newLocation = { name: '', name2: '', address: '' };
+      const newLocation = { name: '', address: '' };
       const currentLocations = getLocationsFromTable(locationsTableBody);
       renderLocationsTable(locationsTableBody, [...currentLocations, newLocation]);
     });
@@ -556,312 +478,170 @@ trackSelect.addEventListener('change', async () => {
     modal.show();
   }
   
+  function getInstructionFormData(form, scheduleTableBody, locationsTableBody, selectedDatesContainer) {
+    const trackId = form.querySelector('#trackSelect').value;
+    const trackName = form.querySelector('#trackSelect').options[form.querySelector('#trackSelect').selectedIndex].text;
+    const overtakingRules = form.querySelector('input[name="overtakingRules"]:checked').value;
+    const noiseLimit = form.querySelector('#noiseLimit').value;
+    const notes = form.querySelector('#notes').value;
+    
+    // Get selected dates
+    const selectedDates = Array.from(selectedDatesContainer.querySelectorAll('.selected-date'))
+      .map(el => el.dataset.date);
+    
+    // Get schedule
+    const schedule = getScheduleFromTable(scheduleTableBody);
+    
+    // Get locations
+    const locations = getLocationsFromTable(locationsTableBody);
+    
+    return {
+      trackId,
+      trackName,
+      dates: selectedDates,
+      overtakingRules,
+      noiseLimit,
+      schedule,
+      locations,
+      notes
+    };
+  }
+  
+  function getScheduleFromTable(tableBody) {
+    return Array.from(tableBody.querySelectorAll('tr')).map(row => {
+      return {
+        startTime: row.querySelector('input[name="startTime"]').value,
+        endTime: row.querySelector('input[name="endTime"]').value,
+        activity: row.querySelector('input[name="activity"]').value,
+        location: row.querySelector('input[name="location"]').value
+      };
+    });
+  }
+  
   function getLocationsFromTable(tableBody) {
     return Array.from(tableBody.querySelectorAll('tr')).map(row => {
       return {
         name: row.querySelector('input[name="locationName"]').value,
-        name2: row.querySelector('input[name="locationName2"]').value,
         address: row.querySelector('input[name="address"]').value
       };
     });
   }
   
-function renderScheduleTable(tableBody, scheduleItems, selectedDates) {
+  function renderScheduleTable(tableBody, scheduleItems) {
     tableBody.innerHTML = '';
-
+    
     scheduleItems.forEach((item, index) => {
-        const row = document.createElement('tr');
-        
-        // Create day selection dropdown if multiple dates are selected
-        let daySelectionHTML = '';
-        if (selectedDates && selectedDates.length > 0) {
-        daySelectionHTML = `
-            <select name="scheduleDay" class="form-input">
-            <option value="all" ${!item.day || item.day === 'all' ? 'selected' : ''}>All Days</option>
-            ${selectedDates.map((date, i) => {
-                const dateObj = new Date(date);
-                const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                return `<option value="${date}" ${item.day === date ? 'selected' : ''}>${formattedDate}</option>`;
-            }).join('')}
-            </select>
-        `;
-        }
-        
-        row.innerHTML = `
-        ${selectedDates && selectedDates.length > 0 ? `<td>${daySelectionHTML}</td>` : ''}
+      const row = document.createElement('tr');
+      row.innerHTML = `
         <td><input type="time" name="startTime" class="form-input" value="${item.startTime}" required></td>
         <td><input type="time" name="endTime" class="form-input" value="${item.endTime}" required></td>
         <td><input type="text" name="activity" class="form-input" value="${item.activity}" required></td>
         <td><input type="text" name="location" class="form-input" value="${item.location}" required></td>
         <td>
-            <button type="button" class="delete-btn">Remove</button>
+          <button type="button" class="delete-btn">Remove</button>
         </td>
-        `;
-        
-        row.querySelector('.delete-btn').addEventListener('click', () => {
+      `;
+      
+      row.querySelector('.delete-btn').addEventListener('click', () => {
         if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last schedule item?')) {
-            row.remove();
+          row.remove();
         }
-        });
-        
-        tableBody.appendChild(row);
+      });
+      
+      tableBody.appendChild(row);
     });
-
+    
     // Add at least one row if empty
     if (tableBody.querySelectorAll('tr').length === 0) {
-        const row = document.createElement('tr');
-        
-        // Create day selection dropdown if multiple dates are selected
-        let daySelectionHTML = '';
-        if (selectedDates && selectedDates.length > 0) {
-        daySelectionHTML = `
-            <select name="scheduleDay" class="form-input">
-            <option value="all" selected>All Days</option>
-            ${selectedDates.map((date, i) => {
-                const dateObj = new Date(date);
-                const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                return `<option value="${date}">${formattedDate}</option>`;
-            }).join('')}
-            </select>
-        `;
-        }
-        
-        row.innerHTML = `
-        ${selectedDates && selectedDates.length > 0 ? `<td>${daySelectionHTML}</td>` : ''}
+      const row = document.createElement('tr');
+      row.innerHTML = `
         <td><input type="time" name="startTime" class="form-input" value="09:00" required></td>
         <td><input type="time" name="endTime" class="form-input" value="17:00" required></td>
         <td><input type="text" name="activity" class="form-input" value="Track Session" required></td>
         <td><input type="text" name="location" class="form-input" value="Main Track" required></td>
         <td>
-            <button type="button" class="delete-btn">Remove</button>
+          <button type="button" class="delete-btn">Remove</button>
         </td>
-        `;
-        
-        row.querySelector('.delete-btn').addEventListener('click', () => {
-        if (confirm('Remove the last schedule item?')) {
-            row.remove();
-        }
-        });
-        
-        tableBody.appendChild(row);
-    }
-}  
-
-function renderLocationsTable(tableBody, locations) {
-  tableBody.innerHTML = '';
-  
-  locations.forEach((location, index) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td><input type="text" name="locationName" class="form-input" value="${location.name}" required placeholder="Location (EN)"></td>
-      <td><input type="text" name="locationName2" class="form-input" value="${location.name2 || ''}" placeholder="Location (2nd lang)"></td>
-      <td><input type="text" name="address" class="form-input" value="${location.address}" required></td>
-      <td>
-        <button type="button" class="delete-btn">Remove</button>
-      </td>
-    `;
-    
-    row.querySelector('.delete-btn').addEventListener('click', () => {
-      if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last location?')) {
-        row.remove();
-      }
-    });
-    
-    tableBody.appendChild(row);
-  });
-  
-  // Add at least one row if empty
-  if (tableBody.querySelectorAll('tr').length === 0) {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td><input type="text" name="locationName" class="form-input" value="Reception" required placeholder="Location (EN)"></td>
-      <td><input type="text" name="locationName2" class="form-input" placeholder="Location (2nd lang)"></td>
-      <td><input type="text" name="address" class="form-input" value="" required></td>
-      <td>
-        <button type="button" class="delete-btn">Remove</button>
-      </td>
-    `;
-    
-    row.querySelector('.delete-btn').addEventListener('click', () => {
-      if (confirm('Remove the last location?')) {
-        row.remove();
-      }
-    });
-    
-    tableBody.appendChild(row);
-  }
-}
-  
-function initCalendar(container, selectedDatesContainer, initialSelectedDates = []) {function initCalendar(container, selectedDatesContainer, initialSelectedDates = []) {
-    // Current date for calendar
-    let currentDate = new Date();
-    let currentMonth = currentDate.getMonth();
-    let currentYear = currentDate.getFullYear();
-    
-    // Store selected dates
-    let selectedDates = [...initialSelectedDates];
-    
-    // Render calendar
-    function renderCalendar() {
-      const firstDay = new Date(currentYear, currentMonth, 1);
-      const lastDay = new Date(currentYear, currentMonth + 1, 0);
-      const daysInMonth = lastDay.getDate();
-      const startingDay = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
-      
-      container.innerHTML = `
-        <div class="calendar">
-          <div class="calendar-header">
-            <button type="button" id="prevMonth" class="edit-btn">&lt;</button>
-            <h3>${new Date(currentYear, currentMonth).toLocaleDateString('default', { month: 'long', year: 'numeric' })}</h3>
-            <button type="button" id="nextMonth" class="edit-btn">&gt;</button>
-          </div>
-          
-          <div class="calendar-days">
-            <div class="calendar-day">Sun</div>
-            <div class="calendar-day">Mon</div>
-            <div class="calendar-day">Tue</div>
-            <div class="calendar-day">Wed</div>
-            <div class="calendar-day">Thu</div>
-            <div class="calendar-day">Fri</div>
-            <div class="calendar-day">Sat</div>
-          </div>
-          
-          <div class="calendar-dates" id="calendarDates"></div>
-        </div>
       `;
       
-      const calendarDates = container.querySelector('#calendarDates');
-      
-      // Add empty cells for days before the first day of month
-      for (let i = 0; i < startingDay; i++) {
-        const emptyDay = document.createElement('div');
-        emptyDay.className = 'calendar-date disabled';
-        calendarDates.appendChild(emptyDay);
-      }
-      
-      // Add days of month
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateCell = document.createElement('div');
-        dateCell.className = 'calendar-date';
-        dateCell.textContent = day;
-        
-        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        dateCell.dataset.date = dateStr;
-        
-        // Check if date is selected
-        if (selectedDates.includes(dateStr)) {
-          dateCell.classList.add('selected');
+      row.querySelector('.delete-btn').addEventListener('click', () => {
+        if (confirm('Remove the last schedule item?')) {
+          row.remove();
         }
-        
-        dateCell.addEventListener('click', () => {
-          const index = selectedDates.indexOf(dateStr);
-          if (index === -1) {
-            selectedDates.push(dateStr);
-            dateCell.classList.add('selected');
-          } else {
-            selectedDates.splice(index, 1);
-            dateCell.classList.remove('selected');
-          }
-          updateSelectedDatesDisplay();
-        });
-        
-        calendarDates.appendChild(dateCell);
-      }
-      
-      // Event listeners for month navigation
-      container.querySelector('#prevMonth').addEventListener('click', () => {
-        currentMonth--;
-        if (currentMonth < 0) {
-          currentMonth = 11;
-          currentYear--;
-        }
-        renderCalendar();
       });
       
-      container.querySelector('#nextMonth').addEventListener('click', () => {
-        currentMonth++;
-        if (currentMonth > 11) {
-          currentMonth = 0;
-          currentYear++;
-        }
-        renderCalendar();
-      });
-      
-      updateSelectedDatesDisplay();
+      tableBody.appendChild(row);
     }
-    
-    function updateSelectedDatesDisplay() {
-      selectedDatesContainer.innerHTML = '';
-      
-      if (selectedDates.length === 0) {
-        selectedDatesContainer.innerHTML = '<p>No dates selected.</p>';
-        return;
-      }
-    
-      // Sort dates chronologically
-      selectedDates.sort();
-      
-      selectedDatesContainer.innerHTML = '<p><strong>Selected Dates:</strong></p>';
-      
-      selectedDates.forEach(dateStr => {
-        const datePill = document.createElement('span');
-        datePill.className = 'selected-date';
-        datePill.dataset.date = dateStr;
-        
-        const dateObj = new Date(dateStr);
-        datePill.textContent = dateObj.toLocaleDateString();
-        
-        const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = '&times;';
-        removeBtn.className = 'remove-date-btn';
-        removeBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const index = selectedDates.indexOf(dateStr);
-          if (index !== -1) {
-            selectedDates.splice(index, 1);
-            datePill.remove();
-            
-            // Update calendar UI
-            const calendarDate = container.querySelector(`.calendar-date[data-date="${dateStr}"]`);
-            if (calendarDate) {
-              calendarDate.classList.remove('selected');
-            }
-            
-            updateSelectedDatesDisplay();
-          }
-        });
-        
-        datePill.appendChild(removeBtn);
-        selectedDatesContainer.appendChild(datePill);
-      });
-    }
-    
-    // Initialize calendar
-    renderCalendar();
   }
   
-    // Current date for calendar
-    let currentDate = new Date();
-    let currentMonth = currentDate.getMonth();
-    let currentYear = currentDate.getFullYear();
+  function renderLocationsTable(tableBody, locations) {
+    tableBody.innerHTML = '';
     
-    // Store selected dates
-    let selectedDates = [...initialSelectedDates];
-    
-    // Render calendar
-    function renderCalendar() {
-      const firstDay = new Date(currentYear, currentMonth, 1);
-      const lastDay = new Date(currentYear, currentMonth + 1, 0);
-      const daysInMonth = lastDay.getDate();
-      const startingDay = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    locations.forEach((location, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" name="locationName" class="form-input" value="${location.name}" required></td>
+        <td><input type="text" name="address" class="form-input" value="${location.address}" required></td>
+        <td>
+          <button type="button" class="delete-btn">Remove</button>
+        </td>
+      `;
       
-      container.innerHTML = `
+      row.querySelector('.delete-btn').addEventListener('click', () => {
+        if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last location?')) {
+          row.remove();
+        }
+      });
+      
+      tableBody.appendChild(row);
+    });
+    
+    // Add at least one row if empty
+    if (tableBody.querySelectorAll('tr').length === 0) {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" name="locationName" class="form-input" value="Reception" required></td>
+        <td><input type="text" name="address" class="form-input" value="" required></td>
+        <td>
+          <button type="button" class="delete-btn">Remove</button>
+        </td>
+      `;
+      
+      row.querySelector('.delete-btn').addEventListener('click', () => {
+        if (confirm('Remove the last location?')) {
+          row.remove();
+        }
+      });
+      
+      tableBody.appendChild(row);
+    }
+  }
+  
+function initCalendar(container, selectedDatesContainer, initialSelectedDates = []) {
+// Current date for calendar
+let currentDate = new Date();
+let currentMonth = currentDate.getMonth();
+let currentYear = currentDate.getFullYear();
+
+// Store selected dates
+let selectedDates = [...initialSelectedDates];
+
+// Render calendar
+function renderCalendar() {
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const lastDay = new Date(currentYear, currentMonth + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    
+    container.innerHTML = `
+    <div class="calendar">
         <div class="calendar-header">
-          <button type="button" id="prevMonth" class="edit-btn">&lt;</button>
-          <h3>${new Date(currentYear, currentMonth).toLocaleDateString('default', { month: 'long', year: 'numeric' })}</h3>
-          <button type="button" id="nextMonth" class="edit-btn">&gt;</button>
+        <button type="button" id="prevMonth" class="edit-btn">&lt;</button>
+        <h3>${new Date(currentYear, currentMonth).toLocaleDateString('default', { month: 'long', year: 'numeric' })}</h3>
+        <button type="button" id="nextMonth" class="edit-btn">&gt;</button>
         </div>
         
+        <div class="calendar-days">
         <div class="calendar-day">Sun</div>
         <div class="calendar-day">Mon</div>
         <div class="calendar-day">Tue</div>
@@ -869,345 +649,254 @@ function initCalendar(container, selectedDatesContainer, initialSelectedDates = 
         <div class="calendar-day">Thu</div>
         <div class="calendar-day">Fri</div>
         <div class="calendar-day">Sat</div>
-      `;
-      
-      // Add empty cells for days before the first day of month
-      for (let i = 0; i < startingDay; i++) {
-        const emptyDay = document.createElement('div');
-        emptyDay.className = 'calendar-date disabled';
-        container.appendChild(emptyDay);
-      }
-      
-      // Add days of month
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateCell = document.createElement('div');
-        dateCell.className = 'calendar-date';
-        dateCell.textContent = day;
+        </div>
         
-        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        dateCell.dataset.date = dateStr;
-        
-        // Check if date is selected
-        if (selectedDates.includes(dateStr)) {
-          dateCell.classList.add('selected');
-        }
-        
-        dateCell.addEventListener('click', () => {
-          const index = selectedDates.indexOf(dateStr);
-          if (index === -1) {
-            selectedDates.push(dateStr);
-            dateCell.classList.add('selected');
-          } else {
-            selectedDates.splice(index, 1);
-            dateCell.classList.remove('selected');
-          }
-          updateSelectedDatesDisplay();
-        });
-        
-        container.appendChild(dateCell);
-      }
-      
-      // Event listeners for month navigation
-      container.querySelector('#prevMonth').addEventListener('click', () => {
-        currentMonth--;
-        if (currentMonth < 0) {
-          currentMonth = 11;
-          currentYear--;
-        }
-        renderCalendar();
-      });
-      
-      container.querySelector('#nextMonth').addEventListener('click', () => {
-        currentMonth++;
-        if (currentMonth > 11) {
-          currentMonth = 0;
-          currentYear++;
-        }
-        renderCalendar();
-      });
-      
-      updateSelectedDatesDisplay();
+        <div class="calendar-dates" id="calendarDates"></div>
+    </div>
+    `;
+    
+    const calendarDates = container.querySelector('#calendarDates');
+    
+    // Add empty cells for days before the first day of month
+    for (let i = 0; i < startingDay; i++) {
+    const emptyDay = document.createElement('div');
+    emptyDay.className = 'calendar-date disabled';
+    calendarDates.appendChild(emptyDay);
     }
     
-    function updateSelectedDatesDisplay() {
-        selectedDatesContainer.innerHTML = '';
-        
-        if (selectedDates.length === 0) {
-          selectedDatesContainer.innerHTML = '<p>No dates selected.</p>';
-          return;
-        }
-      
-        // Sort dates chronologically
-        selectedDates.sort();
-        
-        selectedDatesContainer.innerHTML = '<p><strong>Selected Dates:</strong></p>';
-        
-        selectedDates.forEach(dateStr => {
-          const datePill = document.createElement('span');
-          datePill.className = 'selected-date';
-          datePill.dataset.date = dateStr;
-          
-          const dateObj = new Date(dateStr);
-          datePill.textContent = dateObj.toLocaleDateString();
-          
-          const removeBtn = document.createElement('button');
-          removeBtn.innerHTML = '&times;';
-          removeBtn.className = 'remove-date-btn';
-          removeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const index = selectedDates.indexOf(dateStr);
-            if (index !== -1) {
-              selectedDates.splice(index, 1);
-              datePill.remove();
-              
-              // Update calendar UI
-              const calendarDate = container.querySelector(`.calendar-date[data-date="${dateStr}"]`);
-              if (calendarDate) {
-                calendarDate.classList.remove('selected');
-              }
-
-              updateSelectedDatesDisplay();
-              if (typeof updateScheduleTableHeader === 'function') {
-                updateScheduleTableHeader();
-              }
-            }
-          });
-          
-          datePill.appendChild(removeBtn);
-          selectedDatesContainer.appendChild(datePill);
-        });
-      }
-      
-      // Initialize calendar
-      renderCalendar();
+    // Add days of month
+    for (let day = 1; day <= daysInMonth; day++) {
+    const dateCell = document.createElement('div');
+    dateCell.className = 'calendar-date';
+    dateCell.textContent = day;
+    
+    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    dateCell.dataset.date = dateStr;
+    
+    // Check if date is selected
+    if (selectedDates.includes(dateStr)) {
+        dateCell.classList.add('selected');
     }
     
-async function showInstructionPreview(instruction) {
-    const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
-    
-    const modal = createModal('Instruction Preview');
-    
-    // Format dates for display
-    const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
-    
-    // Get overtaking rules text  
-    let overtakingText = '';
-    switch (instruction.overtakingRules) {
-        case 'leftSideOnly':
-        overtakingText = 'Left Side Only';
-        break;
-        case 'rightSideOnly':
-        overtakingText = 'Right Side Only';
-        break;
-        case 'eitherSide':
-        overtakingText = 'Either Side';
-        break;
-    }
-    
-    // Group schedule items by day
-    const scheduleByDay = {};
-    const allDaysSchedule = [];
-    
-    // Sort dates chronologically
-    const sortedDates = [...instruction.dates].sort();
-    
-    // First add items marked for all days
-    instruction.schedule.forEach(item => {
-        if (!item.day || item.day === 'all') {
-        allDaysSchedule.push(item);
+    dateCell.addEventListener('click', () => {
+        const index = selectedDates.indexOf(dateStr);
+        if (index === -1) {
+        selectedDates.push(dateStr);
+        dateCell.classList.add('selected');
         } else {
-        if (!scheduleByDay[item.day]) {
-            scheduleByDay[item.day] = [];
+        selectedDates.splice(index, 1);
+        dateCell.classList.remove('selected');
         }
-        scheduleByDay[item.day].push(item);
+        updateSelectedDatesDisplay();
+    });
+    
+    calendarDates.appendChild(dateCell);
+    }
+    
+    // Event listeners for month navigation
+    container.querySelector('#prevMonth').addEventListener('click', () => {
+    currentMonth--;
+    if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+    }
+    renderCalendar();
+    });
+    
+    container.querySelector('#nextMonth').addEventListener('click', () => {
+    currentMonth++;
+    if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+    }
+    renderCalendar();
+    });
+    
+    updateSelectedDatesDisplay();
+}
+
+function updateSelectedDatesDisplay() {
+    selectedDatesContainer.innerHTML = '';
+    
+    if (selectedDates.length === 0) {
+    selectedDatesContainer.innerHTML = '<p>No dates selected.</p>';
+    return;
+    }
+
+    // Sort dates chronologically
+    selectedDates.sort();
+    
+    selectedDatesContainer.innerHTML = '<p><strong>Selected Dates:</strong></p>';
+    
+    selectedDates.forEach(dateStr => {
+    const datePill = document.createElement('span');
+    datePill.className = 'selected-date';
+    datePill.dataset.date = dateStr;
+    
+    const dateObj = new Date(dateStr);
+    datePill.textContent = dateObj.toLocaleDateString();
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.innerHTML = '&times;';
+    removeBtn.className = 'remove-date-btn';
+    removeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = selectedDates.indexOf(dateStr);
+        if (index !== -1) {
+        selectedDates.splice(index, 1);
+        datePill.remove();
+        
+        // Update calendar UI
+        const calendarDate = container.querySelector(`.calendar-date[data-date="${dateStr}"]`);
+        if (calendarDate) {
+            calendarDate.classList.remove('selected');
+        }
+        
+        updateSelectedDatesDisplay();
         }
     });
     
-    // Create schedule HTML sections
-    let scheduleHTML = '';
-    
-    // Add all-days schedule if exists
-    if (allDaysSchedule.length > 0) {
-        scheduleHTML += `
-        <div class="instruction-section">
-            <h4>General Daily Schedule (All Days)</h4>
-            <table class="schedule-table-preview">
-            <thead>
-                <tr>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Activity</th>
-                <th>Location</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${allDaysSchedule.map(item => `
-                <tr>
-                    <td>${item.startTime}</td>
-                    <td>${item.endTime}</td>
-                    <td>${item.activity}</td>
-                    <td>${item.location}</td>
-                </tr>
-                `).join('')}
-            </tbody>
-            </table>
-        </div>
-        `;
+    datePill.appendChild(removeBtn);
+    selectedDatesContainer.appendChild(datePill);
+    });
     }
-    
-    // Add day-specific schedules
-    if (instruction.dates.length > 1) {
-        sortedDates.forEach((date, index) => {
-        const dateObj = new Date(date);
-        const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-        const daySchedule = scheduleByDay[date] || [];
-        
-        if (daySchedule.length > 0) {
-            scheduleHTML += `
-            <div class="instruction-section">
-                <h4>Schedule Day ${index + 1} (${formattedDate})</h4>
-                <table class="schedule-table-preview">
-                <thead>
-                    <tr>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Activity</th>
-                    <th>Location</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${daySchedule.map(item => `
-                    <tr>
-                        <td>${item.startTime}</td>
-                        <td>${item.endTime}</td>
-                        <td>${item.activity}</td>
-                        <td>${item.location}</td>
-                    </tr>
-                    `).join('')}
-                </tbody>
-                </table>
-            </div>
-            `;
-        }
-        });
-    } else if (instruction.dates.length === 1) {
-        // Single day schedule - combine with all days schedule if needed
-        const date = instruction.dates[0];
-        const daySchedule = scheduleByDay[date] || [];
-        
-        if (daySchedule.length > 0) {
-        scheduleHTML += `
-            <div class="instruction-section">
-            <h4>Schedule</h4>
-            <table class="schedule-table-preview">
-                <thead>
-                <tr>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Activity</th>
-                    <th>Location</th>
-                </tr>
-                </thead>
-                <tbody>
-                ${daySchedule.map(item => `
-                    <tr>
-                    <td>${item.startTime}</td>
-                    <td>${item.endTime}</td>
-                    <td>${item.activity}</td>
-                    <td>${item.location}</td>
-                    </tr>
-                `).join('')}
-                </tbody>
-            </table>
-            </div>
-        `;
-        }
-    }
-    
-    // Create locations table HTML
-    const locationsTableHTML = `
+
+    // Initialize calendar
+    renderCalendar();
+}
+
+    async function showInstructionPreview(instruction) {
+      const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
+      
+      const modal = createModal('Instruction Preview');
+      
+      // Format dates for display
+      const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
+      
+      let overtakingText = '';
+      switch (instruction.overtakingRules) {
+        case 'leftSideOnly':
+          overtakingText = 'Left Side Only';
+          break;
+        case 'rightSideOnly':
+          overtakingText = 'Right Side Only';
+          break;
+        case 'eitherSide':
+          overtakingText = 'Either Side';
+          break;
+      }
+      
+      // Create schedule table HTML
+      const scheduleTableHTML = `
         <table class="schedule-table-preview">
-        <thead>
+          <thead>
             <tr>
-            <th>Location Name</th>
-            <th>Address</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+              <th>Activity</th>
+              <th>Location</th>
             </tr>
-        </thead>
-        <tbody>
-            ${instruction.locations.map(location => `
+          </thead>
+          <tbody>
+            ${instruction.schedule.map(item => `
+              <tr>
+                <td>${item.startTime}</td>
+                <td>${item.endTime}</td>
+                <td>${item.activity}</td>
+                <td>${item.location}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      
+      // Create locations table HTML
+      const locationsTableHTML = `
+        <table class="schedule-table-preview">
+          <thead>
             <tr>
+              <th>Location Name</th>
+              <th>Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${instruction.locations.map(location => `
+              <tr>
                 <td>${location.name}</td>
                 <td>${location.address}</td>
-            </tr>
+              </tr>
             `).join('')}
-        </tbody>
+          </tbody>
         </table>
-    `;
-    
-    modal.content.innerHTML = `
+      `;
+      
+      modal.content.innerHTML = `
         <div class="instruction-preview">
-        <div class="instruction-header">
+          <div class="instruction-header">
             <div class="instruction-title">${instruction.trackName} - Final Instructions</div>
             <div class="instruction-dates">${formattedDates}</div>
-        </div>
-        
-        ${trackDetails ? `
+          </div>
+          
+          ${trackDetails ? `
             <div class="track-card">
-            ${trackDetails.trackShapeUrl ? `
+              ${trackDetails.trackShapeUrl ? `
                 <div class="track-image" style="background-image: url('${trackDetails.trackShapeUrl}')"></div>
-            ` : ''}
-            <div class="track-info">
+              ` : ''}
+              <div class="track-info">
                 <h3>${trackDetails.name}</h3>
                 <div class="track-stats">
-                <div class="stat-item">
+                  <div class="stat-item">
                     <strong>Noise Limit:</strong> ${instruction.noiseLimit} dB
-                </div>
-                <div class="stat-item">
+                  </div>
+                  <div class="stat-item">
                     <strong>Length:</strong> ${trackDetails.length} km
-                </div>
-                <div class="stat-item">
+                  </div>
+                  <div class="stat-item">
                     <strong>Location:</strong> ${trackDetails.location}
-                </div>
-                <div class="stat-item">
+                  </div>
+                  <div class="stat-item">
                     <strong>Corners:</strong> ${trackDetails.corners}
+                  </div>
                 </div>
-                </div>
+              </div>
             </div>
-            </div>
-        ` : ''}
-        
-        <div class="instruction-section">
+          ` : ''}
+          
+          <div class="instruction-section">
             <h4>Overtaking Rules</h4>
             <p>${overtakingText}</p>
-        </div>
-        
-        ${scheduleHTML}
-        
-        <div class="instruction-section">
+          </div>
+          
+          <div class="instruction-section">
+            <h4>Daily Schedule</h4>
+            ${scheduleTableHTML}
+          </div>
+          
+          <div class="instruction-section">
             <h4>Important Locations</h4>
             ${locationsTableHTML}
-        </div>
-        
-        ${instruction.notes ? `
+          </div>
+          
+          ${instruction.notes ? `
             <div class="instruction-section">
-            <h4>Additional Notes</h4>
-            <div class="notes-section">
+              <h4>Additional Notes</h4>
+              <div class="notes-section">
                 ${instruction.notes.replace(/\n/g, '<br>')}
+              </div>
             </div>
-            </div>
-        ` : ''}
+          ` : ''}
         </div>
         
         <div class="form-buttons">
-        <button type="button" id="closePreviewBtn" class="delete-btn">Close</button>
+          <button type="button" id="closePreviewBtn" class="delete-btn">Close</button>
         </div>
-    `;
-    
-    modal.content.querySelector('#closePreviewBtn').addEventListener('click', () => modal.close());
-    
-    modal.show();
-    }
+      `;
       
+      modal.content.querySelector('#closePreviewBtn').addEventListener('click', () => modal.close());
+      
+      modal.show();
+    }
+    
     async function duplicateInstruction(instructionId) {
       if (!instructions[instructionId]) return;
       
@@ -1299,4 +988,4 @@ async function showInstructionPreview(instruction) {
       showInstructionModal,
       showTrackModal,
       previewInstruction
-    }
+    };
