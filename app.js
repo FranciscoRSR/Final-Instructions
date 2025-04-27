@@ -479,16 +479,13 @@ async function showInstructionModal(instructionId = null) {
   );
   
   try {
-    if (instructionId) {
-      // Editing an existing instruction - pass the ID
-      await saveInstruction(formData, instructionId);
-    } else {
-      // Creating a new instruction - don't pass an ID
-      await saveInstruction(formData);
-    }
+    // For new instructions, pass null explicitly as the second parameter
+    // For existing instructions, pass the ID
+    await saveInstruction(formData, currentInstructionId);
+    
     await loadInstructions();
     modal.close();
-    showToast(`Instruction successfully ${instructionId ? 'updated' : 'created'}!`, 'success');
+    showToast(`Instruction successfully ${currentInstructionId ? 'updated' : 'created'}!`, 'success');
   } catch (error) {
     showToast('Error saving instruction: ' + error.message, 'error');
   }
