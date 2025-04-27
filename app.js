@@ -489,7 +489,8 @@ async function showInstructionModal(instructionId = null) {
       instructionForm, 
       scheduleTableBody,
       locationsTableBody,
-      selectedDatesContainer
+      selectedDatesContainer,
+      notesTableBody
     );
     
     // Open preview in a new modal
@@ -499,16 +500,22 @@ async function showInstructionModal(instructionId = null) {
   instructionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // Get the form data
+    // Get all required elements
+    const scheduleTableBody = modal.content.querySelector('#scheduleTableBody');
+    const locationsTableBody = modal.content.querySelector('#locationsTableBody');
+    const selectedDatesContainer = modal.content.querySelector('#selectedDates');
+    const notesTableBody = modal.content.querySelector('#notesTableBody');
+  
+    // Get the form data with all parameters
     const formData = getInstructionFormData(
       instructionForm, 
       scheduleTableBody,
       locationsTableBody,
-      selectedDatesContainer
+      selectedDatesContainer,
+      notesTableBody
     );
     
     try {
-      // Ensure instructionId is either a string or null
       const idToUse = instructionId && typeof instructionId === 'string' ? instructionId : null;
       await saveInstruction(formData, idToUse);
       await loadInstructions();
@@ -568,38 +575,57 @@ function renderNotesTable(tableBody, notes) {
 }
 
 function getNotesFromTable(tableBody) {
+  if (!tableBody) return [];
+  
   return Array.from(tableBody.querySelectorAll('tr')).map(row => {
+    const textEl = row.querySelector('textarea[name="noteText"]');
+    const text2El = row.querySelector('textarea[name="noteText2"]');
+    const imageUrlEl = row.querySelector('input[name="noteImageUrl"]');
+
     return {
-      text: row.querySelector('textarea[name="noteText"]').value,
-      text2: row.querySelector('textarea[name="noteText2"]').value,
-      imageUrl: row.querySelector('input[name="noteImageUrl"]').value
+      text: textEl ? textEl.value : '',
+      text2: text2El ? text2El.value : '',
+      imageUrl: imageUrlEl ? imageUrlEl.value : ''
     };
-  });
+  }).filter(note => note.text || note.text2 || note.imageUrl); // Filter out empty notes
 }
 
 function getInstructionFormData(form, scheduleTableBody, locationsTableBody, selectedDatesContainer) {
-  const trackId = form.querySelector('#trackSelect').value;
-  const trackName = form.querySelector('#trackSelect').options[form.querySelector('#trackSelect').selectedIndex].text;
-  const overtakingRules = form.querySelector('input[name="overtakingRules"]:checked').value;
-  const noiseLimit = form.querySelector('#noiseLimit').value;
-  const notes = form.querySelector('#notes').value;
-  
+  const trackSelect = form.querySelector('#trackSelect');
+  const noiseLimit = form.querySelector('#noiseLimit');
+  const overtakingRules = form.querySelector('input[name="overtakingRules"]:checked');
+  const notesTableBody = form.querySelector('#notesTableBody');
+
+  // Basic validation
+  if (!trackSelect || !noiseLimit || !overtakingRules || !notesTableBody) {
+    throw new Error("Form elements not found");
+  }
+
+  const trackId = trackSelect.value;
+  const trackName = trackSelect.options[trackSelect.selectedIndex]?.text || '';
+  const noiseLimitValue = noiseLimit.value;
+  const overtakingRulesValue = overtakingRules.value;
+
   // Get selected dates
   const selectedDates = Array.from(selectedDatesContainer.querySelectorAll('.selected-date'))
-    .map(el => el.dataset.date);
-  
+    .map(el => el.dataset.date)
+    .filter(date => date); // Filter out any undefined dates
+
   // Get schedule
   const schedule = getScheduleFromTable(scheduleTableBody);
-  
+
   // Get locations
   const locations = getLocationsFromTable(locationsTableBody);
-  
+
+  // Get notes
+  const notes = getNotesFromTable(notesTableBody);
+
   return {
     trackId,
     trackName,
     dates: selectedDates,
-    overtakingRules,
-    noiseLimit,
+    overtakingRules: overtakingRulesValue,
+    noiseLimit: noiseLimitValue,
     schedule,
     locations,
     notes
