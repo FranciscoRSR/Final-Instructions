@@ -234,7 +234,7 @@ async function showTrackModal(trackId = null) {
 
   trackForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-
+  
     const updatedTrack = {
       name: trackForm.querySelector('#trackName').value,
       noiseLimit: parseInt(trackForm.querySelector('#noiseLimit').value),
@@ -245,17 +245,18 @@ async function showTrackModal(trackId = null) {
       logoUrl: trackForm.querySelector('#logoUrl').value,
       trackShapeUrl: trackForm.querySelector('#trackShapeUrl').value
     };
-
+  
     try {
-      // Explicitly pass trackId or null
-      await saveTrack(updatedTrack, trackId || null);
+      // Ensure trackId is either a string or null
+      const idToUse = trackId && typeof trackId === 'string' ? trackId : null;
+      await saveTrack(updatedTrack, idToUse);
       await loadTracks();
       modal.close();
-      showToast(`Track successfully ${trackId ? 'updated' : 'created'}!`, 'success');
+      showToast(`Track successfully ${idToUse ? 'updated' : 'created'}!`, 'success');
     } catch (error) {
       showToast('Error saving track: ' + error.message, 'error');
     }
-  });
+  });  
 
   modal.show();
 }
@@ -471,8 +472,7 @@ async function showInstructionModal(instructionId = null) {
   instructionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    console.log('instructionId:', instructionId); // Debug log
-    
+    // Get the form data
     const formData = getInstructionFormData(
       instructionForm, 
       scheduleTableBody,
@@ -481,10 +481,12 @@ async function showInstructionModal(instructionId = null) {
     );
     
     try {
-      await saveInstruction(formData, instructionId || null);
+      // Ensure instructionId is either a string or null
+      const idToUse = instructionId && typeof instructionId === 'string' ? instructionId : null;
+      await saveInstruction(formData, idToUse);
       await loadInstructions();
       modal.close();
-      showToast(`Instruction successfully ${instructionId ? 'updated' : 'created'}!`, 'success');
+      showToast(`Instruction successfully ${idToUse ? 'updated' : 'created'}!`, 'success');
     } catch (error) {
       showToast('Error saving instruction: ' + error.message, 'error');
     }
