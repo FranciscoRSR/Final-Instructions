@@ -292,25 +292,29 @@ async function confirmDeleteTrack(trackId) {
   
 // Instruction Functions
 async function showInstructionModal(instructionId = null) {
-  let currentInstructionId = instructionId; // Explicitly store the ID
+  let currentInstructionId = instructionId;
   let instruction = {
     trackId: '',
     trackName: '',
     dates: [],
     overtakingRules: 'eitherSide',
     noiseLimit: '',
-    schedule: [{ startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: 'Track Session', activity2: '', location: 'Main Track' }],
+    schedule: [{ startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: 'Track Session', activity2: '', location: '' }],
     locations: [{ name: 'Reception', name2: '', address: '' }],
-    notes: ''
+    notes: [{ text: '', text2: '', imageUrl: '' }]
   };
   
   if (instructionId && instructions[instructionId]) {
-    instruction = { ...instructions[instructionId] };
+    instruction = { 
+      ...instructions[instructionId],
+      // Ensure notes is an array (for backward compatibility)
+      notes: Array.isArray(instructions[instructionId].notes) ? 
+        instructions[instructionId].notes : 
+        [{ text: instructions[instructionId].notes || '', text2: '', imageUrl: '' }]
+    };
   }
   
-  // Format dates for calendar
   const selectedDates = instruction.dates || [];
-  
   const modal = createModal('Final Instruction Details');
   
   const trackOptions = Object.entries(tracks).map(([id, track]) => 
@@ -395,8 +399,20 @@ async function showInstructionModal(instructionId = null) {
       </div>
       
       <div class="form-group">
-        <label for="notes">Additional Notes</label>
-        <textarea id="notes" class="form-input" rows="5">${instruction.notes || ''}</textarea>
+        <label>Additional Notes</label>
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Additional Notes (EN)</th>
+              <th>Additional Notes (2nd)</th>
+              <th>Image Link</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="notesTableBody">
+          </tbody>
+        </table>
+        <button type="button" id="addNoteRowBtn" class="add-row-btn">Add Note</button>
       </div>
       
       <div class="form-buttons">
@@ -454,6 +470,17 @@ async function showInstructionModal(instructionId = null) {
     const currentLocations = getLocationsFromTable(locationsTableBody);
     renderLocationsTable(locationsTableBody, [...currentLocations, newLocation]);
   });
+
+  // Initialize notes table
+  const notesTableBody = modal.content.querySelector('#notesTableBody');
+  const addNoteRowBtn = modal.content.querySelector('#addNoteRowBtn');
+  renderNotesTable(notesTableBody, instruction.notes);
+  
+  addNoteRowBtn.addEventListener('click', () => {
+    const newNote = { text: '', text2: '', imageUrl: '' };
+    const currentNotes = getNotesFromTable(notesTableBody);
+    renderNotesTable(notesTableBody, [...currentNotes, newNote]);
+  });
   
   cancelBtn.addEventListener('click', () => modal.close());
   
@@ -495,6 +522,61 @@ async function showInstructionModal(instructionId = null) {
   modal.show();
 }
   
+function renderNotesTable(tableBody, notes) {
+  tableBody.innerHTML = '';
+  
+  notes.forEach((note, index) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><textarea name="noteText" class="form-input" rows="2" placeholder="Note (EN)">${note.text || ''}</textarea></td>
+      <td><textarea name="noteText2" class="form-input" rows="2" placeholder="Note (2nd lang)">${note.text2 || ''}</textarea></td>
+      <td><input type="url" name="noteImageUrl" class="form-input" value="${note.imageUrl || ''}" placeholder="Image URL"></td>
+      <td>
+        <button type="button" class="delete-btn">Remove</button>
+      </td>
+    `;
+    
+    row.querySelector('.delete-btn').addEventListener('click', () => {
+      if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last note?')) {
+        row.remove();
+      }
+    });
+    
+    tableBody.appendChild(row);
+  });
+  
+  // Add at least one row if empty
+  if (tableBody.querySelectorAll('tr').length === 0) {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><textarea name="noteText" class="form-input" rows="2" placeholder="Note (EN)"></textarea></td>
+      <td><textarea name="noteText2" class="form-input" rows="2" placeholder="Note (2nd lang)"></textarea></td>
+      <td><input type="url" name="noteImageUrl" class="form-input" placeholder="Image URL"></td>
+      <td>
+        <button type="button" class="delete-btn">Remove</button>
+      </td>
+    `;
+    
+    row.querySelector('.delete-btn').addEventListener('click', () => {
+      if (confirm('Remove the last note?')) {
+        row.remove();
+      }
+    });
+    
+    tableBody.appendChild(row);
+  }
+}
+
+function getNotesFromTable(tableBody) {
+  return Array.from(tableBody.querySelectorAll('tr')).map(row => {
+    return {
+      text: row.querySelector('textarea[name="noteText"]').value,
+      text2: row.querySelector('textarea[name="noteText2"]').value,
+      imageUrl: row.querySelector('input[name="noteImageUrl"]').value
+    };
+  });
+}
+
 function getInstructionFormData(form, scheduleTableBody, locationsTableBody, selectedDatesContainer) {
   const trackId = form.querySelector('#trackSelect').value;
   const trackName = form.querySelector('#trackSelect').options[form.querySelector('#trackSelect').selectedIndex].text;
@@ -560,7 +642,7 @@ function renderScheduleTable(tableBody, scheduleItems) {
       <td><input type="time" name="endTime" class="form-input" value="${item.endTime}" placeholder="Optional"></td>
       <td><input type="text" name="activity" class="form-input" value="${item.activity}" required placeholder="Activity (EN)"></td>
       <td><input type="text" name="activity2" class="form-input" value="${item.activity2 || ''}" placeholder="Activity (2nd lang)"></td>
-      <td><input type="text" name="location" class="form-input" value="${item.location}" required></td>
+      <td><input type="text" name="location" class="form-input" value="${item.location}" placeholder="Optional"></td>
       <td>
         <button type="button" class="delete-btn">Remove</button>
       </td>
@@ -585,7 +667,7 @@ function renderScheduleTable(tableBody, scheduleItems) {
       <td><input type="time" name="endTime" class="form-input" value="17:00" placeholder="Optional"></td>
       <td><input type="text" name="activity" class="form-input" value="Track Session" required placeholder="Activity (EN)"></td>
       <td><input type="text" name="activity2" class="form-input" placeholder="Activity (2nd lang)"></td>
-      <td><input type="text" name="location" class="form-input" value="Main Track" required></td>
+      <td><input type="text" name="location" class="form-input" placeholder="Optional"></td>
       <td>
         <button type="button" class="delete-btn">Remove</button>
       </td>
@@ -787,78 +869,15 @@ function initCalendar(container, selectedDatesContainer, initialSelectedDates = 
     
 async function showInstructionPreview(instruction) {
   const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
-  
   const modal = createModal('Instruction Preview');
-  
-  // Format dates for display
   const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
   
   let overtakingText = '';
   switch (instruction.overtakingRules) {
-    case 'leftSideOnly':
-      overtakingText = 'Left Side Only';
-      break;
-    case 'rightSideOnly':
-      overtakingText = 'Right Side Only';
-      break;
-    case 'eitherSide':
-      overtakingText = 'Either Side';
-      break;
+    case 'leftSideOnly': overtakingText = 'Left Side Only'; break;
+    case 'rightSideOnly': overtakingText = 'Right Side Only'; break;
+    case 'eitherSide': overtakingText = 'Either Side'; break;
   }
-  
-  // Create schedule table HTML with bilingual support
-  const scheduleTableHTML = `
-    <table class="schedule-table-preview">
-      <thead>
-        <tr>
-          <th>Start</th>
-          <th>End</th>
-          <th>Activity</th>
-          <th>Location</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${instruction.schedule.map(item => `
-          <tr>
-            <td>
-              ${item.startText ? `<div>${item.startText}</div>` : ''}
-              ${item.startText2 ? `<div class="secondary-language">${item.startText2}</div>` : ''}
-              <div>${item.startTime}</div>
-            </td>
-            <td>${item.endTime}</td>
-            <td>
-              <div>${item.activity}</div>
-              ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
-            </td>
-            <td>${item.location}</td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-  `;
-  
-  // Create locations table HTML with bilingual support
-  const locationsTableHTML = `
-    <table class="schedule-table-preview">
-      <thead>
-        <tr>
-          <th>Location Name</th>
-          <th>Address</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${instruction.locations.map(location => `
-          <tr>
-            <td>
-              <div>${location.name}</div>
-              ${location.name2 ? `<div class="secondary-language">${location.name2}</div>` : ''}
-            </td>
-            <td>${location.address}</td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-  `;
   
   modal.content.innerHTML = `
     <div class="instruction-preview">
@@ -902,20 +921,72 @@ async function showInstructionPreview(instruction) {
       
       <div class="instruction-section">
         <h4>Daily Schedule</h4>
-        ${scheduleTableHTML}
+        <table class="schedule-table-preview">
+          <thead>
+            <tr>
+              <th>Start</th>
+              <th>End</th>
+              <th>Activity</th>
+              ${instruction.schedule.some(item => item.location) ? '<th>Location</th>' : ''}
+            </tr>
+          </thead>
+          <tbody>
+            ${instruction.schedule.map(item => `
+              <tr>
+                <td>
+                  ${item.startText ? `<div>${item.startText}</div>` : ''}
+                  ${item.startText2 ? `<div class="secondary-language">${item.startText2}</div>` : ''}
+                  <div>${item.startTime}</div>
+                </td>
+                <td>${item.endTime}</td>
+                <td>
+                  <div>${item.activity}</div>
+                  ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                </td>
+                ${item.location ? `<td>${item.location}</td>` : ''}
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
       </div>
       
       <div class="instruction-section">
         <h4>Important Locations</h4>
-        ${locationsTableHTML}
+        <table class="schedule-table-preview">
+          <thead>
+            <tr>
+              <th>Location Name</th>
+              <th>Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${instruction.locations.map(location => `
+              <tr>
+                <td>
+                  <div>${location.name}</div>
+                  ${location.name2 ? `<div class="secondary-language">${location.name2}</div>` : ''}
+                </td>
+                <td>${location.address}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
       </div>
       
-      ${instruction.notes ? `
+      ${instruction.notes && instruction.notes.length > 0 ? `
         <div class="instruction-section">
           <h4>Additional Notes</h4>
-          <div class="notes-section">
-            ${instruction.notes.replace(/\n/g, '<br>')}
-          </div>
+          ${instruction.notes.map(note => `
+            <div class="notes-section">
+              ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
+              ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
+              ${note.imageUrl ? `
+                <div class="note-image-container">
+                  <img src="${note.imageUrl}" alt="Note image" style="max-width: 100%; max-height: 200px;">
+                </div>
+              ` : ''}
+            </div>
+          `).join('')}
         </div>
       ` : ''}
     </div>
@@ -926,7 +997,6 @@ async function showInstructionPreview(instruction) {
   `;
   
   modal.content.querySelector('#closePreviewBtn').addEventListener('click', () => modal.close());
-  
   modal.show();
 }
     
