@@ -291,9 +291,7 @@ async function confirmDeleteTrack(trackId) {
   
 // Instruction Functions
 async function showInstructionModal(instructionId = null) {
-  // Store the ID explicitly at the function level
-  const currentInstructionId = instructionId;
-  
+  let currentInstructionId = instructionId; // Explicitly store the ID
   let instruction = {
     trackId: '',
     trackName: '',
@@ -305,8 +303,8 @@ async function showInstructionModal(instructionId = null) {
     notes: ''
   };
   
-  if (currentInstructionId && instructions[currentInstructionId]) {
-    instruction = { ...instructions[currentInstructionId] };
+  if (instructionId && instructions[instructionId]) {
+    instruction = { ...instructions[instructionId] };
   }
   
   // Format dates for calendar
@@ -473,6 +471,8 @@ async function showInstructionModal(instructionId = null) {
   instructionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    console.log('instructionId:', instructionId); // Debug log
+    
     const formData = getInstructionFormData(
       instructionForm, 
       scheduleTableBody,
@@ -481,21 +481,11 @@ async function showInstructionModal(instructionId = null) {
     );
     
     try {
-      // Use the explicitly stored ID variable, not the event parameter
-      // Be extra careful to not pass the event object
-      if (currentInstructionId) {
-        // Ensure we're passing a string ID, not an event
-        await saveInstruction(formData, String(currentInstructionId));
-      } else {
-        // For new instructions, don't pass a second parameter at all
-        await saveInstruction(formData);
-      }
-      
+      await saveInstruction(formData, instructionId || null);
       await loadInstructions();
       modal.close();
-      showToast(`Instruction successfully ${currentInstructionId ? 'updated' : 'created'}!`, 'success');
+      showToast(`Instruction successfully ${instructionId ? 'updated' : 'created'}!`, 'success');
     } catch (error) {
-      console.error("Save error details:", error);
       showToast('Error saving instruction: ' + error.message, 'error');
     }
   });
