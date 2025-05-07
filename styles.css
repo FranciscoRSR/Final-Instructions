@@ -902,3 +902,182 @@ button {
     font-weight: 500;
     margin-bottom: 5px;
   }
+
+  /* A4 Preview Styles */
+.a4-preview {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  
+  .a4-page {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+  }
+  
+  .a4-page-1, .a4-page-2 {
+    display: flex;
+    min-height: 297mm;
+    width: 210mm;
+    margin: 0 auto;
+    position: relative;
+  }
+  
+  .a4-left-section {
+    width: 50%;
+    padding: 10mm;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #eee;
+  }
+  
+  .a4-right-section {
+    width: 50%;
+    padding: 10mm;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .track-logo-container {
+    height: 30mm;
+    margin-bottom: 5mm;
+    display: flex;
+    align-items: center;
+  }
+  
+  .track-logo {
+    max-height: 100%;
+    max-width: 100%;
+  }
+  
+  .section-header {
+    color: white;
+    font-weight: bold;
+    padding: 3mm;
+    margin-bottom: 3mm;
+  }
+  
+  .red-bg { background: #e74c3c; }
+  .orange-bg { background: #f39c12; }
+  .green-bg { background: #2ecc71; }
+  .yellow-bg { background: #f1c40f; }
+  .blue-bg { background: #3498db; }
+  
+  .section-subheader {
+    color: #e74c3c;
+    font-weight: bold;
+    margin-bottom: 5mm;
+    padding-bottom: 2mm;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .schedule-entry {
+    margin-bottom: 3mm;
+  }
+  
+  .schedule-time {
+    font-weight: bold;
+  }
+  
+  .schedule-time-text {
+    font-weight: bold;
+    margin-bottom: 1mm;
+  }
+  
+  .schedule-activity div:first-child {
+    font-weight: bold;
+  }
+  
+  .schedule-location {
+    margin-top: 1mm;
+  }
+  
+  .location-entry {
+    margin-bottom: 3mm;
+  }
+  
+  .location-name div:first-child {
+    font-weight: bold;
+  }
+  
+  .overtaking-rule {
+    color: #e74c3c;
+    font-weight: bold;
+  }
+  
+  .warnings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3mm;
+  }
+  
+  .warning-item {
+    display: flex;
+    align-items: center;
+    gap: 2mm;
+  }
+  
+  .warning-image {
+    width: 15mm;
+    height: 15mm;
+    object-fit: contain;
+  }
+  
+  .preview-footer {
+    height: 20mm;
+    margin-top: auto;
+  }
+  
+  .right-top-area {
+    margin-bottom: 5mm;
+  }
+  
+  .track-name {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+  
+  .event-dates {
+    color: #777;
+  }
+  
+  .noise-limit-value {
+    font-weight: bold;
+    margin-top: 1mm;
+  }
+  
+  .note-entry {
+    margin-bottom: 3mm;
+  }
+  
+  .note-image-container img {
+    max-width: 100%;
+    max-height: 50mm;
+    margin-top: 2mm;
+  }
+  
+  .a4-page-2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .track-shape-container {
+    width: 100%;
+    padding: 10mm;
+  }
+  
+  .track-shape {
+    max-width: 100%;
+    max-height: 277mm; /* 297mm - 20mm padding */
+  }
+  
+  .secondary-language {
+    color: #777;
+    font-weight: bold;
+  }
