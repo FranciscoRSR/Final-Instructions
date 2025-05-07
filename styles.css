@@ -293,12 +293,35 @@ tr:hover {
     margin-bottom: 10px;
 }
 
+.calendar-header h3 {
+    font-size: 18px;
+    color: var(--primary-color);
+}
+.calendar-header button {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+.calendar-header button:hover {
+    background-color: var(--primary-color);
+    transform: scale(1.1);
+}
+
 .calendar-days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 8px;
     grid-column: span 7;
 }
+
+
 
 .calendar-dates {
     display: grid;
@@ -314,6 +337,8 @@ tr:hover {
     background-color: var(--input-background);
     border-radius: 4px;
 }
+
+
 
 .calendar-date {
     width: 40px;
@@ -348,6 +373,12 @@ tr:hover {
     margin-top: 15px;
 }
 
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
 
 
 /* Overtaking Rules */
@@ -764,6 +795,9 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 4px; /* Fixed from 4px#t */
+    cursor: pointer;
+    transition: var(--transition);
 }
 
 .calendar-header h3 {
