@@ -302,7 +302,7 @@ async function showInstructionModal(instructionId = null) {
     schedule: [{ startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: 'Track Session', activity2: '', location: '' }],
     locations: [{ name: 'Reception', name2: '', address: '' }],
     notes: [{ text: '', text2: '', imageUrl: '' }],
-    warnings: [] // Ensure warnings is initialized as an empty array
+    warnings: []
   };
 
   if (instructionId && instructions[instructionId]) {
@@ -313,7 +313,7 @@ async function showInstructionModal(instructionId = null) {
         [{ text: instructions[instructionId].notes || '', text2: '', imageUrl: '' }],
       warnings: Array.isArray(instructions[instructionId].warnings) ? 
         instructions[instructionId].warnings : 
-        [] // Ensure warnings is an array
+        []
     };
   }
 
@@ -322,10 +322,87 @@ async function showInstructionModal(instructionId = null) {
 
   modal.content.innerHTML = `
     <form id="instructionForm">
-      <!-- Track Selection, Dates Selection, etc. (unchanged) -->
-      <!-- ... existing HTML ... -->
+      <!-- Track Selection -->
+      <div class="form-group">
+        <label for="trackSelect">Select Track</label>
+        <select id="trackSelect" class="form-input" required>
+          <option value="">Select a track</option>
+          ${Object.entries(tracks).map(([id, track]) => `
+            <option value="${id}" ${instruction.trackId === id ? 'selected' : ''}>${track.name}</option>
+          `).join('')}
+        </select>
+      </div>
 
-      <!-- Additional Notes with 2nd language title -->
+      <!-- Dates Selection -->
+      <div class="form-group">
+        <label>Dates</label>
+        <div id="calendarContainer" class="calendar-grid"></div>
+        <div id="selectedDates"></div>
+      </div>
+
+      <!-- Overtaking Rules -->
+      <div class="form-group">
+        <label>Overtaking Rules</label>
+        <input type="text" id="overtakingRulesLabel" class="form-input mb-10" value="${instruction.overtakingRulesLabel || 'Overtaking Rules'}" placeholder="Section Title (EN)">
+        <input type="text" id="overtakingRulesLabel2" class="form-input" value="${instruction.overtakingRulesLabel2 || ''}" placeholder="Section Title (2nd lang - optional)">
+        <div class="overtaking-options">
+          <label><input type="radio" name="overtakingRules" value="leftSideOnly" ${instruction.overtakingRules === 'leftSideOnly' ? 'checked' : ''}> Left Side Only</label>
+          <label><input type="radio" name="overtakingRules" value="rightSideOnly" ${instruction.overtakingRules === 'rightSideOnly' ? 'checked' : ''}> Right Side Only</label>
+          <label><input type="radio" name="overtakingRules" value="eitherSide" ${instruction.overtakingRules === 'eitherSide' ? 'checked' : ''}> Either Side</label>
+        </div>
+      </div>
+
+      <!-- Noise Limit -->
+      <div class="form-group">
+        <label>Noise Limit</label>
+        <input type="text" id="noiseLimitLabel" class="form-input mb-10" value="${instruction.noiseLimitLabel || 'Noise Limit'}" placeholder="Section Title (EN)">
+        <input type="text" id="noiseLimitLabel2" class="form-input" value="${instruction.noiseLimitLabel2 || ''}" placeholder="Section Title (2nd lang - optional)">
+        <input type="number" id="noiseLimit" class="form-input" value="${instruction.noiseLimit || ''}" required>
+      </div>
+
+      <!-- Schedule -->
+      <div class="form-group">
+        <label>Schedule</label>
+        <input type="text" id="scheduleLabel" class="form-input mb-10" value="${instruction.scheduleLabel || 'Daily Schedule'}" placeholder="Section Title (EN)">
+        <input type="text" id="scheduleLabel2" class="form-input" value="${instruction.scheduleLabel2 || ''}" placeholder="Section Title (2nd lang - optional)">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Text (EN)</th>
+              <th>Text (2nd)</th>
+              <th>Start</th>
+              <th>End</th>
+              <th>Activity (EN)</th>
+              <th>Activity (2nd)</th>
+              <th>Location</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleTableBody"></tbody>
+        </table>
+        <button type="button" id="addScheduleRowBtn" class="add-row-btn">Add Schedule Item</button>
+      </div>
+
+      <!-- Important Locations -->
+      <div class="form-group">
+        <label>Important Locations</label>
+        <input type="text" id="locationsLabel" class="form-input mb-10" value="${instruction.locationsLabel || 'Important Locations'}" placeholder="Section Title (EN)">
+        <input type="text" id="locationsLabel2" class="form-input" value="${instruction.locationsLabel2 || ''}" placeholder="Section Title (2nd lang - optional)">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Name (EN)</th>
+              <th>Name (2nd)</th>
+              <th>Address</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="locationsTableBody"></tbody>
+        </table>
+        <button type="button" id="addLocationRowBtn" class="add-row-btn">Add Location</button>
+      </div>
+
+      <!-- Additional Notes -->
       <div class="form-group">
         <label>Additional Notes</label>
         <input type="text" id="notesLabel" class="form-input mb-10" value="${instruction.notesLabel || 'Additional Notes'}" placeholder="Section Title (EN)">
@@ -344,7 +421,7 @@ async function showInstructionModal(instructionId = null) {
         <button type="button" id="addNoteRowBtn" class="add-row-btn">Add Note</button>
       </div>
 
-      <!-- Track Warnings section -->
+      <!-- Track Warnings -->
       <div class="form-group">
         <label>Track Warnings</label>
         <input type="text" id="warningsLabel" class="form-input mb-10" value="${instruction.warningsLabel || 'Track Warnings'}" placeholder="Section Title (EN)">
@@ -363,7 +440,7 @@ async function showInstructionModal(instructionId = null) {
         <button type="button" id="addWarningRowBtn" class="add-row-btn">Add Warning</button>
       </div>
 
-      <!-- Form buttons (unchanged) -->
+      <!-- Form buttons -->
       <div class="form-buttons">
         <button type="button" id="cancelInstructionBtn" class="delete-btn">Cancel</button>
         <button type="button" id="previewInstructionBtn" class="edit-btn">Preview</button>
@@ -390,6 +467,12 @@ async function showInstructionModal(instructionId = null) {
   const addWarningRowBtn = modal.content.querySelector('#addWarningRowBtn');
 
   // Validate DOM elements
+  if (!calendarContainer || !selectedDatesContainer) {
+    console.error('Error: #calendarContainer or #selectedDates element not found in modal content');
+    showToast('Error: Failed to initialize calendar', 'error');
+    return;
+  }
+
   if (!warningsTableBody) {
     console.error('Error: #warningsTableBody element not found in modal content');
     showToast('Error: Failed to initialize warnings table', 'error');
