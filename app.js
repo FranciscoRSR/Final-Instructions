@@ -564,63 +564,61 @@ return Array.from(tableBody.querySelectorAll('tr')).map(row => {
 }
 
 function getInstructionFormData(form, scheduleTableBody, locationsTableBody, selectedDatesContainer, notesTableBody, warningsTableBody) {
-const trackSelect = form.querySelector('#trackSelect');
-const noiseLimit = form.querySelector('#noiseLimit');
-const overtakingRules = form.querySelector('input[name="overtakingRules"]:checked');
-const notesTableBody = form.querySelector('#notesTableBody');
+  const trackSelect = form.querySelector('#trackSelect');
+  const noiseLimit = form.querySelector('#noiseLimit');
+  const overtakingRules = form.querySelector('input[name="overtakingRules"]:checked');
 
-// Basic validation
-if (!trackSelect || !noiseLimit || !overtakingRules || !notesTableBody) {
-  throw new Error("Form elements not found");
+  // Basic validation
+  if (!trackSelect || !noiseLimit || !overtakingRules || !notesTableBody) {
+    throw new Error("Form elements not found");
+  }
+
+  const trackId = trackSelect.value;
+  const trackName = trackSelect.options[trackSelect.selectedIndex]?.text || '';
+  const noiseLimitValue = noiseLimit.value;
+  const overtakingRulesValue = overtakingRules.value;
+
+  // Get selected dates
+  const selectedDates = Array.from(selectedDatesContainer.querySelectorAll('.selected-date'))
+    .map(el => el.dataset.date)
+    .filter(date => date); // Filter out any undefined dates
+
+  // Get schedule
+  const schedule = getScheduleFromTable(scheduleTableBody);
+
+  // Get locations
+  const locations = getLocationsFromTable(locationsTableBody);
+
+  // Get notes
+  const notes = getNotesFromTable(notesTableBody);
+
+  // Get warnings
+  const warnings = getWarningsFromTable(warningsTableBody);
+
+  return {
+    trackId,
+    trackName,
+    dates: selectedDates,
+    overtakingRules: overtakingRulesValue, // Fixed to use overtakingRulesValue
+    overtakingRulesLabel: form.querySelector('#overtakingRulesLabel').value,
+    overtakingRulesLabel2: form.querySelector('#overtakingRulesLabel2').value,
+    noiseLimit: noiseLimitValue,
+    noiseLimitLabel: form.querySelector('#noiseLimitLabel').value,
+    noiseLimitLabel2: form.querySelector('#noiseLimitLabel2').value,
+    schedule,
+    scheduleLabel: form.querySelector('#scheduleLabel').value,
+    scheduleLabel2: form.querySelector('#scheduleLabel2').value,
+    locations,
+    locationsLabel: form.querySelector('#locationsLabel').value,
+    locationsLabel2: form.querySelector('#locationsLabel2').value,
+    notes,
+    notesLabel: form.querySelector('#notesLabel').value,
+    notesLabel2: form.querySelector('#notesLabel2').value,
+    warnings,
+    warningsLabel: form.querySelector('#warningsLabel').value,
+    warningsLabel2: form.querySelector('#warningsLabel2').value
+  };
 }
-
-const trackId = trackSelect.value;
-const trackName = trackSelect.options[trackSelect.selectedIndex]?.text || '';
-const noiseLimitValue = noiseLimit.value;
-const overtakingRulesValue = overtakingRules.value;
-
-// Get selected dates
-const selectedDates = Array.from(selectedDatesContainer.querySelectorAll('.selected-date'))
-  .map(el => el.dataset.date)
-  .filter(date => date); // Filter out any undefined dates
-
-// Get schedule
-const schedule = getScheduleFromTable(scheduleTableBody);
-
-// Get locations
-const locations = getLocationsFromTable(locationsTableBody);
-
-// Get notes
-const notes = getNotesFromTable(notesTableBody);
-
-// Get warnings
-const warnings = getWarningsFromTable(warningsTableBody);
-
-return {
-  trackId,
-  trackName,
-  dates: selectedDates,
-  overtakingRules,
-  overtakingRulesLabel: form.querySelector('#overtakingRulesLabel').value,
-  overtakingRulesLabel2: form.querySelector('#overtakingRulesLabel2').value,
-  noiseLimit: noiseLimitValue,
-  noiseLimitLabel: form.querySelector('#noiseLimitLabel').value,
-  noiseLimitLabel2: form.querySelector('#noiseLimitLabel2').value,
-  schedule,
-  scheduleLabel: form.querySelector('#scheduleLabel').value,
-  scheduleLabel2: form.querySelector('#scheduleLabel2').value,
-  locations,
-  locationsLabel: form.querySelector('#locationsLabel').value,
-  locationsLabel2: form.querySelector('#locationsLabel2').value,
-  notes,
-  notesLabel: form.querySelector('#notesLabel').value,
-  notesLabel2: form.querySelector('#notesLabel2').value,
-  warnings,
-  warningsLabel: form.querySelector('#warningsLabel').value,
-  warningsLabel2: form.querySelector('#warningsLabel2').value
-};
-}
-
 
 function getScheduleFromTable(tableBody) {
 return Array.from(tableBody.querySelectorAll('tr')).map(row => {
