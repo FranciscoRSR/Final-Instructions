@@ -1053,186 +1053,176 @@ function updateSelectedDatesDisplay() {
 }
   
 async function showInstructionPreview(instruction) {
-const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
-const modal = createModal('Instruction Preview');
+  const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
+  const modal = createModal('Instruction Preview - A4 Layout');
 
-// Format dates for display
-const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
+  // Format dates for display
+  const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
 
-// Overtaking rules text
-let overtakingText = '';
-switch (instruction.overtakingRules) {
-  case 'leftSideOnly': overtakingText = 'Left Side Only'; break;
-  case 'rightSideOnly': overtakingText = 'Right Side Only'; break;
-  case 'eitherSide': overtakingText = 'Either Side'; break;
-}
+  // Overtaking rules text
+  let overtakingText = '';
+  switch (instruction.overtakingRules) {
+    case 'leftSideOnly': overtakingText = 'Left Side Only'; break;
+    case 'rightSideOnly': overtakingText = 'Right Side Only'; break;
+    case 'eitherSide': overtakingText = 'Either Side'; break;
+  }
 
-modal.content.innerHTML = `
-  <div class="instruction-preview">
-      <div class="instruction-header">
-        <div class="instruction-title">${instruction.instructionName || instruction.trackName} - Final Instructions</div>
-        <div class="instruction-dates">${formattedDates}</div>
-      </div>
-    
-    ${trackDetails ? `
-      <div class="track-card">
-        ${trackDetails.trackShapeUrl ? `
-          <div class="track-image" style="background-image: url('${trackDetails.trackShapeUrl}')"></div>
-        ` : ''}
-        <div class="track-info">
-          <h3>${trackDetails.name}</h3>
-          ${trackDetails.logoUrl ? `
-            <div class="track-logo" style="background-image: url('${trackDetails.logoUrl}'); height: 60px; background-size: contain; background-repeat: no-repeat; background-position: left center; margin-bottom: 10px;"></div>
-          ` : ''}
-          <div class="track-stats">
-            <div class="stat-item">
-              <strong>Noise Limit:</strong> ${instruction.noiseLimit} dB
-            </div>
-            <div class="stat-item">
-              <strong>Length:</strong> ${trackDetails.length} km
-            </div>
-            <div class="stat-item">
-              <strong>Location:</strong> ${trackDetails.location}
-            </div>
-            <div class="stat-item">
-              <strong>Corners:</strong> ${trackDetails.corners}
-            </div>
-          </div>
-        </div>
-      </div>
-    ` : ''}
-    
-    <!-- Overtaking Rules Section -->
-      <div class="instruction-section">
-        <h4>${instruction.overtakingRulesLabel || 'Overtaking Rules'}</h4>
-        ${instruction.overtakingRulesLabel2 ? `<h5 class="secondary-language">${instruction.overtakingRulesLabel2}</h5>` : ''}
-        <p>${overtakingText}</p>
-        
-        ${instruction.overtakingText1 ? `<p>${instruction.overtakingText1}</p>` : ''}
-        ${instruction.overtakingText2 ? `<p>${instruction.overtakingText2}</p>` : ''}
-        ${instruction.overtakingText1Second ? `<p class="secondary-language">${instruction.overtakingText1Second}</p>` : ''}
-        ${instruction.overtakingText2Second ? `<p class="secondary-language">${instruction.overtakingText2Second}</p>` : ''}
-        ${instruction.overtakingSecond ? `<p class="secondary-language">${instruction.overtakingSecond}</p>` : ''}
-      </div>
-      
-      <!-- Noise Limit Section -->
-      <div class="instruction-section">
-        <h4>${instruction.noiseLimitLabel || 'Noise Limit'}</h4>
-        ${instruction.noiseLimitLabel2 ? `<h5 class="secondary-language">${instruction.noiseLimitLabel2}</h5>` : ''}
-        <p>${instruction.noiseLimit} dB</p>
-        
-        ${instruction.noiseLimitText ? `<p>${instruction.noiseLimitText}</p>` : ''}
-        ${instruction.noiseLimitTextSecond ? `<p class="secondary-language">${instruction.noiseLimitTextSecond}</p>` : ''}
-      </div>
-    
-    <!-- Schedule Section -->
-    <div class="instruction-section">
-      <h4>${instruction.scheduleLabel || 'Daily Schedule'}</h4>
-      ${instruction.scheduleLabel2 ? `<h5 class="secondary-language">${instruction.scheduleLabel2}</h5>` : ''}
-      <table class="schedule-table-preview">
-        <thead>
-          <tr>
-            <th>Start</th>
-            <th>End</th>
-            <th>Activity</th>
-            ${instruction.schedule.some(item => item.location) ? '<th>Location</th>' : ''}
-          </tr>
-        </thead>
-        <tbody>
-          ${instruction.schedule.map(item => `
-            <tr>
-              <td>
-                ${item.startText ? `<div>${item.startText}</div>` : ''}
-                ${item.startText2 ? `<div class="secondary-language">${item.startText2}</div>` : ''}
-                <div>${item.startTime}</div>
-              </td>
-              <td>${item.endTime}</td>
-              <td>
-                <div>${item.activity}</div>
-                ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
-              </td>
-              ${item.location ? `<td>${item.location}</td>` : ''}
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-    
-    <!-- Important Locations Section -->
-    <div class="instruction-section">
-      <h4>${instruction.locationsLabel || 'Important Locations'}</h4>
-      ${instruction.locationsLabel2 ? `<h5 class="secondary-language">${instruction.locationsLabel2}</h5>` : ''}
-      <table class="schedule-table-preview">
-        <thead>
-          <tr>
-            <th>Location Name</th>
-            <th>Address</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${instruction.locations.map(location => `
-            <tr>
-              <td>
-                <div>${location.name}</div>
-                ${location.name2 ? `<div class="secondary-language">${location.name2}</div>` : ''}
-              </td>
-              <td>${location.address}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-    
-    <!-- Additional Notes Section -->
-    ${instruction.notes && instruction.notes.length > 0 ? `
-      <div class="instruction-section">
-        <h4>${instruction.notesLabel || 'Additional Notes'}</h4>
-        ${instruction.notesLabel2 ? `<h5 class="secondary-language">${instruction.notesLabel2}</h5>` : ''}
-        ${instruction.notes.map(note => `
-          <div class="notes-section">
-            ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
-            ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
-            ${note.imageUrl ? `
-              <div class="note-image-container">
-                <img src="${note.imageUrl}" alt="Note image" style="max-width: 100%; max-height: 200px;">
+  modal.content.innerHTML = `
+    <div class="instruction-preview a4-preview">
+      <div class="a4-page">
+        <!-- Page 1 -->
+        <div class="a4-page-1">
+          <!-- Left Section -->
+          <div class="a4-left-section">
+            <!-- Track Logo -->
+            ${trackDetails?.logoUrl ? `
+              <div class="track-logo-container">
+                <img src="${trackDetails.logoUrl}" alt="${trackDetails.name} Logo" class="track-logo">
               </div>
             ` : ''}
-          </div>
-        `).join('')}
-      </div>
-    ` : ''}
-    
-    <!-- Track Warnings Section -->
-    ${instruction.warnings && instruction.warnings.length > 0 ? `
-      <div class="instruction-section">
-        <h4>${instruction.warningsLabel || 'Track Warnings'}</h4>
-        ${instruction.warningsLabel2 ? `<h5 class="secondary-language">${instruction.warningsLabel2}</h5>` : ''}
-        <div class="warnings-container">
-          ${instruction.warnings.map(warning => `
-            <div class="warning-item">
-              ${warning.imageUrl ? `
-                <div class="warning-image">
-                  <img src="${warning.imageUrl}" alt="${warning.name || 'Warning flag'}">
-                </div>
-              ` : ''}
-              <div class="warning-text">
-                <div class="warning-name">${warning.name}</div>
-                ${warning.name2 ? `<div class="secondary-language warning-name">${warning.name2}</div>` : ''}
+            
+            <!-- Schedule Section -->
+            <div class="preview-section schedule-section">
+              <div class="section-header red-bg">
+                <div>${instruction.scheduleLabel || 'Schedule'}</div>
+                ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
+              </div>
+              <div class="section-subheader">
+                <div>${formattedDates} • ${instruction.trackName}</div>
+              </div>
+              <div class="schedule-entries">
+                ${instruction.schedule.map(item => `
+                  <div class="schedule-entry">
+                    ${item.startText || item.startText2 ? `
+                      <div class="schedule-time-text">
+                        ${item.startText ? `<span>${item.startText}</span>` : ''}
+                        ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
+                        ${item.startTime}–${item.endTime}
+                      </div>
+                    ` : `
+                      <div class="schedule-time">${item.startTime}–${item.endTime}</div>
+                    `}
+                    <div class="schedule-activity">
+                      ${item.activity ? `<div>${item.activity}</div>` : ''}
+                      ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                    </div>
+                    ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
+                  </div>
+                `).join('')}
               </div>
             </div>
-          `).join('')}
+            
+            <!-- Important Locations Section -->
+            <div class="preview-section locations-section">
+              <div class="section-header orange-bg">
+                <div>${instruction.locationsLabel || 'Important Locations'}</div>
+                ${instruction.locationsLabel2 ? `<div class="secondary-language">${instruction.locationsLabel2}</div>` : ''}
+              </div>
+              <div class="locations-entries">
+                ${instruction.locations.map(location => `
+                  <div class="location-entry">
+                    <div class="location-name">
+                      <div>${location.name}</div>
+                      ${location.name2 ? `<div class="secondary-language">${location.name2}</div>` : ''}
+                    </div>
+                    <div class="location-address">${location.address}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            
+            <!-- Overtaking Rules Section -->
+            <div class="preview-section overtaking-section">
+              <div class="section-header green-bg">
+                <div>${instruction.overtakingRulesLabel || 'Overtaking Rules'}</div>
+                ${instruction.overtakingRulesLabel2 ? `<div class="secondary-language">${instruction.overtakingRulesLabel2}</div>` : ''}
+              </div>
+              <div class="overtaking-content">
+                ${instruction.overtakingText1 ? `<div class="overtaking-text">${instruction.overtakingText1} <span class="overtaking-rule">${overtakingText}</span> ${instruction.overtakingText2 || ''}</div>` : ''}
+                ${instruction.overtakingText1Second ? `<div class="overtaking-text secondary-language">${instruction.overtakingText1Second} <span class="overtaking-rule">${overtakingText}</span> ${instruction.overtakingText2Second || ''}</div>` : ''}
+              </div>
+            </div>
+            
+            <!-- Track Warnings Section -->
+            <div class="preview-section warnings-section">
+              <div class="section-header yellow-bg">
+                <div>${instruction.warningsLabel || 'Track Warnings'}</div>
+                ${instruction.warningsLabel2 ? `<div class="secondary-language">${instruction.warningsLabel2}</div>` : ''}
+              </div>
+              <div class="warnings-grid">
+                ${instruction.warnings.map(warning => `
+                  <div class="warning-item">
+                    ${warning.imageUrl ? `<img src="${warning.imageUrl}" alt="${warning.name || 'Warning flag'}" class="warning-image">` : ''}
+                    <div class="warning-text">
+                      <div>${warning.name}</div>
+                      ${warning.name2 ? `<div class="secondary-language">${warning.name2}</div>` : ''}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="preview-footer"></div>
+          </div>
+          
+          <!-- Right Section -->
+          <div class="a4-right-section">
+            <!-- Top Area -->
+            <div class="right-top-area">
+              <div class="track-name">${instruction.trackName}</div>
+              <div class="event-dates">${formattedDates}</div>
+            </div>
+            
+            <!-- Additional Notes Section -->
+            <div class="preview-section notes-section">
+              <div class="section-header blue-bg">
+                <div>${instruction.notesLabel || 'Additional Notes'}</div>
+                ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
+              </div>
+              <div class="notes-content">
+                <!-- Noise Limit -->
+                <div class="noise-limit-entry">
+                  ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''}
+                  ${instruction.noiseLimitTextSecond ? `<div class="secondary-language">${instruction.noiseLimitTextSecond}</div>` : ''}
+                  <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
+                </div>
+                
+                <!-- Additional Notes -->
+                ${instruction.notes.map(note => `
+                  <div class="note-entry">
+                    ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
+                    ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
+                    ${note.imageUrl ? `
+                      <div class="note-image-container">
+                        <img src="${note.imageUrl}" alt="Note image">
+                      </div>
+                    ` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Page 2 -->
+        <div class="a4-page-2">
+          ${trackDetails?.trackShapeUrl ? `
+            <div class="track-shape-container">
+              <img src="${trackDetails.trackShapeUrl}" alt="${trackDetails.name} Track Shape" class="track-shape">
+            </div>
+          ` : ''}
         </div>
       </div>
-    ` : ''}
-  </div>
-  
-  <div class="form-buttons">
-    <button type="button" id="closePreviewBtn" class="delete-btn">Close</button>
-  </div>
-`;
+      
+      <div class="form-buttons">
+        <button type="button" id="closePreviewBtn" class="delete-btn">Close</button>
+      </div>
+    </div>
+  `;
 
-modal.content.querySelector('#closePreviewBtn').addEventListener('click', () => modal.close());
-modal.show();
+  modal.content.querySelector('#closePreviewBtn').addEventListener('click', () => modal.close());
+  modal.show();
 }
   
 async function duplicateInstruction(instructionId) {
