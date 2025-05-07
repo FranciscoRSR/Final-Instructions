@@ -84,6 +84,55 @@ try {
 }
 }
 
+function checkForPreviewMode() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const previewId = urlParams.get('preview');
+  
+  if (previewId) {
+    // Hide all UI elements except the preview
+    document.querySelector('header').style.display = 'none';
+    document.querySelector('footer').style.display = 'none';
+    
+    // Show a back button
+    const backButton = document.createElement('button');
+    backButton.textContent = 'Back to App';
+    backButton.className = 'back-btn';
+    backButton.style.position = 'fixed';
+    backButton.style.top = '10px';
+    backButton.style.left = '10px';
+    backButton.style.zIndex = '1000';
+    backButton.addEventListener('click', () => {
+      window.location.href = window.location.origin + window.location.pathname;
+    });
+    document.body.appendChild(backButton);
+    
+    // Load and display the preview
+    loadInstructions().then(() => {
+      if (instructions[previewId]) {
+        showInstructionPreview(instructions[previewId]);
+      } else {
+        document.body.innerHTML = '<h1>Instruction not found</h1>';
+      }
+    });
+    
+    return true;
+  }
+  return false;
+}
+
+// Call this in your initApp function
+async function initApp() {
+  loadTheme();
+  
+  // Check for preview mode first
+  if (checkForPreviewMode()) {
+    return;
+  }
+  
+  switchSection('instructions');
+  await Promise.all([loadTracks(), loadInstructions()]);
+}
+
 // Render Functions
 function renderTracks() {
 tracksTable.innerHTML = '';
@@ -1263,14 +1312,17 @@ try {
 }
   
 async function previewInstruction(instructionId) {
-if (!instructions[instructionId]) return;
+  if (!instructions[instructionId]) return;
 
-try {
-  const instruction = instructions[instructionId];
-  await showInstructionPreview(instruction);
-} catch (error) {
-  showToast('Error loading instruction preview: ' + error.message, 'error');
-}
+  try {
+    const instruction = instructions[instructionId];
+    // Generate a unique URL for this preview
+    const previewUrl = `${window.location.origin}${window.location.pathname}?preview=${instructionId}`;
+    // Open in new tab
+    window.open(previewUrl, '_blank');
+  } catch (error) {
+    showToast('Error loading instruction preview: ' + error.message, 'error');
+  }
 }
   
 async function confirmDeleteInstruction(instructionId) {
