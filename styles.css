@@ -1109,3 +1109,35 @@ button {
     border: 1px solid #ddd;
   }
   
+  .back-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  
+  .back-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+  }
+  
+  /* Preview mode specific styles */
+  body.preview-mode {
+    padding-top: 0;
+  }
+  
+  .preview-mode header,
+  .preview-mode footer {
+    display: none !important;
+  }
+  
+  .preview-mode .section {
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    min-height: 100vh;
+  }
