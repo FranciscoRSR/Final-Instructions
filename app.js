@@ -492,8 +492,7 @@ async function showInstructionModal(instructionId = null) {
     const scheduleTableBody = modal.content.querySelector('#scheduleTableBody');
     const locationsTableBody = modal.content.querySelector('#locationsTableBody');
     const selectedDatesContainer = modal.content.querySelector('#selectedDates');
-    const notesTableBody = modal.content.querySelector('#notesTableBody');
-  
+      
     // Get the form data with all parameters
     const formData = getInstructionFormData(
       instructionForm, 
