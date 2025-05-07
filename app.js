@@ -301,7 +301,8 @@ async function showInstructionModal(instructionId = null) {
     noiseLimit: '',
     schedule: [{ startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: 'Track Session', activity2: '', location: '' }],
     locations: [{ name: 'Reception', name2: '', address: '' }],
-    notes: [{ text: '', text2: '', imageUrl: '' }]
+    notes: [{ text: '', text2: '', imageUrl: '' }],
+    warnings: [] // Ensure warnings is initialized as an empty array
   };
 
   if (instructionId && instructions[instructionId]) {
@@ -309,7 +310,10 @@ async function showInstructionModal(instructionId = null) {
       ...instructions[instructionId],
       notes: Array.isArray(instructions[instructionId].notes) ? 
         instructions[instructionId].notes : 
-        [{ text: instructions[instructionId].notes || '', text2: '', imageUrl: '' }]
+        [{ text: instructions[instructionId].notes || '', text2: '', imageUrl: '' }],
+      warnings: Array.isArray(instructions[instructionId].warnings) ? 
+        instructions[instructionId].warnings : 
+        [] // Ensure warnings is an array
     };
   }
 
@@ -340,18 +344,41 @@ async function showInstructionModal(instructionId = null) {
         <button type="button" id="addNoteRowBtn" class="add-row-btn">Add Note</button>
       </div>
 
-      <!-- Track Warnings section, Form buttons, etc. (unchanged) -->
-      <!-- ... existing HTML ... -->
+      <!-- Track Warnings section -->
+      <div class="form-group">
+        <label>Track Warnings</label>
+        <input type="text" id="warningsLabel" class="form-input mb-10" value="${instruction.warningsLabel || 'Track Warnings'}" placeholder="Section Title (EN)">
+        <input type="text" id="warningsLabel2" class="form-input" value="${instruction.warningsLabel2 || ''}" placeholder="Section Title (2nd lang - optional)">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Flag Name (EN)</th>
+              <th>Flag Name (2nd)</th>
+              <th>Image Link</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="warningsTableBody"></tbody>
+        </table>
+        <button type="button" id="addWarningRowBtn" class="add-row-btn">Add Warning</button>
+      </div>
+
+      <!-- Form buttons (unchanged) -->
+      <div class="form-buttons">
+        <button type="button" id="cancelInstructionBtn" class="delete-btn">Cancel</button>
+        <button type="button" id="previewInstructionBtn" class="edit-btn">Preview</button>
+        <button type="submit" class="edit-btn">Save Instruction</button>
+      </div>
     </form>
   `;
 
-  // Declare DOM elements once
+  // Declare DOM elements
   const instructionForm = modal.content.querySelector('#instructionForm');
   const cancelBtn = modal.content.querySelector('#cancelInstructionBtn');
   const previewBtn = modal.content.querySelector('#previewInstructionBtn');
   const scheduleTableBody = modal.content.querySelector('#scheduleTableBody');
   const locationsTableBody = modal.content.querySelector('#locationsTableBody');
-  const notesTableBody = modal.content.querySelector('#notesTableBody'); // Single declaration
+  const notesTableBody = modal.content.querySelector('#notesTableBody');
   const addScheduleRowBtn = modal.content.querySelector('#addScheduleRowBtn');
   const addLocationRowBtn = modal.content.querySelector('#addLocationRowBtn');
   const trackSelect = modal.content.querySelector('#trackSelect');
@@ -359,14 +386,18 @@ async function showInstructionModal(instructionId = null) {
   const calendarContainer = modal.content.querySelector('#calendarContainer');
   const selectedDatesContainer = modal.content.querySelector('#selectedDates');
   const addNoteRowBtn = modal.content.querySelector('#addNoteRowBtn');
-
-  // Initialize warnings table
   const warningsTableBody = modal.content.querySelector('#warningsTableBody');
   const addWarningRowBtn = modal.content.querySelector('#addWarningRowBtn');
 
-  if (!instruction.warnings || instruction.warnings.length === 0) {
-    renderWarningsTable(warningsTableBody, [{ name: '', name2: '', imageUrl: '' }]);
+  // Validate DOM elements
+  if (!warningsTableBody) {
+    console.error('Error: #warningsTableBody element not found in modal content');
+    showToast('Error: Failed to initialize warnings table', 'error');
+    return;
   }
+
+  // Initialize warnings table
+  renderWarningsTable(warningsTableBody, instruction.warnings.length > 0 ? instruction.warnings : [{ name: '', name2: '', imageUrl: '' }]);
 
   addWarningRowBtn.addEventListener('click', () => {
     const newWarning = { name: '', name2: '', imageUrl: '' };
@@ -403,19 +434,12 @@ async function showInstructionModal(instructionId = null) {
       notesTableBody,
       warningsTableBody
     );
-    
     showInstructionPreview(formData);
   });
 
   instructionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // Get all required elements
-    const scheduleTableBody = modal.content.querySelector('#scheduleTableBody');
-    const locationsTableBody = modal.content.querySelector('#locationsTableBody');
-    const selectedDatesContainer = modal.content.querySelector('#selectedDates');
-    
-    // Get the form data with all parameters
     const formData = getInstructionFormData(
       instructionForm, 
       scheduleTableBody,
@@ -436,7 +460,6 @@ async function showInstructionModal(instructionId = null) {
     }
   });
 
-  // Other event listeners (trackSelect, addScheduleRowBtn, addLocationRowBtn) remain unchanged
   trackSelect.addEventListener('change', async () => {
     const trackId = trackSelect.value;
     if (trackId) {
@@ -467,27 +490,24 @@ async function showInstructionModal(instructionId = null) {
 }
 
 function renderWarningsTable(tableBody, warnings) {
-tableBody.innerHTML = '';
-
-warnings.forEach((warning, index) => {
-  const row = document.createElement('tr');
-  row.innerHTML = `
-    <td><input type="text" name="warningName" class="form-input" value="${warning.name || ''}" placeholder="Flag name (EN)"></td>
-    <td><input type="text" name="warningName2" class="form-input" value="${warning.name2 || ''}" placeholder="Flag name (2nd lang)"></td>
-    <td><input type="url" name="warningImageUrl" class="form-input" value="${warning.imageUrl || ''}" placeholder="Image URL"></td>
-    <td>
-      <button type="button" class="delete-btn">Remove</button>
-    </td>
-  `;
-  
-  row.querySelector('.delete-btn').addEventListener('click', () => {
-    if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last warning?')) {
-      row.remove();
-    }
+  tableBody.innerHTML = '';
+  warnings.forEach((warning, index) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="text" name="warningName" class="form-input" value="${warning.name || ''}" placeholder="Flag name (EN)"></td>
+      <td><input type="text" name="warningName2" class="form-input" value="${warning.name2 || ''}" placeholder="Flag name (2nd lang)"></td>
+      <td><input type="url" name="warningImageUrl" class="form-input" value="${warning.imageUrl || ''}" placeholder="Image URL"></td>
+      <td>
+        <button type="button" class="delete-btn">Remove</button>
+      </td>
+    `;
+    row.querySelector('.delete-btn').addEventListener('click', () => {
+      if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last warning?')) {
+        row.remove();
+      }
+    });
+    tableBody.appendChild(row);
   });
-  
-  tableBody.appendChild(row);
-});
 }
 
 function getWarningsFromTable(tableBody) {
