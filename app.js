@@ -102,28 +102,44 @@ function checkForPreviewMode() {
   const previewId = urlParams.get('preview');
   
   if (previewId) {
-    // Hide all UI elements
-    document.querySelector('header').style.display = 'none';
-    document.querySelector('footer').style.display = 'none';
-    document.body.style.padding = '0';
-    document.body.style.margin = '0';
+    // Clear existing content
+    document.body.innerHTML = `
+      <div id="fullscreen-preview"></div>
+      <style>
+        body, html {
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          height: 100%;
+          overflow: auto;
+        }
+        #fullscreen-preview {
+          width: 100%;
+          min-height: 100%;
+          background: white;
+        }
+      </style>
+    `;
     
-    // Apply full-screen styles
-    document.documentElement.style.height = '100%';
-    document.body.style.height = '100%';
-    document.body.style.overflow = 'hidden';
-    
-    // Load and display the preview
+    // Load data and show preview
     loadInstructions().then(() => {
       if (instructions[previewId]) {
-        const previewContainer = document.createElement('div');
-        previewContainer.id = 'fullscreen-preview';
-        document.body.innerHTML = '';
-        document.body.appendChild(previewContainer);
         showFullScreenPreview(instructions[previewId]);
       } else {
-        document.body.innerHTML = '<h1 style="padding:20px;">Instruction not found</h1>';
+        document.getElementById('fullscreen-preview').innerHTML = `
+          <div style="padding: 20px;">
+            <h1>Instruction not found</h1>
+            <p>The requested instruction could not be loaded.</p>
+          </div>
+        `;
       }
+    }).catch(error => {
+      document.getElementById('fullscreen-preview').innerHTML = `
+        <div style="padding: 20px;">
+          <h1>Error loading preview</h1>
+          <p>${error.message}</p>
+        </div>
+      `;
     });
     
     return true;
@@ -138,9 +154,9 @@ function showFullScreenPreview(instruction) {
   // Format dates for display
   const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
 
-  // Create the preview HTML (similar to your existing preview but full-screen)
+  // Create the preview HTML - using your existing preview structure
   previewContainer.innerHTML = `
-    <div class="instruction-preview fullscreen">
+    <div class="a4-preview">
       <div class="a4-page">
         <!-- Page 1 -->
         <div class="a4-page-1">
@@ -155,13 +171,49 @@ function showFullScreenPreview(instruction) {
             
             <!-- Schedule Section -->
             <div class="preview-section schedule-section">
-              <!-- ... rest of your preview HTML ... -->
+              <div class="section-header red-bg">
+                <div>${instruction.scheduleLabel || 'Schedule'}</div>
+                ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
+              </div>
+              <!-- Rest of your preview content... -->
             </div>
           </div>
+          
+          <!-- Right Section -->
+          <div class="a4-right-section">
+            <!-- Your right section content... -->
+          </div>
         </div>
+        
+        <!-- Page 2 -->
+        ${trackDetails?.trackShapeUrl ? `
+          <div class="a4-page-2">
+            <div class="track-shape-container">
+              <img src="${trackDetails.trackShapeUrl}" alt="${trackDetails.name} Track Shape" class="track-shape">
+            </div>
+          </div>
+        ` : ''}
       </div>
     </div>
   `;
+  
+  // Ensure styles are applied
+  const styleElement = document.createElement('style');
+  styleElement.textContent = `
+    .a4-preview {
+      width: 100%;
+      height: 100%;
+      background: white;
+    }
+    .a4-page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      background: white;
+    }
+    /* Include other necessary styles from your CSS */
+  `;
+  document.head.appendChild(styleElement);
 }
 
 // Call this in your initApp function
@@ -1362,8 +1414,11 @@ async function previewInstruction(instructionId) {
     const instruction = instructions[instructionId];
     // Generate a unique URL for this preview
     const previewUrl = `${window.location.origin}${window.location.pathname}?preview=${instructionId}`;
-    // Open in new tab without toolbar
-    window.open(previewUrl, '_blank', 'toolbar=no,location=no,status=no,menubar=no');
+    // Open in new tab (not window)
+    const newTab = window.open(previewUrl, '_blank');
+    if (!newTab) {
+      showToast('Please allow popups for this site', 'error');
+    }
   } catch (error) {
     showToast('Error loading instruction preview: ' + error.message, 'error');
   }
