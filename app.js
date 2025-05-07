@@ -846,81 +846,76 @@ if (tableBody.querySelectorAll('tr').length === 0) {
 }
 
 function initCalendar(container, selectedDatesContainer, initialSelectedDates = []) {
-// Current date for calendar
-let currentDate = new Date();
-let currentMonth = currentDate.getMonth();
-let currentYear = currentDate.getFullYear();
+  let currentDate = new Date();
+  let currentMonth = currentDate.getMonth();
+  let currentYear = currentDate.getFullYear();
+  let selectedDates = [...initialSelectedDates];
 
-// Store selected dates
-let selectedDates = [...initialSelectedDates];
+  function renderCalendar() {
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const lastDay = new Date(currentYear, currentMonth + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay();
 
-// Render calendar
-function renderCalendar() {
-  const firstDay = new Date(currentYear, currentMonth, 1);
-  const lastDay = new Date(currentYear, currentMonth + 1, 0);
-  const daysInMonth = lastDay.getDate();
-  const startingDay = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    container.innerHTML = `
+      <div class="calendar-header">
+        <button type="button" id="prevMonth" class="edit-btn">&lt;</button>
+        <h3>${new Date(currentYear, currentMonth).toLocaleDateString('default', { month: 'long', year: 'numeric' })}</h3>
+        <button type="button" id="nextMonth" class="edit-btn">&gt;</button>
+      </div>
+      <div class="calendar-day">Sun</div>
+      <div class="calendar-day">Mon</div>
+      <div class="calendar-day">Tue</div>
+      <div class="calendar-day">Wed</div>
+      <div class="calendar-day">Thu</div>
+      <div class="calendar-day">Fri</div>
+      <div class="calendar-day">Sat</div>
+    `;
   
-  container.innerHTML = `
-    <div class="calendar-header">
-      <button type="button" id="prevMonth" class="edit-btn">&lt;</button>
-      <h3>${new Date(currentYear, currentMonth).toLocaleDateString('default', { month: 'long', year: 'numeric' })}</h3>
-      <button type="button" id="nextMonth" class="edit-btn">&gt;</button>
-    </div>
-    
-    <div class="calendar-day">Sun</div>
-    <div class="calendar-day">Mon</div>
-    <div class="calendar-day">Tue</div>
-    <div class="calendar-day">Wed</div>
-    <div class="calendar-day">Thu</div>
-    <div class="calendar-day">Fri</div>
-    <div class="calendar-day">Sat</div>
-  `;
-  
-  // Add empty cells for days before the first day of month
-  for (let i = 0; i < startingDay; i++) {
-    const emptyDay = document.createElement('div');
-    emptyDay.className = 'calendar-date disabled';
-    container.appendChild(emptyDay);
-  }
-  
-  // Add days of month
-  for (let day = 1; day <= daysInMonth; day++) {
-    const dateCell = document.createElement('div');
-    dateCell.className = 'calendar-date';
-    dateCell.textContent = day;
-    
-    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    dateCell.dataset.date = dateStr;
-    
-    // Check if date is selected
-    if (selectedDates.includes(dateStr)) {
-      dateCell.classList.add('selected');
+    // Add empty cells for days before the first day of month
+    for (let i = 0; i < startingDay; i++) {
+      const emptyDay = document.createElement('div');
+      emptyDay.className = 'calendar-date disabled';
+      container.appendChild(emptyDay);
     }
     
-    dateCell.addEventListener('click', () => {
-      const index = selectedDates.indexOf(dateStr);
-      if (index === -1) {
-        selectedDates.push(dateStr);
+    // Add days of month
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateCell = document.createElement('div');
+      dateCell.className = 'calendar-date';
+      dateCell.textContent = day;
+      
+      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      dateCell.dataset.date = dateStr;
+      
+      // Check if date is selected
+      if (selectedDates.includes(dateStr)) {
         dateCell.classList.add('selected');
-      } else {
-        selectedDates.splice(index, 1);
-        dateCell.classList.remove('selected');
       }
-      updateSelectedDatesDisplay();
-    });
-    
-    container.appendChild(dateCell);
-  }
-  
-  // Event listeners for month navigation
-  container.querySelector('#prevMonth').addEventListener('click', () => {
-    currentMonth--;
-    if (currentMonth < 0) {
-      currentMonth = 11;
-      currentYear--;
+      
+      dateCell.addEventListener('click', () => {
+        const index = selectedDates.indexOf(dateStr);
+        if (index === -1) {
+          selectedDates.push(dateStr);
+          dateCell.classList.add('selected');
+        } else {
+          selectedDates.splice(index, 1);
+          dateCell.classList.remove('selected');
+        }
+        updateSelectedDatesDisplay();
+      });
+      
+      container.appendChild(dateCell);
     }
-    renderCalendar();
+    
+    // Event listeners for month navigation
+    container.querySelector('#prevMonth').addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar();
   });
   
   container.querySelector('#nextMonth').addEventListener('click', () => {
