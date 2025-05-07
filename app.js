@@ -338,6 +338,16 @@ async function showInstructionModal(instructionId = null) {
              placeholder="Give this instruction set a name" required>
     </div>
 
+    <!-- Footer Selection -->
+    <div class="form-group">
+      <label for="footerImageUrl">Footer Image URL (optional)</label>
+      <input type="url" id="footerImageUrl" class="form-input" 
+             value="${instruction.footerImageUrl || ''}" 
+             placeholder="https://example.com/footer-image.png">
+      <div class="image-preview" id="footerImagePreview" 
+           style="${instruction.footerImageUrl ? `background-image: url('${instruction.footerImageUrl}')` : ''}"></div>
+    </div>
+
     <!-- Track Selection -->
     <div class="form-group">
       <label for="trackSelect">Select Track</label>
@@ -616,6 +626,12 @@ async function showInstructionModal(instructionId = null) {
     renderScheduleTable(scheduleTableBody, [...currentSchedule, newRow]);
   });
 
+  const footerImageUrl = modal.content.querySelector('#footerImageUrl');
+  const footerImagePreview = modal.content.querySelector('#footerImagePreview');
+  footerImageUrl.addEventListener('input', () => {
+    footerImagePreview.style.backgroundImage = `url('${footerImageUrl.value}')`;
+  });
+
   addLocationRowBtn.addEventListener('click', () => {
     const newLocation = { name: '', name2: '', address: '' };
     const currentLocations = getLocationsFromTable(locationsTableBody);
@@ -792,7 +808,8 @@ function getInstructionFormData(form, scheduleTableBody, locationsTableBody, sel
     notesLabel2: form.querySelector('#notesLabel2').value,
     warnings,
     warningsLabel: form.querySelector('#warningsLabel').value,
-    warningsLabel2: form.querySelector('#warningsLabel2').value
+    warningsLabel2: form.querySelector('#warningsLabel2').value,
+    footerImageUrl: form.querySelector('#footerImageUrl').value
   };
 }
 
@@ -1162,8 +1179,11 @@ async function showInstructionPreview(instruction) {
               </div>
             </div>
             
-            <!-- Footer -->
-            <div class="preview-footer"></div>
+            <div class="preview-footer">
+              ${instruction.footerImageUrl ? `
+                <img src="${instruction.footerImageUrl}" alt="Footer Image" class="footer-image">
+              ` : ''}
+            </div>
           </div>
           
           <!-- Right Section -->
