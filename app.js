@@ -39,6 +39,12 @@ themeToggle.addEventListener('change', toggleTheme);
 async function initializeApplication() {
   loadTheme();
   
+  // Set data-preview attribute if in preview mode
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('preview')) {
+    document.documentElement.setAttribute('data-preview', 'true');
+  }
+  
   // Check for preview mode first
   if (checkForPreviewMode()) {
     return;
@@ -47,6 +53,7 @@ async function initializeApplication() {
   switchSection('instructions');
   await Promise.all([loadTracks(), loadInstructions()]);
 }
+
 
 // Theme Functions
 function loadTheme() {
@@ -95,35 +102,66 @@ function checkForPreviewMode() {
   const previewId = urlParams.get('preview');
   
   if (previewId) {
-    // Hide all UI elements except the preview
+    // Hide all UI elements
     document.querySelector('header').style.display = 'none';
     document.querySelector('footer').style.display = 'none';
+    document.body.style.padding = '0';
+    document.body.style.margin = '0';
     
-    // Show a back button
-    const backButton = document.createElement('button');
-    backButton.textContent = 'Back to App';
-    backButton.className = 'back-btn';
-    backButton.style.position = 'fixed';
-    backButton.style.top = '10px';
-    backButton.style.left = '10px';
-    backButton.style.zIndex = '1000';
-    backButton.addEventListener('click', () => {
-      window.location.href = window.location.origin + window.location.pathname;
-    });
-    document.body.appendChild(backButton);
+    // Apply full-screen styles
+    document.documentElement.style.height = '100%';
+    document.body.style.height = '100%';
+    document.body.style.overflow = 'hidden';
     
     // Load and display the preview
     loadInstructions().then(() => {
       if (instructions[previewId]) {
-        showInstructionPreview(instructions[previewId]);
+        const previewContainer = document.createElement('div');
+        previewContainer.id = 'fullscreen-preview';
+        document.body.innerHTML = '';
+        document.body.appendChild(previewContainer);
+        showFullScreenPreview(instructions[previewId]);
       } else {
-        document.body.innerHTML = '<h1>Instruction not found</h1>';
+        document.body.innerHTML = '<h1 style="padding:20px;">Instruction not found</h1>';
       }
     });
     
     return true;
   }
   return false;
+}
+
+function showFullScreenPreview(instruction) {
+  const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
+  const previewContainer = document.getElementById('fullscreen-preview');
+  
+  // Format dates for display
+  const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
+
+  // Create the preview HTML (similar to your existing preview but full-screen)
+  previewContainer.innerHTML = `
+    <div class="instruction-preview fullscreen">
+      <div class="a4-page">
+        <!-- Page 1 -->
+        <div class="a4-page-1">
+          <!-- Left Section -->
+          <div class="a4-left-section">
+            <!-- Track Logo -->
+            ${trackDetails?.logoUrl ? `
+              <div class="track-logo-container">
+                <img src="${trackDetails.logoUrl}" alt="${trackDetails.name} Logo" class="track-logo">
+              </div>
+            ` : ''}
+            
+            <!-- Schedule Section -->
+            <div class="preview-section schedule-section">
+              <!-- ... rest of your preview HTML ... -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 // Call this in your initApp function
@@ -1324,8 +1362,8 @@ async function previewInstruction(instructionId) {
     const instruction = instructions[instructionId];
     // Generate a unique URL for this preview
     const previewUrl = `${window.location.origin}${window.location.pathname}?preview=${instructionId}`;
-    // Open in new tab
-    window.open(previewUrl, '_blank');
+    // Open in new tab without toolbar
+    window.open(previewUrl, '_blank', 'toolbar=no,location=no,status=no,menubar=no');
   } catch (error) {
     showToast('Error loading instruction preview: ' + error.message, 'error');
   }
