@@ -43,6 +43,7 @@ async function initializeApplication() {
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('preview')) {
     document.documentElement.setAttribute('data-preview', 'true');
+    document.body.style.background = 'white'; // Ensure white background for print
   }
   
   // Check for preview mode first
@@ -102,9 +103,12 @@ function checkForPreviewMode() {
   const previewId = urlParams.get('preview');
   
   if (previewId) {
-    // Clear existing content
+    // Clear existing content and set up print-friendly styles
     document.body.innerHTML = `
-      <div id="fullscreen-preview"></div>
+      <div id="fullscreen-preview" class="fullscreen-preview"></div>
+    `;
+    
+    document.head.innerHTML += `
       <style>
         body, html {
           margin: 0;
@@ -112,17 +116,23 @@ function checkForPreviewMode() {
           width: 100%;
           height: 100%;
           overflow: auto;
-        }
-        #fullscreen-preview {
-          width: 100%;
-          min-height: 100%;
           background: white;
         }
+        .fullscreen-preview {
+          width: 100%;
+          min-height: 100vh;
+          background: white;
+          padding: 0;
+          margin: 0;
+        }
+        ${document.querySelector('style')?.textContent || ''}
       </style>
     `;
     
     // Load data and show preview
-    loadInstructions().then(() => {
+    loadTracks().then(() => {
+      return loadInstructions();
+    }).then(() => {
       if (instructions[previewId]) {
         showFullScreenPreview(instructions[previewId]);
       } else {
@@ -175,13 +185,87 @@ function showFullScreenPreview(instruction) {
                 <div>${instruction.scheduleLabel || 'Schedule'}</div>
                 ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
               </div>
-              <!-- Rest of your preview content... -->
+              <div class="section-subheader">
+                <div>${formattedDates} • ${instruction.trackName}</div>
+              </div>
+              <div class="schedule-entries">
+                ${instruction.schedule.map(item => `
+                  <div class="schedule-entry">
+                    ${item.startText || item.startText2 ? `
+                      <div class="schedule-time-text">
+                        ${item.startText ? `<span>${item.startText}</span>` : ''}
+                        ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
+                        ${item.startTime}–${item.endTime}
+                      </div>
+                    ` : `
+                      <div class="schedule-time">${item.startTime}–${item.endTime}</div>
+                    `}
+                    <div class="schedule-activity">
+                      ${item.activity ? `<div>${item.activity}</div>` : ''}
+                      ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                    </div>
+                    ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            
+            <!-- Important Locations Section -->
+            <div class="preview-section locations-section">
+              <div class="section-header orange-bg">
+                <div>${instruction.locationsLabel || 'Important Locations'}</div>
+                ${instruction.locationsLabel2 ? `<div class="secondary-language">${instruction.locationsLabel2}</div>` : ''}
+              </div>
+              <div class="locations-entries">
+                ${instruction.locations.map(location => `
+                  <div class="location-entry">
+                    <div class="location-name">
+                      <div>${location.name}</div>
+                      ${location.name2 ? `<div class="secondary-language">${location.name2}</div>` : ''}
+                    </div>
+                    <div class="location-address">${location.address}</div>
+                  </div>
+                `).join('')}
+              </div>
             </div>
           </div>
           
           <!-- Right Section -->
           <div class="a4-right-section">
-            <!-- Your right section content... -->
+            <!-- Top Area -->
+            <div class="right-top-area">
+              <div class="track-name">${instruction.trackName}</div>
+              <div class="event-dates">${formattedDates}</div>
+            </div>
+            
+            <!-- Additional Notes Section -->
+            <div class="preview-section notes-section">
+              <div class="section-header blue-bg">
+                <div>${instruction.notesLabel || 'Additional Notes'}</div>
+                ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
+              </div>
+              <div class="notes-content">
+                <!-- Noise Limit -->
+                <div class="noise-limit-entry">
+                  ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''}
+                  ${instruction.noiseLimitTextSecond ? `<div class="secondary-language">${instruction.noiseLimitTextSecond}</div>` : ''}
+                  <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
+                </div>
+                
+                <!-- Additional Notes -->
+                ${instruction.notes.map(note => `
+                  <div class="note-entry">
+                    ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
+                    ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
+                    ${note.imageUrl ? `
+                      <div class="note-image-container">
+                        <img src="${note.imageUrl}" alt="Note image">
+                      </div>
+                    ` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
           </div>
         </div>
         
@@ -197,23 +281,25 @@ function showFullScreenPreview(instruction) {
     </div>
   `;
   
-  // Ensure styles are applied
-  const styleElement = document.createElement('style');
-  styleElement.textContent = `
-    .a4-preview {
-      width: 100%;
-      height: 100%;
-      background: white;
-    }
-    .a4-page {
-      width: 210mm;
-      min-height: 297mm;
-      margin: 0 auto;
-      background: white;
-    }
-    /* Include other necessary styles from your CSS */
-  `;
-  document.head.appendChild(styleElement);
+  // Add print button
+  const printButton = document.createElement('button');
+  printButton.textContent = 'Print';
+  printButton.style.position = 'fixed';
+  printButton.style.top = '10px';
+  printButton.style.right = '10px';
+  printButton.style.padding = '10px 20px';
+  printButton.style.backgroundColor = '#e74c3c';
+  printButton.style.color = 'white';
+  printButton.style.border = 'none';
+  printButton.style.borderRadius = '4px';
+  printButton.style.cursor = 'pointer';
+  printButton.style.zIndex = '1000';
+  
+  printButton.addEventListener('click', () => {
+    window.print();
+  });
+  
+  document.body.appendChild(printButton);
 }
 
 // Call this in your initApp function
