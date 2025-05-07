@@ -28,18 +28,24 @@ let tracks = {};
 let instructions = {};
 
 // Event Listeners
-document.addEventListener('DOMContentLoaded', initApp);
+document.addEventListener('DOMContentLoaded', initializeApplication);
 instructionsBtn.addEventListener('click', () => switchSection('instructions'));
 tracksBtn.addEventListener('click', () => switchSection('tracks'));
 createInstructionBtn.addEventListener('click', showInstructionModal);
 addTrackBtn.addEventListener('click', showTrackModal);
 themeToggle.addEventListener('change', toggleTheme);
 
-// Initialize App
-async function initApp() {
-loadTheme();
-switchSection('instructions');
-await Promise.all([loadTracks(), loadInstructions()]);
+// Replace the existing initApp function with this:
+async function initializeApplication() {
+  loadTheme();
+  
+  // Check for preview mode first
+  if (checkForPreviewMode()) {
+    return;
+  }
+  
+  switchSection('instructions');
+  await Promise.all([loadTracks(), loadInstructions()]);
 }
 
 // Theme Functions
