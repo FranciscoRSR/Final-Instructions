@@ -117,30 +117,30 @@ Object.entries(tracks).forEach(([id, track]) => {
 }
 
 function renderInstructions() {
-instructionsTable.innerHTML = '';
+  instructionsTable.innerHTML = '';
 
-if (Object.keys(instructions).length === 0) {
-  const row = document.createElement('tr');
-  row.innerHTML = '<td colspan="3" class="text-center">No instructions found. Create your first instruction!</td>';
-  instructionsTable.appendChild(row);
-  return;
-}
+  if (Object.keys(instructions).length === 0) {
+    const row = document.createElement('tr');
+    row.innerHTML = '<td colspan="3" class="text-center">No instructions found. Create your first instruction!</td>';
+    instructionsTable.appendChild(row);
+    return;
+  }
 
-Object.entries(instructions).forEach(([id, instruction]) => {
-  const dates = Array.isArray(instruction.dates) 
-    ? instruction.dates.join(', ') 
-    : new Date(instruction.date).toLocaleDateString();
-  
-  const row = document.createElement('tr');
-  row.innerHTML = `
-    <td>${instruction.trackName || 'Unknown'}</td>
-    <td>${dates}</td>
-    <td class="actions">
-      <button class="edit-btn" data-id="${id}">Edit</button>
-      <button class="duplicate-btn" data-id="${id}">Duplicate</button>
-      <button class="preview-btn" data-id="${id}">Preview</button>
-      <button class="delete-btn" data-id="${id}">Delete</button>
-    </td>
+  Object.entries(instructions).forEach(([id, instruction]) => {
+    const dates = Array.isArray(instruction.dates) 
+      ? instruction.dates.join(', ') 
+      : new Date(instruction.date).toLocaleDateString();
+    
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${instruction.instructionName || instruction.trackName || 'Unnamed Instruction'}</td>
+      <td>${dates}</td>
+      <td class="actions">
+        <button class="edit-btn" data-id="${id}">Edit</button>
+        <button class="duplicate-btn" data-id="${id}">Duplicate</button>
+        <button class="preview-btn" data-id="${id}">Preview</button>
+        <button class="delete-btn" data-id="${id}">Delete</button>
+      </td>
   `;
   
   row.querySelector('.edit-btn').addEventListener('click', () => showInstructionModal(id));
@@ -294,6 +294,7 @@ if (isConfirmed) {
 async function showInstructionModal(instructionId = null) {
   let currentInstructionId = instructionId;
   let instruction = {
+  instructionName: '', // New field
   trackId: '',
   trackName: '',
   dates: [],
@@ -329,6 +330,14 @@ async function showInstructionModal(instructionId = null) {
 
   modal.content.innerHTML = `
   <form id="instructionForm">
+    <!-- Instruction Name -->
+    <div class="form-group">
+      <label for="instructionName">Instruction Name</label>
+      <input type="text" id="instructionName" class="form-input" 
+             value="${instruction.instructionName || ''}" 
+             placeholder="Give this instruction set a name" required>
+    </div>
+
     <!-- Track Selection -->
     <div class="form-group">
       <label for="trackSelect">Select Track</label>
@@ -743,6 +752,7 @@ function getInstructionFormData(form, scheduleTableBody, locationsTableBody, sel
   const warnings = getWarningsFromTable(warningsTableBody);
 
   return {
+    instructionName: form.querySelector('#instructionName').value, // New field
     trackId,
     trackName,
     dates: selectedDates,
@@ -1059,10 +1069,10 @@ switch (instruction.overtakingRules) {
 
 modal.content.innerHTML = `
   <div class="instruction-preview">
-    <div class="instruction-header">
-      <div class="instruction-title">${instruction.trackName} - Final Instructions</div>
-      <div class="instruction-dates">${formattedDates}</div>
-    </div>
+      <div class="instruction-header">
+        <div class="instruction-title">${instruction.instructionName || instruction.trackName} - Final Instructions</div>
+        <div class="instruction-dates">${formattedDates}</div>
+      </div>
     
     ${trackDetails ? `
       <div class="track-card">
