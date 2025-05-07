@@ -294,15 +294,22 @@ if (isConfirmed) {
 async function showInstructionModal(instructionId = null) {
   let currentInstructionId = instructionId;
   let instruction = {
-    trackId: '',
-    trackName: '',
-    dates: [],
-    overtakingRules: 'eitherSide',
-    noiseLimit: '',
-    schedule: [{ startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: 'Track Session', activity2: '', location: '' }],
-    locations: [{ name: 'Reception', name2: '', address: '' }],
-    notes: [{ text: '', text2: '', imageUrl: '' }],
-    warnings: []
+  trackId: '',
+  trackName: '',
+  dates: [],
+  overtakingRules: 'eitherSide',
+  overtakingText1: '', // New field
+  overtakingText2: '', // New field
+  overtakingText1Second: '', // New field
+  overtakingText2Second: '', // New field
+  overtakingSecond: '', // New field
+  noiseLimit: '',
+  noiseLimitText: '', // New field
+  noiseLimitTextSecond: '', // New field
+  schedule: [{ startText: '', startText2: '', startTime: '09:00', endTime: '17:00', activity: 'Track Session', activity2: '', location: '' }],
+  locations: [{ name: 'Reception', name2: '', address: '' }],
+  notes: [{ text: '', text2: '', imageUrl: '' }],
+  warnings: []
   };
 
   if (instructionId && instructions[instructionId]) {
@@ -321,44 +328,81 @@ async function showInstructionModal(instructionId = null) {
   const modal = createModal('Final Instruction Details');
 
   modal.content.innerHTML = `
-    <form id="instructionForm">
-      <!-- Track Selection -->
-      <div class="form-group">
-        <label for="trackSelect">Select Track</label>
-        <select id="trackSelect" class="form-input" required>
-          <option value="">Select a track</option>
-          ${Object.entries(tracks).map(([id, track]) => `
-            <option value="${id}" ${instruction.trackId === id ? 'selected' : ''}>${track.name}</option>
-          `).join('')}
-        </select>
-      </div>
+  <form id="instructionForm">
+    <!-- Track Selection -->
+    <div class="form-group">
+      <label for="trackSelect">Select Track</label>
+      <select id="trackSelect" class="form-input" required>
+        <option value="">Select a track</option>
+        ${Object.entries(tracks).map(([id, track]) => `
+          <option value="${id}" ${instruction.trackId === id ? 'selected' : ''}>${track.name}</option>
+        `).join('')}
+      </select>
+    </div>
 
-      <!-- Dates Selection -->
-      <div class="form-group">
-        <label>Dates</label>
-        <div id="calendarContainer" class="calendar-grid"></div>
-        <div id="selectedDates"></div>
-      </div>
+    <!-- Dates Selection -->
+    <div class="form-group">
+      <label>Dates</label>
+      <div id="calendarContainer" class="calendar-grid"></div>
+      <div id="selectedDates"></div>
+    </div>
 
-      <!-- Overtaking Rules -->
+    <!-- Overtaking Rules -->
+    <div class="form-group">
+      <label>Overtaking Rules</label>
+      <input type="text" id="overtakingRulesLabel" class="form-input mb-10" value="${instruction.overtakingRulesLabel || 'Overtaking Rules'}" placeholder="Section Title (EN)">
+      <input type="text" id="overtakingRulesLabel2" class="form-input" value="${instruction.overtakingRulesLabel2 || ''}" placeholder="Section Title (2nd lang - optional)">
+      
       <div class="form-group">
-        <label>Overtaking Rules</label>
-        <input type="text" id="overtakingRulesLabel" class="form-input mb-10" value="${instruction.overtakingRulesLabel || 'Overtaking Rules'}" placeholder="Section Title (EN)">
-        <input type="text" id="overtakingRulesLabel2" class="form-input" value="${instruction.overtakingRulesLabel2 || ''}" placeholder="Section Title (2nd lang - optional)">
-        <div class="overtaking-options">
-          <label><input type="radio" name="overtakingRules" value="leftSideOnly" ${instruction.overtakingRules === 'leftSideOnly' ? 'checked' : ''}> Left Side Only</label>
-          <label><input type="radio" name="overtakingRules" value="rightSideOnly" ${instruction.overtakingRules === 'rightSideOnly' ? 'checked' : ''}> Right Side Only</label>
-          <label><input type="radio" name="overtakingRules" value="eitherSide" ${instruction.overtakingRules === 'eitherSide' ? 'checked' : ''}> Either Side</label>
-        </div>
+        <label>Overtaking Text 1 (EN)</label>
+        <input type="text" id="overtakingText1" class="form-input" value="${instruction.overtakingText1 || ''}">
       </div>
+      
+      <div class="form-group">
+        <label>Overtaking Text 2 (EN)</label>
+        <input type="text" id="overtakingText2" class="form-input" value="${instruction.overtakingText2 || ''}">
+      </div>
+      
+      <div class="form-group">
+        <label>Overtaking Text 1 (2nd)</label>
+        <input type="text" id="overtakingText1Second" class="form-input" value="${instruction.overtakingText1Second || ''}">
+      </div>
+      
+      <div class="form-group">
+        <label>Overtaking Text 2 (2nd)</label>
+        <input type="text" id="overtakingText2Second" class="form-input" value="${instruction.overtakingText2Second || ''}">
+      </div>
+      
+      <div class="form-group">
+        <label>Overtaking 2nd</label>
+        <input type="text" id="overtakingSecond" class="form-input" value="${instruction.overtakingSecond || ''}">
+      </div>
+      
+      <div class="overtaking-options">
+        <label><input type="radio" name="overtakingRules" value="leftSideOnly" ${instruction.overtakingRules === 'leftSideOnly' ? 'checked' : ''}> Left Side Only</label>
+        <label><input type="radio" name="overtakingRules" value="rightSideOnly" ${instruction.overtakingRules === 'rightSideOnly' ? 'checked' : ''}> Right Side Only</label>
+        <label><input type="radio" name="overtakingRules" value="eitherSide" ${instruction.overtakingRules === 'eitherSide' ? 'checked' : ''}> Either Side</label>
+      </div>
+    </div>
 
-      <!-- Noise Limit -->
+    <!-- Noise Limit -->
+    <div class="form-group">
+      <label>Noise Limit</label>
+      <input type="text" id="noiseLimitLabel" class="form-input mb-10" value="${instruction.noiseLimitLabel || 'Noise Limit'}" placeholder="Section Title (EN)">
+      <input type="text" id="noiseLimitLabel2" class="form-input" value="${instruction.noiseLimitLabel2 || ''}" placeholder="Section Title (2nd lang - optional)">
+      
       <div class="form-group">
-        <label>Noise Limit</label>
-        <input type="text" id="noiseLimitLabel" class="form-input mb-10" value="${instruction.noiseLimitLabel || 'Noise Limit'}" placeholder="Section Title (EN)">
-        <input type="text" id="noiseLimitLabel2" class="form-input" value="${instruction.noiseLimitLabel2 || ''}" placeholder="Section Title (2nd lang - optional)">
-        <input type="number" id="noiseLimit" class="form-input" value="${instruction.noiseLimit || ''}" required>
+        <label>Noise Limit Text (EN)</label>
+        <input type="text" id="noiseLimitText" class="form-input" value="${instruction.noiseLimitText || ''}">
       </div>
+      
+      <div class="form-group">
+        <label>Noise Limit Text (2nd)</label>
+        <input type="text" id="noiseLimitTextSecond" class="form-input" value="${instruction.noiseLimitTextSecond || ''}">
+      </div>
+      
+      <input type="number" id="noiseLimit" class="form-input" value="${instruction.noiseLimit || ''}" required>
+    </div>
 
       <!-- Schedule -->
       <div class="form-group">
@@ -702,12 +746,31 @@ function getInstructionFormData(form, scheduleTableBody, locationsTableBody, sel
     trackId,
     trackName,
     dates: selectedDates,
-    overtakingRules: overtakingRulesValue, // Fixed to use overtakingRulesValue
+    overtakingRules: overtakingRulesValue,
     overtakingRulesLabel: form.querySelector('#overtakingRulesLabel').value,
     overtakingRulesLabel2: form.querySelector('#overtakingRulesLabel2').value,
+    overtakingText1: form.querySelector('#overtakingText1').value,
+    overtakingText2: form.querySelector('#overtakingText2').value,
+    overtakingText1Second: form.querySelector('#overtakingText1Second').value,
+    overtakingText2Second: form.querySelector('#overtakingText2Second').value,
+    overtakingSecond: form.querySelector('#overtakingSecond').value,
     noiseLimit: noiseLimitValue,
     noiseLimitLabel: form.querySelector('#noiseLimitLabel').value,
     noiseLimitLabel2: form.querySelector('#noiseLimitLabel2').value,
+    noiseLimitText: form.querySelector('#noiseLimitText').value,
+    noiseLimitTextSecond: form.querySelector('#noiseLimitTextSecond').value,
+    schedule,
+    scheduleLabel: form.querySelector('#scheduleLabel').value,
+    scheduleLabel2: form.querySelector('#scheduleLabel2').value,
+    locations,
+    locationsLabel: form.querySelector('#locationsLabel').value,
+    locationsLabel2: form.querySelector('#locationsLabel2').value,
+    notes,
+    notesLabel: form.querySelector('#notesLabel').value,
+    notesLabel2: form.querySelector('#notesLabel2').value,
+    warnings,
+    warningsLabel: form.querySelector('#warningsLabel').value,
+    warningsLabel2: form.querySelector('#warningsLabel2').value,
     schedule,
     scheduleLabel: form.querySelector('#scheduleLabel').value,
     scheduleLabel2: form.querySelector('#scheduleLabel2').value,
@@ -1030,18 +1093,27 @@ modal.content.innerHTML = `
     ` : ''}
     
     <!-- Overtaking Rules Section -->
-    <div class="instruction-section">
-      <h4>${instruction.overtakingRulesLabel || 'Overtaking Rules'}</h4>
-      ${instruction.overtakingRulesLabel2 ? `<h5 class="secondary-language">${instruction.overtakingRulesLabel2}</h5>` : ''}
-      <p>${overtakingText}</p>
-    </div>
-    
-    <!-- Noise Limit Section -->
-    <div class="instruction-section">
-      <h4>${instruction.noiseLimitLabel || 'Noise Limit'}</h4>
-      ${instruction.noiseLimitLabel2 ? `<h5 class="secondary-language">${instruction.noiseLimitLabel2}</h5>` : ''}
-      <p>${instruction.noiseLimit} dB</p>
-    </div>
+      <div class="instruction-section">
+        <h4>${instruction.overtakingRulesLabel || 'Overtaking Rules'}</h4>
+        ${instruction.overtakingRulesLabel2 ? `<h5 class="secondary-language">${instruction.overtakingRulesLabel2}</h5>` : ''}
+        <p>${overtakingText}</p>
+        
+        ${instruction.overtakingText1 ? `<p>${instruction.overtakingText1}</p>` : ''}
+        ${instruction.overtakingText2 ? `<p>${instruction.overtakingText2}</p>` : ''}
+        ${instruction.overtakingText1Second ? `<p class="secondary-language">${instruction.overtakingText1Second}</p>` : ''}
+        ${instruction.overtakingText2Second ? `<p class="secondary-language">${instruction.overtakingText2Second}</p>` : ''}
+        ${instruction.overtakingSecond ? `<p class="secondary-language">${instruction.overtakingSecond}</p>` : ''}
+      </div>
+      
+      <!-- Noise Limit Section -->
+      <div class="instruction-section">
+        <h4>${instruction.noiseLimitLabel || 'Noise Limit'}</h4>
+        ${instruction.noiseLimitLabel2 ? `<h5 class="secondary-language">${instruction.noiseLimitLabel2}</h5>` : ''}
+        <p>${instruction.noiseLimit} dB</p>
+        
+        ${instruction.noiseLimitText ? `<p>${instruction.noiseLimitText}</p>` : ''}
+        ${instruction.noiseLimitTextSecond ? `<p class="secondary-language">${instruction.noiseLimitTextSecond}</p>` : ''}
+      </div>
     
     <!-- Schedule Section -->
     <div class="instruction-section">
