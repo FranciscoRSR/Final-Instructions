@@ -1244,3 +1244,56 @@ button {
       padding: 15mm;
     }
   }
+
+  /* Add this to your styles.css */
+.preview-mode {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .preview-mode .a4-preview {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+  
+  .preview-mode .a4-page {
+    width: 100% !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+  
+  .preview-mode .a4-page-1,
+  .preview-mode .a4-page-2 {
+    width: 100% !important;
+  }
+  
+  .preview-mode .a4-left-section,
+  .preview-mode .a4-right-section {
+    padding: 15mm !important;
+  }
+  
+  .print-button-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+  
+  .print-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  
+  @media print {
+    .print-button-container {
+      display: none !important;
+    }
+  }
