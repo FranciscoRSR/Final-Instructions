@@ -353,57 +353,38 @@ function showFullScreenPreview(instruction) {
   
   previewContainer.appendChild(a4Container);
   
-  // Add buttons for different views
-  const buttonContainer = document.createElement('div');
-  buttonContainer.style.position = 'fixed';
-  buttonContainer.style.top = '10px';
-  buttonContainer.style.right = '10px';
-  buttonContainer.style.display = 'flex';
-  buttonContainer.style.gap = '10px';
-  buttonContainer.style.zIndex = '1000';
+  // Add print button
+  const printButtonContainer = document.createElement('div');
+  printButtonContainer.className = 'print-button-container';
   
-  // Print button
   const printButton = document.createElement('button');
-  printButton.textContent = 'Print A4';
-  printButton.style.padding = '10px 20px';
-  printButton.style.backgroundColor = '#e74c3c';
-  printButton.style.color = 'white';
-  printButton.style.border = 'none';
-  printButton.style.borderRadius = '4px';
-  printButton.style.cursor = 'pointer';
+  printButton.className = 'print-button';
+  printButton.textContent = 'Download PDF';
   
   printButton.addEventListener('click', () => {
-    // Add a class to optimize for printing
-    document.body.classList.add('print-mode');
-    window.print();
-    // Remove the class after printing
-    setTimeout(() => {
-      document.body.classList.remove('print-mode');
-    }, 1000);
+    generatePDF();
   });
   
-  // Back button
-  const backButton = document.createElement('button');
-  backButton.textContent = 'Back to Editor';
-  backButton.style.padding = '10px 20px';
-  backButton.style.backgroundColor = '#3498db';
-  backButton.style.color = 'white';
-  backButton.style.border = 'none';
-  backButton.style.borderRadius = '4px';
-  backButton.style.cursor = 'pointer';
-  
-  backButton.addEventListener('click', () => {
-    document.body.classList.remove('preview-mode');
-    previewContainer.style.display = 'none';
-    document.getElementById('instructionsSection').style.display = 'block';
-  });
-  
-  buttonContainer.appendChild(backButton);
-  buttonContainer.appendChild(printButton);
-  document.body.appendChild(buttonContainer);
+  printButtonContainer.appendChild(printButton);
+  document.body.appendChild(printButtonContainer);
   
   // Set the body to preview mode
   document.body.classList.add('preview-mode');
+}
+
+function generatePDF() {
+  // Use html2pdf or similar library to generate PDF
+  const element = document.querySelector('.a4-preview');
+  const opt = {
+    margin: 0,
+    filename: 'instruction-sheet.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  // Use html2pdf library
+  html2pdf().from(element).set(opt).save();
 }
 
 // Call this in your initApp function
