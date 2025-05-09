@@ -161,17 +161,29 @@ function showFullScreenPreview(instruction) {
   const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
   const previewContainer = document.getElementById('fullscreen-preview');
   
-  previewContainer.innerHTML = `
-    <div class="a4-preview">
-      <div class="a4-page">
-        <div class="a4-page-1">
-          <!-- Left Section (50%) -->
-          <div class="a4-left-section">
-            ${trackDetails?.logoUrl ? `
-              <div class="track-logo-container">
-                <img src="${trackDetails.logoUrl}" alt="${trackDetails.name} Logo">
-              </div>
-            ` : ''}
+  // Clear any existing content
+  previewContainer.innerHTML = '';
+  
+  // Create the A4 container
+  const a4Container = document.createElement('div');
+  a4Container.className = 'a4-preview';
+  
+  // Format dates for display
+  const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
+
+  // Create the preview HTML - using the updated structure
+  a4Container.innerHTML = `
+    <div class="a4-page">
+      <!-- Page 1 -->
+      <div class="a4-page-1">
+        <!-- Left Section -->
+        <div class="a4-left-section">
+          <!-- Track Logo -->
+          ${trackDetails?.logoUrl ? `
+            <div class="track-logo-container">
+              <img src="${trackDetails.logoUrl}" alt="${trackDetails.name} Logo" class="track-logo">
+            </div>
+          ` : ''}
           
           <!-- Schedule Section -->
           <div class="preview-section schedule-section">
@@ -266,7 +278,9 @@ function showFullScreenPreview(instruction) {
       <!-- Page 2 -->
       ${trackDetails?.trackShapeUrl ? `
         <div class="a4-page-2">
-            <img src="${trackDetails.trackShapeUrl}" alt="Track Map">
+          <div class="track-shape-container">
+            <img src="${trackDetails.trackShapeUrl}" alt="${trackDetails.name} Track Shape" class="track-shape">
+          </div>
         </div>
       ` : ''}
     </div>
@@ -276,9 +290,22 @@ function showFullScreenPreview(instruction) {
   
   // Add print button
   const printButton = document.createElement('button');
-  printButton.textContent = 'Print Full Layout';
-  printButton.className = 'print-btn';
-  printButton.onclick = () => window.print();
+  printButton.textContent = 'Print';
+  printButton.style.position = 'fixed';
+  printButton.style.top = '10px';
+  printButton.style.right = '10px';
+  printButton.style.padding = '10px 20px';
+  printButton.style.backgroundColor = '#e74c3c';
+  printButton.style.color = 'white';
+  printButton.style.border = 'none';
+  printButton.style.borderRadius = '4px';
+  printButton.style.cursor = 'pointer';
+  printButton.style.zIndex = '1000';
+  
+  printButton.addEventListener('click', () => {
+    window.print();
+  });
+  
   document.body.appendChild(printButton);
 }
 
