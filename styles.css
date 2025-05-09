@@ -903,8 +903,8 @@ button {
     margin-bottom: 5px;
   }
 
-  /* A4 Preview Styles */
-  .a4-preview {
+  /* A4 Preview and Print Styles */
+.a4-preview {
     width: 100%;
     max-width: 210mm; /* A4 width */
     margin: 0 auto;
@@ -920,14 +920,19 @@ button {
     margin-bottom: 20px;
     width: 210mm; /* A4 width */
     min-height: 297mm; /* A4 height */
-  }  
+    page-break-after: always;
+  }
+  
+  .a4-page:last-child {
+    page-break-after: auto;
+  }
   
   .a4-page-1 {
     display: flex;
     width: 100%;
     min-height: 297mm;
-  }  
-
+  }
+  
   .a4-page-2 {
     display: flex;
     min-height: 297mm;
@@ -943,7 +948,7 @@ button {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-  }  
+  }
   
   .a4-right-section {
     width: 50%;
@@ -953,6 +958,7 @@ button {
     flex-direction: column;
   }
   
+  /* Track Logo */
   .track-logo-container {
     height: 30mm;
     margin-bottom: 5mm;
@@ -963,8 +969,10 @@ button {
   .track-logo {
     max-height: 100%;
     max-width: 100%;
+    object-fit: contain;
   }
   
+  /* Section Headers */
   .section-header {
     color: white;
     font-weight: bold;
@@ -984,6 +992,11 @@ button {
     margin-bottom: 5mm;
     padding-bottom: 2mm;
     border-bottom: 1px solid #ddd;
+  }
+  
+  /* Schedule Section */
+  .schedule-entries {
+    margin-bottom: 10mm;
   }
   
   .schedule-entry {
@@ -1007,6 +1020,11 @@ button {
     margin-top: 1mm;
   }
   
+  /* Locations Section */
+  .locations-entries {
+    margin-bottom: 10mm;
+  }
+  
   .location-entry {
     margin-bottom: 3mm;
   }
@@ -1015,88 +1033,58 @@ button {
     font-weight: bold;
   }
   
+  /* Overtaking Rules Section */
+  .overtaking-entries {
+    margin-bottom: 10mm;
+  }
+  
+  .overtaking-rule-name {
+    font-weight: bold;
+    margin-bottom: 1mm;
+  }
+  
   .overtaking-rule {
     color: #e74c3c;
     font-weight: bold;
   }
   
+  /* Warnings Section */
   .warnings-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 3mm;
+    margin-bottom: 10mm;
   }
   
   .warning-item {
     display: flex;
     align-items: center;
     gap: 2mm;
+    padding: 2mm;
+    background-color: #f9f9f9;
+    border-radius: 2mm;
   }
   
   .warning-image {
     width: 15mm;
     height: 15mm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .warning-image img {
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
   }
   
+  .warning-name {
+    font-weight: bold;
+  }
+  
+  /* Footer */
   .preview-footer {
-    height: 20mm;
-    margin-top: auto;
-  }
-  
-  .right-top-area {
-    margin-bottom: 5mm;
-  }
-  
-  .track-name {
-    font-size: 1.2em;
-    font-weight: bold;
-  }
-  
-  .event-dates {
-    color: #777;
-  }
-  
-  .noise-limit-value {
-    font-weight: bold;
-    margin-top: 1mm;
-  }
-  
-  .note-entry {
-    margin-bottom: 3mm;
-  }
-  
-  .note-image-container img {
-    max-width: 100%;
-    max-height: 50mm;
-    margin-top: 2mm;
-  }
-  
-  .a4-page-2 {
-    width: 100%;
-    min-height: 297mm;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }  
-  
-  .track-shape-container {
-    width: 100%;
-    padding: 15mm;
-    box-sizing: border-box;
-  }  
-  
-  .track-shape {
-    max-width: 100%;
-    max-height: 267mm; /* 297mm - 30mm padding */
-  }  
-  
-  .secondary-language {
-    color: #777;
-    font-weight: bold;
-  }
-
-  /* Footer Image Styles */
-.preview-footer {
     height: 20mm;
     margin-top: auto;
     display: flex;
@@ -1110,36 +1098,88 @@ button {
     object-fit: contain;
   }
   
-  /* Image Preview in Form */
-  .image-preview {
+  /* Right Section */
+  .right-top-area {
+    height: 30mm;
+    margin-bottom: 5mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .track-name {
+    font-size: 18pt;
+    font-weight: bold;
+    margin-bottom: 2mm;
+  }
+  
+  .event-name {
+    font-size: 14pt;
+    margin-bottom: 2mm;
+  }
+  
+  .event-dates {
+    color: #777;
+  }
+  
+  /* Notes Section */
+  .notes-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5mm;
+  }
+  
+  .noise-limit-entry {
+    margin-bottom: 5mm;
+  }
+  
+  .noise-limit-value {
+    font-weight: bold;
+    margin-top: 1mm;
+  }
+  
+  .note-entry {
+    margin-bottom: 5mm;
+  }
+  
+  .note-image-container {
+    margin-top: 3mm;
+  }
+  
+  .note-image-container img {
+    max-width: 100%;
+    max-height: 50mm;
+    object-fit: contain;
+  }
+  
+  /* Page 2 - Track Shape */
+  .track-shape-container {
     width: 100%;
-    height: 100px;
-    background-color: #f5f5f5;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    margin-top: 10px;
-    border: 1px solid #ddd;
+    height: 100%;
+    padding: 15mm;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
-  .back-btn {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: var(--transition);
+  .track-shape {
+    max-width: 100%;
+    max-height: 267mm; /* 297mm - 30mm padding */
+    object-fit: contain;
   }
   
-  .back-btn:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-2px);
+  /* Secondary Language */
+  .secondary-language {
+    color: #777;
+    font-size: 0.9em;
+    font-weight: inherit;
   }
   
-  /* Preview mode specific styles */
-  body.preview-mode {
+  /* Preview Mode */
+  .preview-mode {
     padding-top: 0;
+    background-color: #f4f4f4;
   }
   
   .preview-mode header,
@@ -1154,94 +1194,53 @@ button {
     box-shadow: none;
     min-height: 100vh;
   }
-
-  /* Add to styles.css */
-.fullscreen {
-    width: 100vw;
-    height: 100vh;
-    margin: 0;
-    padding: 0;
-    overflow: auto;
-  }
   
-  .fullscreen .a4-page {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    box-shadow: none;
-  }
-  
-  .fullscreen .a4-page-1, 
-  .fullscreen .a4-page-2 {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-  }
-  
-  .fullscreen .a4-left-section,
-  .fullscreen .a4-right-section {
-    padding: 20px;
-    box-sizing: border-box;
-  }
-  
-  /* Remove any max-width constraints in preview mode */
-  body[data-preview="true"] .instruction-preview {
-    max-width: none;
-  }
-
   #fullscreen-preview {
     width: 100%;
     min-height: 100vh;
-    background: white;
-    padding: 0;
+    background: #f4f4f4;
+    padding: 20px 0;
     margin: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-  }  
-  
-  #fullscreen-preview .a4-page {
-    width: 210mm;
-    min-height: 297mm;
-    margin: 0 auto;
-    box-shadow: none;
-  }  
-  
-  #fullscreen-preview .a4-page-1,
-  #fullscreen-preview .a4-page-2 {
-    width: 100%;
-    min-height: 297mm;
   }
   
-  #fullscreen-preview .a4-left-section,
-  #fullscreen-preview .a4-right-section {
-  padding: 15mm;
-  box-sizing: border-box;
- }
- 
- @media print {
+  /* Print Mode */
+  @media print {
     body, html {
       background: white !important;
       margin: 0 !important;
       padding: 0 !important;
+      height: 100% !important;
+      width: 100% !important;
+    }
+    
+    .a4-preview {
+      max-width: none;
+      width: 100%;
+      margin: 0;
+      box-shadow: none;
     }
     
     .a4-page {
       box-shadow: none;
       margin: 0;
-      page-break-after: always;
+      width: 100%;
+      min-height: 297mm;
     }
     
-    .a4-page:last-child {
-      page-break-after: auto;
-    }
-    
-    #fullscreen-preview {
-      padding: 0;
-    }
-    
-    button {
+    button, .main-nav, header, footer {
       display: none !important;
     }
+    
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+    
+    .print-mode .a4-left-section,
+    .print-mode .a4-right-section {
+      padding: 15mm;
+    }
   }
-  
