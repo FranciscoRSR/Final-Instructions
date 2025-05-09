@@ -161,125 +161,132 @@ function showFullScreenPreview(instruction) {
   const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
   const previewContainer = document.getElementById('fullscreen-preview');
   
+  // Clear any existing content
+  previewContainer.innerHTML = '';
+  
+  // Create the A4 container
+  const a4Container = document.createElement('div');
+  a4Container.className = 'a4-preview';
+  
   // Format dates for display
   const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
 
-  // Create the preview HTML - using your existing preview structure
-  previewContainer.innerHTML = `
-    <div class="a4-preview">
-      <div class="a4-page">
-        <!-- Page 1 -->
-        <div class="a4-page-1">
-          <!-- Left Section -->
-          <div class="a4-left-section">
-            <!-- Track Logo -->
-            ${trackDetails?.logoUrl ? `
-              <div class="track-logo-container">
-                <img src="${trackDetails.logoUrl}" alt="${trackDetails.name} Logo" class="track-logo">
-              </div>
-            ` : ''}
-            
-            <!-- Schedule Section -->
-            <div class="preview-section schedule-section">
-              <div class="section-header red-bg">
-                <div>${instruction.scheduleLabel || 'Schedule'}</div>
-                ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
-              </div>
-              <div class="section-subheader">
-                <div>${formattedDates} • ${instruction.trackName}</div>
-              </div>
-              <div class="schedule-entries">
-                ${instruction.schedule.map(item => `
-                  <div class="schedule-entry">
-                    ${item.startText || item.startText2 ? `
-                      <div class="schedule-time-text">
-                        ${item.startText ? `<span>${item.startText}</span>` : ''}
-                        ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
-                        ${item.startTime}–${item.endTime}
-                      </div>
-                    ` : `
-                      <div class="schedule-time">${item.startTime}–${item.endTime}</div>
-                    `}
-                    <div class="schedule-activity">
-                      ${item.activity ? `<div>${item.activity}</div>` : ''}
-                      ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
-                    </div>
-                    ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
-                  </div>
-                `).join('')}
-              </div>
+  // Create the preview HTML - using the updated structure
+  a4Container.innerHTML = `
+    <div class="a4-page">
+      <!-- Page 1 -->
+      <div class="a4-page-1">
+        <!-- Left Section -->
+        <div class="a4-left-section">
+          <!-- Track Logo -->
+          ${trackDetails?.logoUrl ? `
+            <div class="track-logo-container">
+              <img src="${trackDetails.logoUrl}" alt="${trackDetails.name} Logo" class="track-logo">
             </div>
-            
-            <!-- Important Locations Section -->
-            <div class="preview-section locations-section">
-              <div class="section-header orange-bg">
-                <div>${instruction.locationsLabel || 'Important Locations'}</div>
-                ${instruction.locationsLabel2 ? `<div class="secondary-language">${instruction.locationsLabel2}</div>` : ''}
-              </div>
-              <div class="locations-entries">
-                ${instruction.locations.map(location => `
-                  <div class="location-entry">
-                    <div class="location-name">
-                      <div>${location.name}</div>
-                      ${location.name2 ? `<div class="secondary-language">${location.name2}</div>` : ''}
+          ` : ''}
+          
+          <!-- Schedule Section -->
+          <div class="preview-section schedule-section">
+            <div class="section-header red-bg">
+              <div>${instruction.scheduleLabel || 'Schedule'}</div>
+              ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
+            </div>
+            <div class="section-subheader">
+              <div>${formattedDates} • ${instruction.trackName}</div>
+            </div>
+            <div class="schedule-entries">
+              ${instruction.schedule.map(item => `
+                <div class="schedule-entry">
+                  ${item.startText || item.startText2 ? `
+                    <div class="schedule-time-text">
+                      ${item.startText ? `<span>${item.startText}</span>` : ''}
+                      ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
+                      ${item.startTime}–${item.endTime}
                     </div>
-                    <div class="location-address">${location.address}</div>
+                  ` : `
+                    <div class="schedule-time">${item.startTime}–${item.endTime}</div>
+                  `}
+                  <div class="schedule-activity">
+                    ${item.activity ? `<div>${item.activity}</div>` : ''}
+                    ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
                   </div>
-                `).join('')}
-              </div>
+                  ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
+                </div>
+              `).join('')}
             </div>
           </div>
           
-          <!-- Right Section -->
-          <div class="a4-right-section">
-            <!-- Top Area -->
-            <div class="right-top-area">
-              <div class="track-name">${instruction.trackName}</div>
-              <div class="event-dates">${formattedDates}</div>
+          <!-- Important Locations Section -->
+          <div class="preview-section locations-section">
+            <div class="section-header orange-bg">
+              <div>${instruction.locationsLabel || 'Important Locations'}</div>
+              ${instruction.locationsLabel2 ? `<div class="secondary-language">${instruction.locationsLabel2}</div>` : ''}
             </div>
-            
-            <!-- Additional Notes Section -->
-            <div class="preview-section notes-section">
-              <div class="section-header blue-bg">
-                <div>${instruction.notesLabel || 'Additional Notes'}</div>
-                ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
-              </div>
-              <div class="notes-content">
-                <!-- Noise Limit -->
-                <div class="noise-limit-entry">
-                  ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''}
-                  ${instruction.noiseLimitTextSecond ? `<div class="secondary-language">${instruction.noiseLimitTextSecond}</div>` : ''}
-                  <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
-                </div>
-                
-                <!-- Additional Notes -->
-                ${instruction.notes.map(note => `
-                  <div class="note-entry">
-                    ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
-                    ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
-                    ${note.imageUrl ? `
-                      <div class="note-image-container">
-                        <img src="${note.imageUrl}" alt="Note image">
-                      </div>
-                    ` : ''}
+            <div class="locations-entries">
+              ${instruction.locations.map(location => `
+                <div class="location-entry">
+                  <div class="location-name">
+                    <div>${location.name}</div>
+                    ${location.name2 ? `<div class="secondary-language">${location.name2}</div>` : ''}
                   </div>
-                `).join('')}
-              </div>
+                  <div class="location-address">${location.address}</div>
+                </div>
+              `).join('')}
             </div>
           </div>
         </div>
         
-        <!-- Page 2 -->
-        ${trackDetails?.trackShapeUrl ? `
-          <div class="a4-page-2">
-            <div class="track-shape-container">
-              <img src="${trackDetails.trackShapeUrl}" alt="${trackDetails.name} Track Shape" class="track-shape">
+        <!-- Right Section -->
+        <div class="a4-right-section">
+          <!-- Top Area -->
+          <div class="right-top-area">
+            <div class="track-name">${instruction.trackName}</div>
+            <div class="event-dates">${formattedDates}</div>
+          </div>
+          
+          <!-- Additional Notes Section -->
+          <div class="preview-section notes-section">
+            <div class="section-header blue-bg">
+              <div>${instruction.notesLabel || 'Additional Notes'}</div>
+              ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
+            </div>
+            <div class="notes-content">
+              <!-- Noise Limit -->
+              <div class="noise-limit-entry">
+                ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''}
+                ${instruction.noiseLimitTextSecond ? `<div class="secondary-language">${instruction.noiseLimitTextSecond}</div>` : ''}
+                <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
+              </div>
+              
+              <!-- Additional Notes -->
+              ${instruction.notes.map(note => `
+                <div class="note-entry">
+                  ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
+                  ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
+                  ${note.imageUrl ? `
+                    <div class="note-image-container">
+                      <img src="${note.imageUrl}" alt="Note image">
+                    </div>
+                  ` : ''}
+                </div>
+              `).join('')}
             </div>
           </div>
-        ` : ''}
+        </div>
       </div>
+      
+      <!-- Page 2 -->
+      ${trackDetails?.trackShapeUrl ? `
+        <div class="a4-page-2">
+          <div class="track-shape-container">
+            <img src="${trackDetails.trackShapeUrl}" alt="${trackDetails.name} Track Shape" class="track-shape">
+          </div>
+        </div>
+      ` : ''}
     </div>
   `;
+  
+  previewContainer.appendChild(a4Container);
   
   // Add print button
   const printButton = document.createElement('button');
