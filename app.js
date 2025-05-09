@@ -173,8 +173,8 @@ function showFullScreenPreview(instruction) {
 
   // Create the preview HTML - using the updated structure
   a4Container.innerHTML = `
+    <!-- Page 1 -->
     <div class="a4-page">
-      <!-- Page 1 -->
       <div class="a4-page-1">
         <!-- Left Section -->
         <div class="a4-left-section">
@@ -192,7 +192,7 @@ function showFullScreenPreview(instruction) {
               ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
             </div>
             <div class="section-subheader">
-              <div>${formattedDates} • ${instruction.trackName}</div>
+              <div>${formattedDates} • ${instruction.trackName} ${instruction.eventName || ''}</div>
             </div>
             <div class="schedule-entries">
               ${instruction.schedule.map(item => `
@@ -234,6 +234,66 @@ function showFullScreenPreview(instruction) {
               `).join('')}
             </div>
           </div>
+          
+          <!-- Overtaking Rules Section -->
+          <div class="preview-section overtaking-section">
+            <div class="section-header green-bg">
+              <div>${instruction.overtakingLabel || 'Overtaking Rules'}</div>
+              ${instruction.overtakingLabel2 ? `<div class="secondary-language">${instruction.overtakingLabel2}</div>` : ''}
+            </div>
+            <div class="overtaking-entries">
+              ${instruction.overtakingRule ? `
+                <div class="overtaking-entry">
+                  <div class="overtaking-rule-name">${instruction.overtakingRuleName || 'Standard Rule'}</div>
+                  <div class="overtaking-rule-text">
+                    ${instruction.overtakingRuleIntro || ''}
+                    <span class="overtaking-rule">${instruction.overtakingRule}</span>
+                    ${instruction.overtakingRulePost || ''}
+                  </div>
+                  ${instruction.overtakingRuleName2 ? `
+                    <div class="overtaking-rule-name secondary-language">${instruction.overtakingRuleName2}</div>
+                  ` : ''}
+                  ${instruction.overtakingRuleIntro2 || instruction.overtakingRule2 || instruction.overtakingRulePost2 ? `
+                    <div class="overtaking-rule-text secondary-language">
+                      ${instruction.overtakingRuleIntro2 || ''}
+                      <span class="overtaking-rule">${instruction.overtakingRule2 || ''}</span>
+                      ${instruction.overtakingRulePost2 || ''}
+                    </div>
+                  ` : ''}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+          
+          <!-- Track Warnings Section -->
+          <div class="preview-section warnings-section">
+            <div class="section-header yellow-bg">
+              <div>${instruction.warningsLabel || 'Track Warnings'}</div>
+              ${instruction.warningsLabel2 ? `<div class="secondary-language">${instruction.warningsLabel2}</div>` : ''}
+            </div>
+            <div class="warnings-grid">
+              ${instruction.warnings && instruction.warnings.length ? instruction.warnings.map(warning => `
+                <div class="warning-item">
+                  ${warning.imageUrl ? `
+                    <div class="warning-image">
+                      <img src="${warning.imageUrl}" alt="${warning.name}">
+                    </div>
+                  ` : ''}
+                  <div class="warning-text">
+                    <div class="warning-name">${warning.name || ''}</div>
+                    ${warning.name2 ? `<div class="warning-name secondary-language">${warning.name2}</div>` : ''}
+                  </div>
+                </div>
+              `).join('') : ''}
+            </div>
+          </div>
+          
+          <!-- Footer with image if available -->
+          <div class="preview-footer">
+            ${trackDetails?.footerImageUrl ? `
+              <img src="${trackDetails.footerImageUrl}" alt="Footer" class="footer-image">
+            ` : ''}
+          </div>
         </div>
         
         <!-- Right Section -->
@@ -241,6 +301,7 @@ function showFullScreenPreview(instruction) {
           <!-- Top Area -->
           <div class="right-top-area">
             <div class="track-name">${instruction.trackName}</div>
+            ${instruction.eventName ? `<div class="event-name">${instruction.eventName}</div>` : ''}
             <div class="event-dates">${formattedDates}</div>
           </div>
           
@@ -252,14 +313,16 @@ function showFullScreenPreview(instruction) {
             </div>
             <div class="notes-content">
               <!-- Noise Limit -->
-              <div class="noise-limit-entry">
-                ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''}
-                ${instruction.noiseLimitTextSecond ? `<div class="secondary-language">${instruction.noiseLimitTextSecond}</div>` : ''}
-                <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
-              </div>
+              ${instruction.noiseLimit ? `
+                <div class="noise-limit-entry">
+                  ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''}
+                  ${instruction.noiseLimitTextSecond ? `<div class="secondary-language">${instruction.noiseLimitTextSecond}</div>` : ''}
+                  <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
+                </div>
+              ` : ''}
               
               <!-- Additional Notes -->
-              ${instruction.notes.map(note => `
+              ${instruction.notes && instruction.notes.length ? instruction.notes.map(note => `
                 <div class="note-entry">
                   ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
                   ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
@@ -269,44 +332,78 @@ function showFullScreenPreview(instruction) {
                     </div>
                   ` : ''}
                 </div>
-              `).join('')}
+              `).join('') : ''}
             </div>
           </div>
         </div>
       </div>
-      
-      <!-- Page 2 -->
-      ${trackDetails?.trackShapeUrl ? `
+    </div>
+    
+    <!-- Page 2 - Track Shape -->
+    ${trackDetails?.trackShapeUrl ? `
+      <div class="a4-page">
         <div class="a4-page-2">
           <div class="track-shape-container">
             <img src="${trackDetails.trackShapeUrl}" alt="${trackDetails.name} Track Shape" class="track-shape">
           </div>
         </div>
-      ` : ''}
-    </div>
+      </div>
+    ` : ''}
   `;
   
   previewContainer.appendChild(a4Container);
   
-  // Add print button
+  // Add buttons for different views
+  const buttonContainer = document.createElement('div');
+  buttonContainer.style.position = 'fixed';
+  buttonContainer.style.top = '10px';
+  buttonContainer.style.right = '10px';
+  buttonContainer.style.display = 'flex';
+  buttonContainer.style.gap = '10px';
+  buttonContainer.style.zIndex = '1000';
+  
+  // Print button
   const printButton = document.createElement('button');
-  printButton.textContent = 'Print';
-  printButton.style.position = 'fixed';
-  printButton.style.top = '10px';
-  printButton.style.right = '10px';
+  printButton.textContent = 'Print A4';
   printButton.style.padding = '10px 20px';
   printButton.style.backgroundColor = '#e74c3c';
   printButton.style.color = 'white';
   printButton.style.border = 'none';
   printButton.style.borderRadius = '4px';
   printButton.style.cursor = 'pointer';
-  printButton.style.zIndex = '1000';
   
   printButton.addEventListener('click', () => {
+    // Add a class to optimize for printing
+    document.body.classList.add('print-mode');
     window.print();
+    // Remove the class after printing
+    setTimeout(() => {
+      document.body.classList.remove('print-mode');
+    }, 1000);
   });
   
-  document.body.appendChild(printButton);
+  // Back button
+  const backButton = document.createElement('button');
+  backButton.textContent = 'Back to Editor';
+  backButton.style.padding = '10px 20px';
+  backButton.style.backgroundColor = '#3498db';
+  backButton.style.color = 'white';
+  backButton.style.border = 'none';
+  backButton.style.borderRadius = '4px';
+  backButton.style.cursor = 'pointer';
+  
+  backButton.addEventListener('click', () => {
+    document.body.classList.remove('preview-mode');
+    previewContainer.style.display = 'none';
+    document.getElementById('instructionsSection').style.display = 'block';
+  });
+  
+  buttonContainer.appendChild(backButton);
+  buttonContainer.appendChild(printButton);
+  document.body.appendChild(buttonContainer);
+  
+  // Set the body to preview mode
+  document.body.classList.add('preview-mode');
 }
 
 // Call this in your initApp function
