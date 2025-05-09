@@ -353,60 +353,57 @@ function showFullScreenPreview(instruction) {
   
   previewContainer.appendChild(a4Container);
   
-  // Add the download PDF button
+  // Add buttons for different views
   const buttonContainer = document.createElement('div');
   buttonContainer.style.position = 'fixed';
   buttonContainer.style.top = '10px';
   buttonContainer.style.right = '10px';
+  buttonContainer.style.display = 'flex';
+  buttonContainer.style.gap = '10px';
   buttonContainer.style.zIndex = '1000';
   
-  // PDF Download button
-  const downloadButton = document.createElement('button');
-  downloadButton.textContent = 'Download PDF';
-  downloadButton.style.padding = '10px 20px';
-  downloadButton.style.backgroundColor = '#e74c3c';
-  downloadButton.style.color = 'white';
-  downloadButton.style.border = 'none';
-  downloadButton.style.borderRadius = '4px';
-  downloadButton.style.cursor = 'pointer';
-  downloadButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+  // Print button
+  const printButton = document.createElement('button');
+  printButton.textContent = 'Print A4';
+  printButton.style.padding = '10px 20px';
+  printButton.style.backgroundColor = '#e74c3c';
+  printButton.style.color = 'white';
+  printButton.style.border = 'none';
+  printButton.style.borderRadius = '4px';
+  printButton.style.cursor = 'pointer';
   
-  downloadButton.addEventListener('click', () => {
-    // Generate the PDF using html2pdf library
-    const element = previewContainer.querySelector('.a4-preview');
-    const opt = {
-      margin: 0,
-      filename: `${instruction.trackName}_${instruction.eventName || 'Track_Instructions'}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-    
-    // Use html2pdf library to generate and download the PDF
-    html2pdf().set(opt).from(element).save();
+  printButton.addEventListener('click', () => {
+    // Add a class to optimize for printing
+    document.body.classList.add('print-mode');
+    window.print();
+    // Remove the class after printing
+    setTimeout(() => {
+      document.body.classList.remove('print-mode');
+    }, 1000);
   });
   
-  buttonContainer.appendChild(downloadButton);
+  // Back button
+  const backButton = document.createElement('button');
+  backButton.textContent = 'Back to Editor';
+  backButton.style.padding = '10px 20px';
+  backButton.style.backgroundColor = '#3498db';
+  backButton.style.color = 'white';
+  backButton.style.border = 'none';
+  backButton.style.borderRadius = '4px';
+  backButton.style.cursor = 'pointer';
+  
+  backButton.addEventListener('click', () => {
+    document.body.classList.remove('preview-mode');
+    previewContainer.style.display = 'none';
+    document.getElementById('instructionsSection').style.display = 'block';
+  });
+  
+  buttonContainer.appendChild(backButton);
+  buttonContainer.appendChild(printButton);
   document.body.appendChild(buttonContainer);
   
-  // Set the body to preview mode and make the container full width
+  // Set the body to preview mode
   document.body.classList.add('preview-mode');
-  previewContainer.style.display = 'flex';
-  previewContainer.style.flexDirection = 'column';
-  previewContainer.style.alignItems = 'center';
-  previewContainer.style.width = '100%';
-  previewContainer.style.margin = '0';
-  previewContainer.style.padding = '20px 0';
-  
-  // Hide the instructions section
-  document.getElementById('instructionsSection').style.display = 'none';
-  
-  // Make sure we're adding the html2pdf script if not already present
-  if (!document.querySelector('script[src*="html2pdf"]')) {
-    const html2pdfScript = document.createElement('script');
-    html2pdfScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-    document.head.appendChild(html2pdfScript);
-  }
 }
 
 // Call this in your initApp function
