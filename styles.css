@@ -1193,36 +1193,31 @@ button {
     width: 100%;
     min-height: 100vh;
     background: white;
+    padding: 0;
+    margin: 0;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-  }
-  
-  #fullscreen-preview .a4-preview {
-    width: 50%; /* Takes 50% of screen in web view */
-    max-width: 100%;
-    box-shadow: 0 0 20px rgba(0,0,0,0.2);
   }  
   
   #fullscreen-preview .a4-page {
-    width: 100%;
-    min-height: auto;
-    aspect-ratio: 1 / 1.4142; /* Maintain A4 aspect ratio */
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    box-shadow: none;
   }  
   
   #fullscreen-preview .a4-page-1,
   #fullscreen-preview .a4-page-2 {
-    flex-direction: row;
-    min-height: auto;
+    width: 100%;
+    min-height: 297mm;
   }
   
   #fullscreen-preview .a4-left-section,
   #fullscreen-preview .a4-right-section {
-    width: 50%;
-    padding: 20px;
-    box-sizing: border-box;
-  }
-
+  padding: 15mm;
+  box-sizing: border-box;
+ }
  
  @media print {
     body, html {
@@ -1244,27 +1239,9 @@ button {
     #fullscreen-preview {
       padding: 0;
     }
-
-    #fullscreen-preview .a4-preview {
-        width: 210mm !important; /* Full A4 width for print */
-        box-shadow: none !important;
-      }
-      
-      #fullscreen-preview .a4-page {
-        width: 210mm !important;
-        min-height: 297mm !important;
-        aspect-ratio: auto !important;
-      }
-      
-      #fullscreen-preview .a4-left-section,
-      #fullscreen-preview .a4-right-section {
-        width: 105mm !important; /* Exactly half of A4 */
-        padding: 15mm !important; /* Standard print margins */
-      }
-      
-      /* Hide print button when actually printing */
-      button {
-        display: none !important;
-      }    
+    
+    button {
+      display: none !important;
+    }
   }
   
