@@ -334,16 +334,16 @@ function showFullScreenPreview(instruction) {
   
   previewContainer.appendChild(a4Container);
   
-  // Add print button
-  const printButtonContainer = document.createElement('div');
-  printButtonContainer.className = 'print-button-container';
+  // // Add print button
+  // const printButtonContainer = document.createElement('div');
+  // printButtonContainer.className = 'print-button-container';
   
-  const printButton = document.createElement('button');
-  printButton.className = 'print-button';
-  printButton.textContent = 'Download PDF';
+  // const printButton = document.createElement('button');
+  // printButton.className = 'print-button';
+  // printButton.textContent = 'Download PDF';
   
-  printButton.addEventListener('click', () => {
-    generatePDF();
+  // printButton.addEventListener('click', () => {
+  //   generatePDF();
   });
   
   printButtonContainer.appendChild(printButton);
