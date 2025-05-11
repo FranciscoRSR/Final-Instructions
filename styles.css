@@ -633,7 +633,6 @@ tr:hover {
 .notes-section {
     background-color: var(--input-background);
     padding: 15px;
-    border-radius: 4px;
 }
 
 /* Track Form */
