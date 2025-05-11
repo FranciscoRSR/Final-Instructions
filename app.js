@@ -248,6 +248,8 @@ function showFullScreenPreview(instruction) {
                   instruction.overtakingRules === 'rightSideOnly' ? 'Right Side Only' : 
                   'Either Side'}
               </div>
+              ${instruction.overtakingText2 ? `<div class="overtaking-text">${instruction.overtakingText2}</div>` : ''}
+
               ${instruction.overtakingText1Second ? `<div class="overtaking-text secondary-language">${instruction.overtakingText1Second}</div>` : ''}
               <div class="overtaking-rule">
               ${instruction.overtakingSecond ? `<div class="overtaking-text">${instruction.overtakingSecond}</div>` : ''}
