@@ -171,7 +171,7 @@ function showFullScreenPreview(instruction) {
   // Format dates for display
   const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
 
-  // Create the preview HTML - using the updated structure
+  // Create the preview HTML - using a two-column layout
   a4Container.innerHTML = `
     <!-- Page 1 -->
     <div class="a4-page">
@@ -207,12 +207,23 @@ function showFullScreenPreview(instruction) {
                     <div class="schedule-time">${item.startTime} – ${item.endTime}</div>
                   `}
                   <div class="schedule-activity">
-                    ${item.activity ? `<div>${item.activity}</div>` : ''} ${item.activity2 ? `<div class="secondary-language"> / ${item.activity2}</div>` : ''}
+                    ${item.activity ? `<div>${item.activity}</div>` : ''} 
+                    ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
                   </div>
                   ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
                 </div>
               `).join('')}
             </div>
+          </div>
+        </div>
+        
+        <!-- Right Section -->
+        <div class="a4-right-section">
+          <!-- Top Area -->
+          <div class="right-top-area">
+            <div class="track-name">${instruction.trackName}</div>
+            ${instruction.eventName ? `<div class="event-name">${instruction.eventName}</div>` : ''}
+            <div class="event-dates">${formattedDates}</div>
           </div>
           
           <!-- Important Locations Section -->
@@ -225,7 +236,8 @@ function showFullScreenPreview(instruction) {
               ${instruction.locations.map(location => `
                 <div class="location-entry">
                   <div class="location-name">
-                    <div>${location.name}</div> ${location.name2 ? `<div class="secondary-language"> / ${location.name2}</div>` : ''}
+                    <div>${location.name}</div> 
+                    ${location.name2 ? `<div class="secondary-language">${location.name2}</div>` : ''}
                   </div>
                   <div class="location-address">${location.address}</div>
                 </div>
@@ -246,86 +258,77 @@ function showFullScreenPreview(instruction) {
                   instruction.overtakingRules === 'rightSideOnly' ? 'Right Side Only' : 
                   'Either Side'}
               </div>
-              ${instruction.overtakingText2 ? `<div class="overtaking-text">${instruction.overtakingText}</div>` : ''}
-
+              ${instruction.overtakingText2 ? `<div class="overtaking-text">${instruction.overtakingText2}</div>` : ''}
               ${instruction.overtakingText1Second ? `<div class="overtaking-text secondary-language">${instruction.overtakingText1Second}</div>` : ''}
-              <div class="overtaking-rule">
               ${instruction.overtakingSecond ? `<div class="overtaking-text">${instruction.overtakingSecond}</div>` : ''}
-              </div>
               ${instruction.overtakingText2Second ? `<div class="overtaking-text secondary-language">${instruction.overtakingText2Second}</div>` : ''}
             </div>
           </div>
-          
-          <!-- Track Warnings Section -->
-          <div class="preview-section warnings-section">
-            <div class="section-header yellow-bg">
-              <div>${instruction.warningsLabel || 'Track Warnings'}</div>
-              ${instruction.warningsLabel2 ? `<div class="secondary-language">${instruction.warningsLabel2}</div>` : ''}
-            </div>
-            <div class="warnings-grid">
-              ${instruction.warnings && instruction.warnings.length ? instruction.warnings.map(warning => `
-                <div class="warning-item">
-                  ${warning.imageUrl ? `
-                    <div class="warning-image">
-                      <img src="${warning.imageUrl}" alt="${warning.name}">
-                    </div>
-                  ` : ''}
-                  <div class="warning-text">
-                    <div class="warning-name">${warning.name || ''}</div>
-                    ${warning.name2 ? `<div class="warning-name secondary-language">${warning.name2}</div>` : ''}
-                  </div>
-                </div>
-              `).join('') : ''}
-            </div>
+        </div>
+      </div>
+      
+      <!-- Bottom Row - Warnings and Notes -->
+      <div class="a4-bottom-row">
+        <!-- Track Warnings Section -->
+        <div class="preview-section warnings-section">
+          <div class="section-header yellow-bg">
+            <div>${instruction.warningsLabel || 'Track Warnings'}</div>
+            ${instruction.warningsLabel2 ? `<div class="secondary-language">${instruction.warningsLabel2}</div>` : ''}
           </div>
-          
-          <!-- Footer with image if available -->
-          <div class="preview-footer">
-            ${trackDetails?.footerImageUrl ? `
-              <img src="${trackDetails.footerImageUrl}" alt="Footer" class="footer-image">
-            ` : ''}
+          <div class="warnings-grid">
+            ${instruction.warnings && instruction.warnings.length ? instruction.warnings.map(warning => `
+              <div class="warning-item">
+                ${warning.imageUrl ? `
+                  <div class="warning-image">
+                    <img src="${warning.imageUrl}" alt="${warning.name}">
+                  </div>
+                ` : ''}
+                <div class="warning-text">
+                  <div class="warning-name">${warning.name || ''}</div>
+                  ${warning.name2 ? `<div class="warning-name secondary-language">${warning.name2}</div>` : ''}
+                </div>
+              </div>
+            `).join('') : ''}
           </div>
         </div>
         
-        <!-- Right Section -->
-        <div class="a4-right-section">
-          <!-- Top Area -->
-          <div class="right-top-area">
-            <div class="track-name">${instruction.trackName}</div>
-            ${instruction.eventName ? `<div class="event-name">${instruction.eventName}</div>` : ''}
-            <div class="event-dates">${formattedDates}</div>
+        <!-- Additional Notes Section -->
+        <div class="preview-section notes-section">
+          <div class="section-header blue-bg">
+            <div>${instruction.notesLabel || 'Additional Notes'}</div>
+            ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
           </div>
-          
-          <!-- Additional Notes Section -->
-          <div class="preview-section notes-section">
-            <div class="section-header blue-bg">
-              <div>${instruction.notesLabel || 'Additional Notes'}</div>
-              ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
-            </div>
-            <div class="notes-content">
-              <!-- Noise Limit -->
-              ${instruction.noiseLimit ? `
-                <div class="noise-limit-entry">
-                  ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''} ${instruction.noiseLimitTextSecond ? `<class="secondary-language"> / ${instruction.noiseLimitTextSecond}</>` : ''}
-                  <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
-                </div>
-              ` : ''}
-              
-              <!-- Additional Notes -->
-              ${instruction.notes && instruction.notes.length ? instruction.notes.map(note => `
-                <div class="note-entry">
-                  ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
-                  ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
-                  ${note.imageUrl ? `
-                    <div class="note-image-container">
-                      <img src="${note.imageUrl}" alt="Note image">
-                    </div>
-                  ` : ''}
-                </div>
-              `).join('') : ''}
-            </div>
+          <div class="notes-content">
+            <!-- Noise Limit -->
+            ${instruction.noiseLimit ? `
+              <div class="noise-limit-entry">
+                ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''} 
+                ${instruction.noiseLimitTextSecond ? `<div class="secondary-language">${instruction.noiseLimitTextSecond}</div>` : ''}
+                <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
+              </div>
+            ` : ''}
+            
+            <!-- Additional Notes -->
+            ${instruction.notes && instruction.notes.length ? instruction.notes.map(note => `
+              <div class="note-entry">
+                ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
+                ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
+                ${note.imageUrl ? `
+                  <div class="note-image-container">
+                    <img src="${note.imageUrl}" alt="Note image">
+                  </div>
+                ` : ''}
+              </div>
+            `).join('') : ''}
           </div>
         </div>
+      </div>
+      
+      <!-- Footer with image if available -->
+      <div class="preview-footer">
+        ${trackDetails?.footerImageUrl ? `
+          <img src="${trackDetails.footerImageUrl}" alt="Footer" class="footer-image">
+        ` : ''}
       </div>
     </div>
     
