@@ -1043,11 +1043,6 @@ button {
     margin-bottom: 1mm;
   }
   
-  .overtaking-rule {
-    color: #e74c3c;
-    font-weight: bold;
-  }
-  
   /* Warnings Section */
   .warnings-grid {
     display: grid;
@@ -1297,3 +1292,24 @@ button {
       display: none !important;
     }
   }
+
+.overtaking-section {
+  margin-bottom: 15mm;
+}
+
+.overtaking-content {
+  padding: 3mm 0;
+}
+
+.overtaking-text {
+  margin-bottom: 2mm;
+}
+
+.overtaking-rule {
+  font-weight: bold;
+  color: #e74c3c;
+  margin: 2mm 0;
+  padding: 2mm;
+  background-color: #f9f9f9;
+  border-left: 3px solid #e74c3c;
+}
