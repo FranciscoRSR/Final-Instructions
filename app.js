@@ -201,14 +201,13 @@ function showFullScreenPreview(instruction) {
                     <div class="schedule-time-text">
                       ${item.startText ? `<span>${item.startText}</span>` : ''}
                       ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
-                      ${item.startTime}–${item.endTime}
+                      ${item.startTime} – ${item.endTime}
                     </div>
                   ` : `
-                    <div class="schedule-time">${item.startTime}–${item.endTime}</div>
+                    <div class="schedule-time">${item.startTime} – ${item.endTime}</div>
                   `}
                   <div class="schedule-activity">
-                    ${item.activity ? `<div>${item.activity}</div>` : ''}
-                    ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                    ${item.activity ? `<div>${item.activity}</div>` : ''} ${item.activity2 ? `<div class="secondary-language"> / ${item.activity2}</div>` : ''}
                   </div>
                   ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
                 </div>
@@ -226,8 +225,7 @@ function showFullScreenPreview(instruction) {
               ${instruction.locations.map(location => `
                 <div class="location-entry">
                   <div class="location-name">
-                    <div>${location.name}</div>
-                    ${location.name2 ? `<div class="secondary-language">${location.name2}</div>` : ''}
+                    <div>${location.name}</div> ${location.name2 ? `<div class="secondary-language"> / ${location.name2}</div>` : ''}
                   </div>
                   <div class="location-address">${location.address}</div>
                 </div>
@@ -308,8 +306,7 @@ function showFullScreenPreview(instruction) {
               <!-- Noise Limit -->
               ${instruction.noiseLimit ? `
                 <div class="noise-limit-entry">
-                  ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''}
-                  ${instruction.noiseLimitTextSecond ? `<div class="secondary-language">${instruction.noiseLimitTextSecond}</div>` : ''}
+                  ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''} ${instruction.noiseLimitTextSecond ? `<div class="secondary-language"> / ${instruction.noiseLimitTextSecond}</div>` : ''}
                   <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
                 </div>
               ` : ''}
