@@ -366,92 +366,82 @@ function showFullScreenPreview(instruction) {
 }
 
 function generatePDF() {
-  // Create a temporary clone of the preview element to modify for PDF generation
-  const originalElement = document.querySelector('.a4-preview');
-  const element = originalElement.cloneNode(true);
+  // Clone the preview element to modify for PDF without affecting the view
+  const element = document.querySelector('.a4-preview').cloneNode(true);
   
-  // Add PDF-specific styling to ensure content fits on the pages
-  const pdfStyle = document.createElement('style');
-  pdfStyle.textContent = `
-    .a4-page-1 {
-      transform: scale(0.85);
-      transform-origin: top left;
-      height: 95%;
-      overflow: hidden;
-    }
-    
-    /* Reduce font sizes for PDF */
-    .a4-page-1 .track-name { font-size: 24px; }
-    .a4-page-1 .event-name { font-size: 20px; }
-    .a4-page-1 .event-dates { font-size: 18px; }
-    .a4-page-1 .section-header { font-size: 16px; }
-    .a4-page-1 .section-subheader { font-size: 14px; }
-    .a4-page-1 .schedule-time, 
-    .a4-page-1 .schedule-time-text { font-size: 14px; }
-    .a4-page-1 .schedule-activity { font-size: 14px; }
-    .a4-page-1.schedule-location { font-size: 13px; }
-    .a4-page-1 .locations-entries { font-size: 14px; }
-    .a4-page-1 .overtaking-content { font-size: 14px; }
-    .a4-page-1 .warnings-grid { font-size: 14px; }
-    .a4-page-1 .notes-content { font-size: 14px; }
-    
-    /* Optimize layout for PDF */
-    .a4-page-1 .warnings-grid { 
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-    
-    /* Make sure track shape is centered and sized properly on page 2 */
-    .a4-page-2 .track-shape-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-      width: 100%;
-    }
-    
-    .a4-page-2 .track-shape {
-      max-width: 90%;
-      max-height: 90%;
-      object-fit: contain;
-    }
+  // Apply PDF-specific styles to the clone
+  const pdfStyles = `
+    <style>
+      /* Reduce font sizes and spacing for PDF */
+      .a4-preview {
+        font-size: 10px !important;
+        line-height: 1.2 !important;
+      }
+      
+      /* Scale down images */
+      .track-logo {
+        max-height: 60px !important;
+      }
+      
+      .warning-image {
+        max-height: 30px !important;
+      }
+      
+      /* Adjust section spacing */
+      .preview-section {
+        margin-bottom: 8px !important;
+      }
+      
+      /* Make sure content fits on one page */
+      .a4-page-1 {
+        padding: 5mm !important;
+      }
+      
+      /* Hide the track shape from first page */
+      .a4-page-1 .track-shape-container {
+        display: none !important;
+      }
+      
+      /* Show full track shape on second page */
+      .a4-page-2 .track-shape {
+        max-height: 270mm !important;
+        width: auto !important;
+      }
+    </style>
   `;
   
-  element.appendChild(pdfStyle);
+  // Insert the styles at the beginning of the cloned element
+  element.insertAdjacentHTML('afterbegin', pdfStyles);
   
   const opt = {
-    margin: [5, 5, 5, 5], // Slightly smaller margins [top, right, bottom, left]
+    margin: 0,
     filename: 'instruction-sheet.pdf',
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { 
       scale: 2,
-      useCORS: true, // Allow images from other domains
-      logging: false // Reduce console output
+      ignoreElements: (element) => {
+        // Ignore the print button in the PDF
+        return element.classList && element.classList.contains('print-button-container');
+      }
     },
     jsPDF: { 
       unit: 'mm', 
       format: 'a4', 
       orientation: 'portrait',
-      compress: true // Compress the PDF
+      // Create a two-page PDF
+      putOnlyUsedFonts: true,
+      hotfixes: ["px_scaling"]
     },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Better page breaks
+    // Split content between two pages
+    pagebreak: { 
+      mode: ['avoid-all', 'css', 'legacy'],
+      before: '.a4-page-2'
+    }
   };
 
-  // Temporarily append the clone to the document for PDF generation
-  const tempContainer = document.createElement('div');
-  tempContainer.style.position = 'absolute';
-  tempContainer.style.left = '-9999px';
-  tempContainer.appendChild(element);
-  document.body.appendChild(tempContainer);
-
-  // Generate the PDF
-  html2pdf().from(element).set(opt).save().then(() => {
-    // Clean up the temporary elements
-    document.body.removeChild(tempContainer);
-  });
+  // Use html2pdf library
+  html2pdf().set(opt).from(element).save();
 }
-
 
 // Call this in your initApp function
 async function initApp() {
