@@ -1127,6 +1127,7 @@ button {
   
   .noise-limit-entry {
     margin-bottom: 5mm;
+    display: flex;
   }
   
   .noise-limit-value {
@@ -1136,6 +1137,7 @@ button {
   
   .note-entry {
     margin-bottom: 5mm;
+    display: flex;
   }
   
   .note-image-container {
@@ -1301,6 +1303,7 @@ button {
 
 .overtaking-content {
   padding: 3mm 0;
+  display: flex;
 }
 
 .overtaking-text {
