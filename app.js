@@ -366,18 +366,28 @@ function showFullScreenPreview(instruction) {
 }
 
 function generatePDF() {
-  // Use html2pdf or similar library to generate PDF
   const element = document.querySelector('.a4-preview');
   const opt = {
     margin: 0,
     filename: 'instruction-sheet.pdf',
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['css', 'legacy'], before: '.a4-page-2' }
   };
 
-  // Use html2pdf library
-  html2pdf().from(element).set(opt).save();
+  // Ensure the second page starts after the first page content
+  html2pdf().from(element).set(opt).toPdf().get('pdf').then(function (pdf) {
+    // Ensure track shape image fits on second page
+    const trackShapeImg = document.querySelector('.track-shape');
+    if (trackShapeImg) {
+      const imgWidth = 190; // Adjust to fit A4 width (210mm - margins)
+      const imgHeight = trackShapeImg.naturalHeight * (imgWidth / trackShapeImg.naturalWidth);
+      const pageHeight = 297; // A4 height in mm
+      const yPos = (pageHeight - imgHeight) / 2; // Center vertically
+      pdf.addImage(trackShapeImg.src, 'JPEG', 10, yPos, imgWidth, imgHeight, undefined, 'FAST');
+    }
+  }).save();
 }
 
 // Call this in your initApp function
