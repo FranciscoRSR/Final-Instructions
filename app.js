@@ -366,51 +366,90 @@ function showFullScreenPreview(instruction) {
 }
 
 function generatePDF() {
-  // Select the preview container
-  const element = document.querySelector('.a4-preview');
+  // Create a temporary clone of the preview element to modify for PDF generation
+  const originalElement = document.querySelector('.a4-preview');
+  const element = originalElement.cloneNode(true);
   
-  // Create configuration for PDF generation
+  // Add PDF-specific styling to ensure content fits on the pages
+  const pdfStyle = document.createElement('style');
+  pdfStyle.textContent = `
+    .a4-page-1 {
+      transform: scale(0.85);
+      transform-origin: top left;
+      height: 95%;
+      overflow: hidden;
+    }
+    
+    /* Reduce font sizes for PDF */
+    .a4-page-1 .track-name { font-size: 24px; }
+    .a4-page-1 .event-name { font-size: 20px; }
+    .a4-page-1 .event-dates { font-size: 18px; }
+    .a4-page-1 .section-header { font-size: 16px; }
+    .a4-page-1 .section-subheader { font-size: 14px; }
+    .a4-page-1 .schedule-time, 
+    .a4-page-1 .schedule-time-text { font-size: 14px; }
+    .a4-page-1 .schedule-activity { font-size: 14px; }
+    .a4-page-1.schedule-location { font-size: 13px; }
+    .a4-page-1 .locations-entries { font-size: 14px; }
+    .a4-page-1 .overtaking-content { font-size: 14px; }
+    .a4-page-1 .warnings-grid { font-size: 14px; }
+    .a4-page-1 .notes-content { font-size: 14px; }
+    
+    /* Optimize layout for PDF */
+    .a4-page-1 .warnings-grid { 
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    
+    /* Make sure track shape is centered and sized properly on page 2 */
+    .a4-page-2 .track-shape-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+    }
+    
+    .a4-page-2 .track-shape {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+    }
+  `;
+  
+  element.appendChild(pdfStyle);
+  
   const opt = {
-    margin: 0,
+    margin: [5, 5, 5, 5], // Slightly smaller margins [top, right, bottom, left]
     filename: 'instruction-sheet.pdf',
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { 
       scale: 2,
-      useCORS: true,
-      logging: false
+      useCORS: true, // Allow images from other domains
+      logging: false // Reduce console output
     },
     jsPDF: { 
       unit: 'mm', 
       format: 'a4', 
-      orientation: 'portrait'
+      orientation: 'portrait',
+      compress: true // Compress the PDF
     },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Better page breaks
   };
 
-  // Handle multi-page PDF with proper page breaks
-  html2pdf()
-    .from(element)
-    .set(opt)
-    .toPdf()
-    .get('pdf')
-    .then((pdf) => {
-      // Ensure each page in our preview becomes a separate PDF page
-      const pages = document.querySelectorAll('.a4-page');
-      if (pages.length > 1) {
-        // Set PDF to have correct number of pages
-        const pageCount = pdf.internal.getNumberOfPages();
-        
-        // If we don't have enough pages, add them
-        if (pageCount < pages.length) {
-          for (let i = pageCount; i < pages.length; i++) {
-            pdf.addPage();
-          }
-        }
-      }
-      
-      // Save the PDF
-      pdf.save('instruction-sheet.pdf');
-    });
+  // Temporarily append the clone to the document for PDF generation
+  const tempContainer = document.createElement('div');
+  tempContainer.style.position = 'absolute';
+  tempContainer.style.left = '-9999px';
+  tempContainer.appendChild(element);
+  document.body.appendChild(tempContainer);
+
+  // Generate the PDF
+  html2pdf().from(element).set(opt).save().then(() => {
+    // Clean up the temporary elements
+    document.body.removeChild(tempContainer);
+  });
 }
 
 
