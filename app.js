@@ -248,7 +248,7 @@ function showFullScreenPreview(instruction) {
                   instruction.overtakingRules === 'rightSideOnly' ? 'Right Side Only' : 
                   'Either Side'}
               </div>
-              ${instruction.overtakingText2 ? `<div class="overtaking-text">${instruction.overtakingText2}</div>` : ''}
+              ${instruction.overtakingText2 ? `<div class="overtaking-text">${instruction.overtakingText}</div>` : ''}
 
               ${instruction.overtakingText1Second ? `<div class="overtaking-text secondary-language">${instruction.overtakingText1Second}</div>` : ''}
               <div class="overtaking-rule">
@@ -366,74 +366,53 @@ function showFullScreenPreview(instruction) {
 }
 
 function generatePDF() {
-  // Create a clone of the preview content to modify for PDF generation
-  const element = document.querySelector('.a4-preview').cloneNode(true);
+  // Select the preview container
+  const element = document.querySelector('.a4-preview');
   
-  // Ensure the clone is not visible in the DOM
-  element.style.position = 'fixed';
-  element.style.left = '-9999px';
-  document.body.appendChild(element);
-
-  // Modify the clone for PDF generation
-  const pages = element.querySelectorAll('.a4-page');
-  
-  if (pages.length > 1) {
-    // Ensure the second page only contains the track shape image
-    const secondPage = pages[1];
-    secondPage.innerHTML = `
-      <div class="a4-page-2">
-        ${secondPage.querySelector('.track-shape-container')?.outerHTML || ''}
-      </div>
-    `;
-  }
-
-  // PDF options
+  // Create configuration for PDF generation
   const opt = {
     margin: 0,
     filename: 'instruction-sheet.pdf',
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { 
       scale: 2,
-      // Ensure each page is rendered separately
-      allowTaint: true,
       useCORS: true,
-      logging: false,
-      letterRendering: true
+      logging: false
     },
     jsPDF: { 
       unit: 'mm', 
       format: 'a4', 
-      orientation: 'portrait',
-      // Ensure proper page breaks
-      putOnlyUsedFonts: true,
-      hotfixes: ["px_scaling"]
+      orientation: 'portrait'
     },
-    // Force page breaks
     pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
   };
 
-  // Generate PDF
+  // Handle multi-page PDF with proper page breaks
   html2pdf()
-    .set(opt)
     .from(element)
+    .set(opt)
     .toPdf()
     .get('pdf')
     .then((pdf) => {
-      // Clean up by removing the cloned element
-      document.body.removeChild(element);
-      
-      // Ensure the PDF has exactly 2 pages
-      if (pdf.internal.getNumberOfPages() > 2) {
-        // Delete extra pages if any
-        while (pdf.internal.getNumberOfPages() > 2) {
-          pdf.deletePage(2);
+      // Ensure each page in our preview becomes a separate PDF page
+      const pages = document.querySelectorAll('.a4-page');
+      if (pages.length > 1) {
+        // Set PDF to have correct number of pages
+        const pageCount = pdf.internal.getNumberOfPages();
+        
+        // If we don't have enough pages, add them
+        if (pageCount < pages.length) {
+          for (let i = pageCount; i < pages.length; i++) {
+            pdf.addPage();
+          }
         }
       }
       
       // Save the PDF
-      pdf.save(opt.filename);
+      pdf.save('instruction-sheet.pdf');
     });
 }
+
 
 // Call this in your initApp function
 async function initApp() {
