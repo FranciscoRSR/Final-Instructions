@@ -238,30 +238,19 @@ function showFullScreenPreview(instruction) {
           <!-- Overtaking Rules Section -->
           <div class="preview-section overtaking-section">
             <div class="section-header green-bg">
-              <div>${instruction.overtakingLabel || 'Overtaking Rules'}</div>
-              ${instruction.overtakingLabel2 ? `<div class="secondary-language">${instruction.overtakingLabel2}</div>` : ''}
+              <div>${instruction.overtakingRulesLabel || 'Overtaking Rules'}</div>
+              ${instruction.overtakingRulesLabel2 ? `<div class="secondary-language">${instruction.overtakingRulesLabel2}</div>` : ''}
             </div>
-            <div class="overtaking-entries">
-              ${instruction.overtakingRule ? `
-                <div class="overtaking-entry">
-                  <div class="overtaking-rule-name">${instruction.overtakingRuleName || 'Standard Rule'}</div>
-                  <div class="overtaking-rule-text">
-                    ${instruction.overtakingRuleIntro || ''}
-                    <span class="overtaking-rule">${instruction.overtakingRule}</span>
-                    ${instruction.overtakingRulePost || ''}
-                  </div>
-                  ${instruction.overtakingRuleName2 ? `
-                    <div class="overtaking-rule-name secondary-language">${instruction.overtakingRuleName2}</div>
-                  ` : ''}
-                  ${instruction.overtakingRuleIntro2 || instruction.overtakingRule2 || instruction.overtakingRulePost2 ? `
-                    <div class="overtaking-rule-text secondary-language">
-                      ${instruction.overtakingRuleIntro2 || ''}
-                      <span class="overtaking-rule">${instruction.overtakingRule2 || ''}</span>
-                      ${instruction.overtakingRulePost2 || ''}
-                    </div>
-                  ` : ''}
-                </div>
-              ` : ''}
+            <div class="overtaking-content">
+              ${instruction.overtakingText1 ? `<div class="overtaking-text">${instruction.overtakingText1}</div>` : ''}
+              <div class="overtaking-rule">
+                ${instruction.overtakingRules === 'leftSideOnly' ? 'Left Side Only' : 
+                  instruction.overtakingRules === 'rightSideOnly' ? 'Right Side Only' : 
+                  'Either Side'}
+              </div>
+              ${instruction.overtakingText2 ? `<div class="overtaking-text">${instruction.overtakingText2}</div>` : ''}
+              ${instruction.overtakingText1Second ? `<div class="overtaking-text secondary-language">${instruction.overtakingText1Second}</div>` : ''}
+              ${instruction.overtakingText2Second ? `<div class="overtaking-text secondary-language">${instruction.overtakingText2Second}</div>` : ''}
             </div>
           </div>
           
@@ -1475,6 +1464,7 @@ async function showInstructionPreview(instruction) {
                 ${instruction.overtakingText1Second ? `<div class="overtaking-text secondary-language">${instruction.overtakingText1Second} <span class="overtaking-rule">${overtakingText}</span> ${instruction.overtakingText2Second || ''}</div>` : ''}
               </div>
             </div>
+
             
             <!-- Track Warnings Section -->
             <div class="preview-section warnings-section">
