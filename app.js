@@ -171,11 +171,6 @@ function showFullScreenPreview(instruction) {
   // Format dates for display
   const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
 
-  // Overtaking rules text
-  const overtakingText = instruction.overtakingRules === 'leftSideOnly' ? 'Left Side Only' : 
-                         instruction.overtakingRules === 'rightSideOnly' ? 'Right Side Only' : 
-                         'Either Side';
-
   // Create the preview HTML - using the updated structure
   a4Container.innerHTML = `
     <!-- Page 1 -->
@@ -212,8 +207,7 @@ function showFullScreenPreview(instruction) {
                     <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
                   `}
                   <div class="schedule-activity">
-                    ${item.activity ? `<div>${item.activity}</div>` : ''} 
-                    ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                    ${item.activity ? `<div>${item.activity}</div>` : ''} ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
                   </div>
                   ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
                 </div>
@@ -231,8 +225,7 @@ function showFullScreenPreview(instruction) {
               ${instruction.locations.map(location => `
                 <div class="location-entry">
                   <div class="location-name">
-                    <div>${location.name}</div> 
-                    ${location.name2 ? `<div class="secondary-language">${location.name2}</div>` : ''}
+                    <div>${location.name}${location.name2 ? ` <span class="secondary-language">/ ${location.name2}</span>` : ''}</div>
                   </div>
                   <div class="location-address">${location.address}</div>
                 </div>
@@ -247,18 +240,11 @@ function showFullScreenPreview(instruction) {
               ${instruction.overtakingRulesLabel2 ? `<div class="secondary-language">${instruction.overtakingRulesLabel2}</div>` : ''}
             </div>
             <div class="overtaking-content">
-              <div class="overtaking-text">
-                ${instruction.overtakingText1 || ''} 
-                <span class="overtaking-rule">${overtakingText}</span> 
-                ${instruction.overtakingText2 || ''}
-              </div>
-              ${instruction.overtakingText1Second || instruction.overtakingSecond || instruction.overtakingText2Second ? `
-                <div class="overtaking-text secondary-language">
-                  ${instruction.overtakingText1Second || ''} 
-                  ${instruction.overtakingSecond ? `<span class="overtaking-rule">${instruction.overtakingSecond}</span>` : ''} 
-                  ${instruction.overtakingText2Second || ''}
-                </div>
-              ` : ''}
+              ${instruction.overtakingText1 ? `<div class="overtaking-text">${instruction.overtakingText1} ${instruction.overtakingRules === 'leftSideOnly' ? 'Left Side Only' : 
+                  instruction.overtakingRules === 'rightSideOnly' ? 'Right Side Only' : 
+                  'Either Side'} ${instruction.overtakingText2 || ''}</div>` : ''}
+
+              ${instruction.overtakingText1Second ? `<div class="overtaking-text secondary-language">${instruction.overtakingText1Second} ${instruction.overtakingSecond || ''} ${instruction.overtakingText2Second || ''}</div>` : ''}
             </div>
           </div>
           
@@ -312,8 +298,7 @@ function showFullScreenPreview(instruction) {
               <!-- Noise Limit -->
               ${instruction.noiseLimit ? `
                 <div class="noise-limit-entry">
-                  ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''} 
-                  ${instruction.noiseLimitTextSecond ? `<div class="secondary-language">${instruction.noiseLimitTextSecond}</div>` : ''}
+                  ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}${instruction.noiseLimitTextSecond ? ` <span class="secondary-language">/ ${instruction.noiseLimitTextSecond}</span>` : ''}</div>` : ''}
                   <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
                 </div>
               ` : ''}
@@ -321,14 +306,13 @@ function showFullScreenPreview(instruction) {
               <!-- Additional Notes -->
               ${instruction.notes && instruction.notes.length ? instruction.notes.map(note => `
                 <div class="note-entry">
-                  ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
-                  ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
+                  ${note.text ? `<div>${note.text}${note.text2 ? ` <span class="secondary-language">/ ${note.text2}</span>` : ''}</div>` : ''}
+                </div>
                   ${note.imageUrl ? `
                     <div class="note-image-container">
                       <img src="${note.imageUrl}" alt="Note image">
                     </div>
                   ` : ''}
-                </div>
               `).join('') : ''}
             </div>
           </div>
