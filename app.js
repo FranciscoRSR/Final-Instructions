@@ -306,7 +306,7 @@ function showFullScreenPreview(instruction) {
               <!-- Noise Limit -->
               ${instruction.noiseLimit ? `
                 <div class="noise-limit-entry">
-                  ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''} ${instruction.noiseLimitTextSecond ? `<div class="secondary-language"> / ${instruction.noiseLimitTextSecond}</div>` : ''}
+                  ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''} ${instruction.noiseLimitTextSecond ? `<class="secondary-language"> / ${instruction.noiseLimitTextSecond}</>` : ''}
                   <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
                 </div>
               ` : ''}
