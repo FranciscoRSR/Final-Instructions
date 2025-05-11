@@ -366,28 +366,73 @@ function showFullScreenPreview(instruction) {
 }
 
 function generatePDF() {
-  const element = document.querySelector('.a4-preview');
+  // Create a clone of the preview content to modify for PDF generation
+  const element = document.querySelector('.a4-preview').cloneNode(true);
+  
+  // Ensure the clone is not visible in the DOM
+  element.style.position = 'fixed';
+  element.style.left = '-9999px';
+  document.body.appendChild(element);
+
+  // Modify the clone for PDF generation
+  const pages = element.querySelectorAll('.a4-page');
+  
+  if (pages.length > 1) {
+    // Ensure the second page only contains the track shape image
+    const secondPage = pages[1];
+    secondPage.innerHTML = `
+      <div class="a4-page-2">
+        ${secondPage.querySelector('.track-shape-container')?.outerHTML || ''}
+      </div>
+    `;
+  }
+
+  // PDF options
   const opt = {
     margin: 0,
     filename: 'instruction-sheet.pdf',
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: ['css', 'legacy'], before: '.a4-page-2' }
+    html2canvas: { 
+      scale: 2,
+      // Ensure each page is rendered separately
+      allowTaint: true,
+      useCORS: true,
+      logging: false,
+      letterRendering: true
+    },
+    jsPDF: { 
+      unit: 'mm', 
+      format: 'a4', 
+      orientation: 'portrait',
+      // Ensure proper page breaks
+      putOnlyUsedFonts: true,
+      hotfixes: ["px_scaling"]
+    },
+    // Force page breaks
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
   };
 
-  // Ensure the second page starts after the first page content
-  html2pdf().from(element).set(opt).toPdf().get('pdf').then(function (pdf) {
-    // Ensure track shape image fits on second page
-    const trackShapeImg = document.querySelector('.track-shape');
-    if (trackShapeImg) {
-      const imgWidth = 190; // Adjust to fit A4 width (210mm - margins)
-      const imgHeight = trackShapeImg.naturalHeight * (imgWidth / trackShapeImg.naturalWidth);
-      const pageHeight = 297; // A4 height in mm
-      const yPos = (pageHeight - imgHeight) / 2; // Center vertically
-      pdf.addImage(trackShapeImg.src, 'JPEG', 10, yPos, imgWidth, imgHeight, undefined, 'FAST');
-    }
-  }).save();
+  // Generate PDF
+  html2pdf()
+    .set(opt)
+    .from(element)
+    .toPdf()
+    .get('pdf')
+    .then((pdf) => {
+      // Clean up by removing the cloned element
+      document.body.removeChild(element);
+      
+      // Ensure the PDF has exactly 2 pages
+      if (pdf.internal.getNumberOfPages() > 2) {
+        // Delete extra pages if any
+        while (pdf.internal.getNumberOfPages() > 2) {
+          pdf.deletePage(2);
+        }
+      }
+      
+      // Save the PDF
+      pdf.save(opt.filename);
+    });
 }
 
 // Call this in your initApp function
