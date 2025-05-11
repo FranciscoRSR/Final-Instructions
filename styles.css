@@ -929,27 +929,10 @@ button {
   }
   
   .a4-page-1 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15mm;
-    padding: 15mm;
+    display: flex;
+    width: 100%;
+    min-height: 297mm;
   }
-
-  .a4-bottom-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15mm;
-  padding: 0 15mm 15mm 15mm;
-}
-
-/* Reduce spacing throughout the preview */
-.schedule-entry,
-.location-entry,
-.overtaking-text,
-.note-entry,
-.warning-item {
-  margin-bottom: 3mm;
-}
   
   .a4-page-2 {
     display: flex;
@@ -1029,22 +1012,10 @@ button {
     font-weight: bold;
     margin-bottom: 1mm;
   }
-
-  .schedule-time-text,
-  .schedule-time {
-    margin-bottom: 1mm;
-  }
-
   
   .schedule-activity div:first-child {
     font-weight: bold;
   }
-  
-.schedule-activity,
-.schedule-location,
-.location-address {
-  margin-bottom: 1mm;
-}
   
   .schedule-location {
     margin-top: 1mm;
@@ -1342,47 +1313,4 @@ button {
   margin: 2mm 0;
   padding: 2mm;
   background-color: #f9f9f9;
-}
-
-/* Make sections more compact */
-.preview-section {
-  margin-bottom: 10mm;
-}
-
-.section-header {
-  margin-bottom: 3mm;
-}
-
-.section-subheader {
-  margin-bottom: 3mm;
-  padding-bottom: 1mm;
-}
-
-/* Adjust warning grid to be more compact */
-.warnings-grid {
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 5mm;
-}
-
-.warning-item {
-  padding: 2mm;
-  gap: 2mm;
-}
-
-.warning-image {
-  width: 20px;
-  height: 20px;
-}
-
-/* Make notes more compact */
-.notes-content {
-  gap: 3mm;
-}
-
-.noise-limit-entry {
-  margin-bottom: 3mm;
-}
-
-.noise-limit-value {
-  margin-top: 0.5mm;
 }
