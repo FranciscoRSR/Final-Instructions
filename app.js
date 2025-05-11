@@ -240,11 +240,11 @@ function showFullScreenPreview(instruction) {
               ${instruction.overtakingRulesLabel2 ? `<div class="secondary-language">${instruction.overtakingRulesLabel2}</div>` : ''}
             </div>
             <div class="overtaking-content">
-              ${instruction.overtakingText1 ? `<div class="overtaking-text">${instruction.overtakingText1} ${instruction.overtakingRules === 'leftSideOnly' ? 'Left Side Only' : 
+              ${instruction.overtakingText1 ? `<div class="overtaking-text">${instruction.overtakingText1} <class="overtaking-rule">${instruction.overtakingRules === 'leftSideOnly' ? 'Left Side Only' : 
                   instruction.overtakingRules === 'rightSideOnly' ? 'Right Side Only' : 
-                  'Either Side'} ${instruction.overtakingText2 || ''}</div>` : ''}
+                  'Either Side'}</div> ${instruction.overtakingText2 || ''}</div>` : ''}
 
-              ${instruction.overtakingText1Second ? `<div class="overtaking-text secondary-language">${instruction.overtakingText1Second} ${instruction.overtakingSecond || ''} ${instruction.overtakingText2Second || ''}</div>` : ''}
+              ${instruction.overtakingText1Second ? `<div class="overtaking-text secondary-language">${instruction.overtakingText1Second} <class="overtaking-rule">${instruction.overtakingSecond || ''}</div> ${instruction.overtakingText2Second || ''}</div>` : ''}
             </div>
           </div>
           
