@@ -2128,7 +2128,7 @@ function generatePDFContent(instruction, trackDetails) {
                   ` : ''}
                   <div>
                     <div>${warning.name}</div>
-                    ${warning.name2 ? `<div class="secondary-language">${warning.name2}</div>` : ''}
+                    ${warning.name2 ? `<div style="font-size: 5pt;" class="secondary-language">${warning.name2}</div>` : ''}
                   </div>
                 </div>
               `).join('')}
