@@ -1882,15 +1882,17 @@ function generatePDFContent(instruction, trackDetails) {
         clear: both;
       }
       
-      /* Second page container */
+      /* Second page container - Modified for full page track shape */
       .page-two {
         width: 210mm;
         height: 297mm;
         box-sizing: border-box;
         display: block;
-        padding: 10mm;
+        padding: 0;
         margin: 0;
         text-align: center;
+        position: relative;
+        overflow: hidden;
       }
       
       /* Layout sections - Using grid instead of flexbox for better PDF rendering */
@@ -2055,12 +2057,38 @@ function generatePDFContent(instruction, trackDetails) {
         font-size: 7.5pt;
       }
       
+      /* Modified track shape styling for full page */
+      .track-shape-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      
       .track-shape {
-        max-width: 190mm;
-        max-height: 277mm;
+        max-width: 100%;
+        max-height: 85%;
+        width: auto;
+        height: auto;
         object-fit: contain;
-        display: block;
-        margin: 0 auto;
+      }
+      
+      .track-title {
+        position: absolute;
+        top: 10mm;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        font-size: 14pt;
+        font-weight: bold;
+        color: #333;
       }
       
       .track-logo {
@@ -2136,11 +2164,6 @@ function generatePDFContent(instruction, trackDetails) {
       .schedule-row, .section-subheader, table, tr, td, th {
         page-break-inside: avoid;
         break-inside: avoid;
-      }
-      
-      /* Debug borders for track shape container */
-      .track-shape-debug {
-        border: 1px dashed red;
       }
     </style>
 
@@ -2302,10 +2325,10 @@ function generatePDFContent(instruction, trackDetails) {
       <!-- Explicit page break -->
       <div class="explicit-page-break"></div>
       
-      <!-- Page 2 - Track Shape -->
+      <!-- Page 2 - Full page Track Shape -->
       <div class="page-two">
-        <h2 style="margin-bottom: 10mm; color: #333;">${trackName} Track Layout</h2>
-        <div style="text-align: center; height: 250mm; display: flex; align-items: center; justify-content: center;">
+        <h2 class="track-title">${trackName} Track Layout</h2>
+        <div class="track-shape-container">
           <img 
             src="${trackDetails.trackShapeUrl}" 
             alt="${trackName} Track Shape" 
