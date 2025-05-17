@@ -1420,3 +1420,12 @@ button {
     margin-bottom: 1mm;
   }
 }
+
+.download-btn {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.download-btn:hover {
+    background-color: #e67e22;
+}
