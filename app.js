@@ -1965,7 +1965,7 @@ function generatePDFContent(instruction, trackDetails) {
       .warning-item {
         display: flex;
         align-items: center;
-        gap: 1mm;
+        gap: 0mm;
         margin-bottom: 0mm;
         font-size: 5pt;
       }
@@ -1991,7 +1991,10 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .footer-image {
-        max-height: 20mm !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
       }
       
       .track-name {
@@ -2004,7 +2007,7 @@ function generatePDFContent(instruction, trackDetails) {
       .warnings-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 1mm;
+        gap: 0mm;
       }
       
       .overtaking-rule {
@@ -2151,8 +2154,7 @@ function generatePDFContent(instruction, trackDetails) {
               ${instruction.warnings.map(warning => `
                 <div class="warning-item">
                   ${warning.imageUrl ? `
-                    <img src="${warning.imageUrl}" alt="${warning.name || 'Warning flag'}" class="warning-image">
-                  ` : ''}
+                    <img src="${warning.imageUrl}" alt="${warning.name || 'Warning flag'}" class="warning-image">` : ''}
                   <div>
                     <div>${warning.name}</div>
                     ${warning.name2 ? `<div style="font-size: 5pt;" class="secondary-language">${warning.name2}</div>` : ''}
