@@ -1917,8 +1917,6 @@ function generatePDFContent(instruction, trackDetails) {
       /* Schedule table improvements */
       .schedule-table {
         width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 2mm;
         font-size: 7.5pt;
       }
       
