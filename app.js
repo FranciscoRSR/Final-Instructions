@@ -1777,6 +1777,9 @@ async function downloadPDF(instructionId) {
     // Generate the HTML content for the PDF with compact styling
     element.innerHTML = generatePDFContent(instruction, trackDetails);
     
+    // Append to document temporarily for proper rendering
+    document.body.appendChild(element);
+    
     // PDF options with very narrow margins to maximize content space
     const opt = {
       margin: [3, 3, 3, 3], // Very narrow margins: [top, right, bottom, left] in mm
@@ -1791,12 +1794,13 @@ async function downloadPDF(instructionId) {
       jsPDF: { 
         unit: 'mm', 
         format: 'a4', 
-        orientation: 'portrait'
+        orientation: 'portrait',
+        compress: true // Enable compression
       },
       pagebreak: { 
-        mode: ['avoid-all', 'css', 'legacy'],
-        before: '.page-break', // Force page break at specific element
-        avoid: 'img' // Avoid breaking inside images
+        mode: ['css', 'avoid-all'], // Changed order and removed 'legacy'
+        before: '.explicit-page-break', // More specific class name
+        avoid: '.no-break' // Added a class for elements that shouldn't break
       }
     };
 
@@ -1804,7 +1808,7 @@ async function downloadPDF(instructionId) {
     await html2pdf().set(opt).from(element).save();
     
     // Clean up
-    element.remove();
+    document.body.removeChild(element);
     
   } catch (error) {
     showToast('Error generating PDF: ' + error.message, 'error');
@@ -1826,68 +1830,73 @@ function generatePDFContent(instruction, trackDetails) {
 
   return `
     <style>
-      /* Base styles with tight spacing */
+      /* Base styles with strict control to avoid unwanted page breaks */
       .pdf-container {
         font-family: Arial, sans-serif;
-        max-width: 210mm;
-        font-size: 8pt; /* Reduced from 9pt */
-        line-height: 1.1; /* Reduced from 1.15 */
+        width: 210mm;
+        font-size: 8pt;
+        line-height: 1.1;
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
       }
       
-      /* First page container with tight fit */
+      /* First page container with fixed dimensions */
       .page-one {
         width: 210mm;
-        height: 297mm;
         box-sizing: border-box;
         position: relative;
-        overflow: hidden;
+        page-break-after: avoid;
+        break-after: avoid;
+        padding: 0;
+        margin: 0;
+        display: block;
       }
       
-      /* Page break element */
-      .page-break {
+      /* Explicit page break element */
+      .explicit-page-break {
         display: block;
         page-break-before: always;
         break-before: page;
         height: 0;
         margin: 0;
         padding: 0;
+        clear: both;
       }
       
       /* Second page container */
       .page-two {
         width: 210mm;
-        height: 297mm;
         box-sizing: border-box;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        page-break-before: always;
+        display: block;
+        padding: 0;
+        margin: 0;
+        text-align: center;
       }
       
-      /* Layout sections - using flexbox for better control */
+      /* Layout sections - Using grid instead of flexbox for better PDF rendering */
       .page-content {
-        display: flex;
+        display: grid;
+        grid-template-columns: 48% 48%;
+        column-gap: 4%;
         width: 100%;
-        height: 291mm; /* 297mm - 2*3mm padding */
+        padding: 0;
+        margin: 0;
       }
       
       .left-section {
-        width: 48%; /* Slightly less than half to account for padding */
-        padding-right: 2mm;
-        box-sizing: border-box;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
+        display: grid;
+        grid-template-rows: auto auto auto auto 1fr;
+        row-gap: 2mm;
+        width: 100%;
+        margin: 0;
+        padding: 0;
       }
       
       .right-section {
-        width: 48%; /* Slightly less than half to account for padding */
-        padding-left: 2mm;
-        box-sizing: border-box;
-        overflow: hidden;
+        width: 100%;
+        margin: 0;
+        padding: 0;
       }
       
       /* Section headers */
@@ -1895,7 +1904,7 @@ function generatePDFContent(instruction, trackDetails) {
         color: white;
         font-weight: bold;
         padding: 1mm 1.5mm;
-        margin: 0; /* Removed all margins */
+        margin: 0;
         font-size: 8.5pt;
       }
       
@@ -1923,8 +1932,8 @@ function generatePDFContent(instruction, trackDetails) {
       .schedule-table {
         width: 100%;
         font-size: 7.5pt;
-        margin-top: 0; /* Remove space before table */
-        margin-bottom: 0; /* Remove space after table */
+        margin: 0;
+        border-collapse: collapse;
       }
       
       .schedule-header-row {
@@ -1937,7 +1946,7 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .schedule-date-group {
-        margin-bottom: 0mm;
+        margin: 0;
       }
       
       .schedule-row {
@@ -1966,14 +1975,14 @@ function generatePDFContent(instruction, trackDetails) {
       
       /* Content items */
       .content-block {
-        margin-bottom: 0mm; /* Remove any bottom margin */
+        margin: 0 0 2mm 0;
       }
       
       .warning-item {
         display: flex;
         align-items: center;
         gap: 1mm;
-        margin-bottom: 0mm;
+        margin: 0;
         font-size: 5pt;
       }
       
@@ -1983,7 +1992,7 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .note-entry {
-        margin-bottom: 1.5mm;
+        margin: 0 0 1.5mm 0;
         font-size: 7.5pt;
       }
       
@@ -1998,7 +2007,8 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .footer-container {
-        margin-top: auto; /* Push to bottom of flex container */
+        margin-top: auto;
+        align-self: end;
         text-align: center;
       }
       
@@ -2019,7 +2029,7 @@ function generatePDFContent(instruction, trackDetails) {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 1mm;
-        margin-bottom: 0mm; /* Remove bottom margin */
+        margin: 0;
       }
       
       .overtaking-rule {
@@ -2038,7 +2048,7 @@ function generatePDFContent(instruction, trackDetails) {
       }
 
       .note-image-container {
-        margin-top: 0mm;
+        margin: 0;
       }
 
       .note-image-container img {
@@ -2047,15 +2057,23 @@ function generatePDFContent(instruction, trackDetails) {
         object-fit: contain;
       }
       
-      /* Remove any unwanted second pages */
+      /* Page settings */
       @page {
         size: A4;
         margin: 0;
       }
 
-      /* Make sure only page breaks that are explicitly defined work */
-      * {
+      /* No page breaks inside content blocks */
+      .no-break {
         page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      
+      /* Force every part of content to avoid page breaks */
+      .section-header, .content-block, .note-entry, .warning-item, 
+      .schedule-row, .section-subheader, table, tr, td, th {
+        page-break-inside: avoid;
+        break-inside: avoid;
       }
     </style>
 
@@ -2067,12 +2085,12 @@ function generatePDFContent(instruction, trackDetails) {
           <!-- Track Logo -->
           ${trackDetails?.logoUrl ? `
             <div style="text-align: center; margin-bottom: 1mm;">
-              <img src="${trackDetails.logoUrl}" alt="${trackDetails.name} Logo" class="track-logo" style="max-height: 15mm;">
+              <img src="${trackDetails.logoUrl}" alt="${trackDetails.name} Logo" class="track-logo no-break" style="max-height: 15mm;">
             </div>
           ` : ''}
           
           <!-- Schedule Section -->
-          <div class="content-block">
+          <div class="content-block no-break">
             <div class="section-header red-bg">
               <div>${instruction.scheduleLabel || 'Schedule'}</div>
               ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
@@ -2090,7 +2108,7 @@ function generatePDFContent(instruction, trackDetails) {
                   .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA))
                   .map(([date, items]) => `
                     <tr>
-                      <td colspan="3" class="section-subheader" style="padding-top: 1mm;">
+                      <td colspan="3" class="section-subheader">
                         ${new Date(date).toLocaleDateString()} • ${instruction.trackName} ${instruction.eventName || ''}
                       </td>
                     </tr>
@@ -2122,7 +2140,7 @@ function generatePDFContent(instruction, trackDetails) {
           </div>
           
           <!-- Important Locations Section -->
-          <div class="content-block">
+          <div class="content-block no-break">
             <div class="section-header orange-bg">
               <div>${instruction.locationsLabel || 'Important Locations'}</div>
               ${instruction.locationsLabel2 ? `<div class="secondary-language">${instruction.locationsLabel2}</div>` : ''}
@@ -2139,7 +2157,7 @@ function generatePDFContent(instruction, trackDetails) {
           </div>
           
           <!-- Overtaking Rules Section -->
-          <div class="content-block">
+          <div class="content-block no-break">
             <div class="section-header green-bg">
               <div>${instruction.overtakingRulesLabel || 'Overtaking Rules'}</div>
               ${instruction.overtakingRulesLabel2 ? `<div class="secondary-language">${instruction.overtakingRulesLabel2}</div>` : ''}
@@ -2150,8 +2168,8 @@ function generatePDFContent(instruction, trackDetails) {
             </div>
           </div>
           
-          <!-- Footer - placed at the bottom using flex -->
-          <div class="footer-container">
+          <!-- Footer - placed at the bottom using grid -->
+          <div class="footer-container no-break">
             ${instruction.footerImageUrl ? `
               <img src="${instruction.footerImageUrl}" alt="Footer Image" class="footer-image">
             ` : ''}
@@ -2161,13 +2179,13 @@ function generatePDFContent(instruction, trackDetails) {
         <!-- Right Section -->
         <div class="right-section">
           <!-- Top Area -->
-          <div style="margin-bottom: 10mm;">
+          <div style="margin-bottom: 5mm;" class="no-break">
             <div class="track-name">${instruction.trackName} • ${instruction.instructionName}</div>
             <div style="color: #777; font-size: 7.5pt;">${formattedDates}</div>
           </div>
 
           <!-- Track Warnings Section -->
-          <div class="content-block">
+          <div class="content-block no-break">
             <div class="section-header yellow-bg">
               <div>${instruction.warningsLabel || 'Track Warnings'}</div>
               ${instruction.warningsLabel2 ? `<div class="secondary-language">${instruction.warningsLabel2}</div>` : ''}
@@ -2186,9 +2204,9 @@ function generatePDFContent(instruction, trackDetails) {
             </div>
           </div>
           
-          <!-- Additional Notes Section - No space after Track Warnings -->
-          <div style="margin-top: 0; padding-top: 0;">
-            <div class="section-header blue-bg" style="margin-top: 0;">
+          <!-- Additional Notes Section -->
+          <div style="margin-top: 2mm;" class="no-break">
+            <div class="section-header blue-bg">
               <div>${instruction.notesLabel || 'Additional Notes'}</div>
               ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
             </div>
@@ -2202,14 +2220,14 @@ function generatePDFContent(instruction, trackDetails) {
             
               <!-- Additional Notes -->
               ${instruction.notes && instruction.notes.length ? instruction.notes.map(note => `
-                <div class="note-entry">
+                <div class="note-entry no-break">
                   ${note.text ? `<div>${note.text}${note.text2 ? ` <span class="secondary-language">/ ${note.text2}</span>` : ''}</div>` : ''}
-                </div>
                   ${note.imageUrl ? `
                     <div class="note-image-container">
                       <img src="${note.imageUrl}" alt="Note image">
                     </div>
                   ` : ''}
+                </div>
               `).join('') : ''}
           </div>
         </div>
@@ -2219,10 +2237,10 @@ function generatePDFContent(instruction, trackDetails) {
     <!-- Only add the page break and second page if there's a track shape to display -->
     ${trackDetails?.trackShapeUrl ? `
       <!-- Explicit page break -->
-      <div class="page-break"></div>
+      <div class="explicit-page-break"></div>
       
       <!-- Page 2 - Track Shape -->
-      <div class="page-two">
+      <div class="page-two no-break">
         <img src="${trackDetails.trackShapeUrl}" alt="${trackDetails.name} Track Shape" class="track-shape">
       </div>
     ` : ''}
