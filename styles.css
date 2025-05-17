@@ -1156,7 +1156,6 @@ button {
   
   .track-shape {
     max-width: 100%;
-    max-height: 267mm; /* 297mm - 30mm padding */
     object-fit: contain;
   }
   
