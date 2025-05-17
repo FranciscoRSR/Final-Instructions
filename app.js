@@ -1828,7 +1828,7 @@ function generatePDFContent(instruction, trackDetails) {
       /* Base styles with tight spacing */
       .pdf-container {
         font-family: Arial, sans-serif;
-        max-width: 209mm;
+        max-width: 210mm;
         font-size: 8pt; /* Reduced from 9pt */
         line-height: 1.1; /* Reduced from 1.15 */
         margin: 0;
@@ -1840,7 +1840,6 @@ function generatePDFContent(instruction, trackDetails) {
         width: 210mm;
         height: 297mm;
         box-sizing: border-box;
-        padding: 3mm;
         position: relative;
         overflow: hidden;
       }
@@ -1858,7 +1857,6 @@ function generatePDFContent(instruction, trackDetails) {
         width: 210mm;
         height: 297mm;
         box-sizing: border-box;
-        padding: 3mm;
         display: flex;
         align-items: center;
         justify-content: center;
