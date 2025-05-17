@@ -1970,6 +1970,95 @@ function generatePDFContent(instruction, trackDetails) {
       .content-block {
         margin-bottom: 3mm;
       }
+
+      /* Schedule Entries Layout */
+      .schedule-entries {
+        width: 100%;
+        margin-bottom: 15mm;
+      }
+
+      .schedule-header {
+        display: flex;
+        font-weight: bold;
+        padding: 5px 0;
+        border-bottom: 2px solid #e74c3c;
+        margin-bottom: 5px;
+        text-align: center;
+      }
+
+      .schedule-date-group {
+        margin-bottom: 10mm;
+      }
+
+      .schedule-date-header {
+        font-weight: bold;
+        color: #e74c3c;
+        margin-bottom: 3mm;
+        padding-bottom: 1mm;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .schedule-entry {
+        display: flex;
+        margin-bottom: 3mm;
+        align-items: flex-start;
+      }
+
+      .schedule-col {
+        padding: 0 2mm;
+      }
+
+      .time-col {
+        flex: 0 0 25%;
+        text-align: center;
+      }
+
+      .activity-col {
+        flex: 1;
+        text-align: center;
+      }
+
+      .location-col {
+        flex: 0 0 25%;
+        text-align: center;
+      }
+
+      .schedule-time {
+        font-weight: bold;
+        white-space: nowrap;
+      }
+
+      .schedule-time-text {
+        font-weight: bold;
+        margin-bottom: 1mm;
+      }
+
+      .schedule-activity div:first-child {
+        font-weight: bold;
+      }
+
+      .schedule-activity div:not(:first-child) {
+        margin-top: 1mm;
+      }
+
+      .schedule-location {
+        margin-top: 1mm;
+      }
+
+      /* For the header row */
+      .schedule-header .time-col,
+      .schedule-header .activity-col,
+      .schedule-header .location-col {
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 0.9em;
+        color: #e74c3c;
+      }
+        
+      .overtaking-rule {
+      font-weight: bold;
+      color: #e74c3c;
+      }
     </style>
 
     <!-- Page 1 -->
@@ -1989,8 +2078,14 @@ function generatePDFContent(instruction, trackDetails) {
             <div>${instruction.scheduleLabel || 'Schedule'}</div>
             ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
           </div>
+          <div class="schedule-entries">
+                <div class="schedule-header">
+                  <div class="schedule-col time-col">Time</div>
+                  <div class="schedule-col activity-col">Activity</div>
+                  <div class="schedule-col location-col">Location</div>
+          </div>
           ${groupByDate(instruction.schedule)
-            .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
+            .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA))
             .map(([date, items]) => `
               <div style="margin-bottom: 2mm;">
                 <div class="section-subheader">
@@ -1998,7 +2093,7 @@ function generatePDFContent(instruction, trackDetails) {
                 </div>
                 ${items.map(item => `
                   <div class="schedule-entry" style="margin-bottom: 1mm;">
-                    <div>
+                    <div class="schedule-col time-col">
                       ${item.startText || item.startText2 ? `
                         <div style="font-size: 8.5pt;">
                           ${item.startText ? `<span>${item.startText}</span>` : ''}
@@ -2010,10 +2105,14 @@ function generatePDFContent(instruction, trackDetails) {
                       `}
                     </div>
                     <div style="font-size: 8.5pt;">
+                    <div class="schedule-col activity-col">
                       ${item.activity ? `<div>${item.activity}</div>` : ''}
                       ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
-                    </div>
+                      </div>
+                      </div>
+                    <div class="schedule-col location-col">
                     ${item.location ? `<div style="font-size: 8pt;">${item.location}</div>` : ''}
+                    </div>
                   </div>
                 `).join('')}
               </div>
@@ -2044,8 +2143,10 @@ function generatePDFContent(instruction, trackDetails) {
             ${instruction.overtakingRulesLabel2 ? `<div class="secondary-language">${instruction.overtakingRulesLabel2}</div>` : ''}
           </div>
           <div style="font-size: 8.5pt;">
-            ${instruction.overtakingText1 ? `<div>${instruction.overtakingText1} <strong>${overtakingText}</strong> ${instruction.overtakingText2 || ''}</div>` : ''}
-            ${instruction.overtakingText1Second ? `<div class="secondary-language">${instruction.overtakingText1Second} <strong>${overtakingText}</strong> ${instruction.overtakingText2Second || ''}</div>` : ''}
+             ${instruction.overtakingText1 ? `<div class="overtaking-text">${instruction.overtakingText1} <span class="overtaking-rule">${instruction.overtakingRules === 'leftSideOnly' ? 'Left Side Only' : 
+                  instruction.overtakingRules === 'rightSideOnly' ? 'Right Side Only' : 
+                  'Either Side'}</span> ${instruction.overtakingText2 || ''}</div>` : ''}
+              ${instruction.overtakingText1Second ? `<div class="overtaking-text secondary-language">${instruction.overtakingText1Second} <span class="overtaking-rule">${instruction.overtakingSecond || ''}</span> ${instruction.overtakingText2Second || ''}</div>` : ''}
           </div>
         </div>
         
