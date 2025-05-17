@@ -1830,7 +1830,7 @@ function generatePDFContent(instruction, trackDetails) {
 
   return `
     <style>
-      /* Base styles with strict control to avoid unwanted page breaks */
+      /* Base styles with strict control to avoid unwanted pagebreaks */
       .pdf-container {
         font-family: Arial, sans-serif;
         width: 210mm;
@@ -1864,7 +1864,7 @@ function generatePDFContent(instruction, trackDetails) {
         clear: both;
       }
       
-      /* Second page container */
+      /* Second page container - optimized for full-page image */
       .page-two {
         width: 210mm;
         height: 297mm;
@@ -1872,10 +1872,9 @@ function generatePDFContent(instruction, trackDetails) {
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 5mm; /* Added padding to ensure content stays within printable area */
+        padding: 0;
         margin: 0;
-        text-align: center;
-        position: relative;
+        overflow: hidden;
       }
       
       /* Layout sections */
@@ -2041,20 +2040,22 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .track-shape-container {
-        width: 100%;
-        height: 100%;
+        width: 210mm;
+        height: 297mm;
         display: flex;
         align-items: center;
         justify-content: center;
-        position: relative;
+        margin: 0;
+        padding: 0;
       }
       
       .track-shape {
-        max-width: 95%; /* Reduced from 100% to ensure it stays within margins */
-        max-height: 95%; /* Reduced from 100% to ensure it stays within margins */
-        width: auto;
-        height: auto;
+        width: 210mm;
+        height: 297mm;
         object-fit: contain;
+        display: block;
+        margin: 0;
+        padding: 0;
       }
       
       .track-logo {
@@ -2231,7 +2232,7 @@ function generatePDFContent(instruction, trackDetails) {
               <div>${instruction.warningsLabel || 'Track Warnings'}</div>
               ${instruction.warningsLabel2 ? `<div class="secondary-language">${instruction.warningsLabel2}</div>` : ''}
             </div>
-            <div class="warnings-grid">
+            <divSHIPMENT class="warnings-grid">
               ${instruction.warnings.map(warning => `
                 <div class="warning-item">
                   ${warning.imageUrl ? `
