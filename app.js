@@ -1829,8 +1829,8 @@ function generatePDFContent(instruction, trackDetails) {
       .pdf-container {
         font-family: Arial, sans-serif;
         max-width: 210mm;
-        font-size: 9pt;
-        line-height: 1.15;
+        font-size: 8pt; /* Reduced from 9pt */
+        line-height: 1.1; /* Reduced from 1.15 */
         margin: 0;
         padding: 0;
       }
@@ -1864,28 +1864,34 @@ function generatePDFContent(instruction, trackDetails) {
         justify-content: center;
       }
       
-      /* Layout sections */
+      /* Layout sections - using flexbox for better control */
+      .page-content {
+        display: flex;
+        width: 100%;
+        height: 291mm; /* 297mm - 2*3mm padding */
+      }
+      
       .left-section {
-        width: 50%;
-        float: left;
-        padding-right: 3mm;
+        width: 48%; /* Slightly less than half to account for padding */
+        padding-right: 2mm;
         box-sizing: border-box;
+        overflow: hidden;
       }
       
       .right-section {
-        width: 50%;
-        float: right;
-        padding-left: 3mm;
+        width: 48%; /* Slightly less than half to account for padding */
+        padding-left: 2mm;
         box-sizing: border-box;
+        overflow: hidden;
       }
       
       /* Section headers */
       .section-header {
         color: white;
         font-weight: bold;
-        padding: 1.5mm;
-        margin-bottom: 1.5mm;
-        font-size: 10pt;
+        padding: 1mm 1.5mm;
+        margin-bottom: 1mm;
+        font-size: 8.5pt;
       }
       
       .red-bg { background: #e74c3c; }
@@ -1897,25 +1903,66 @@ function generatePDFContent(instruction, trackDetails) {
       .section-subheader {
         color: #e74c3c;
         font-weight: bold;
-        margin-bottom: 2mm;
+        margin: 1mm 0;
         padding-bottom: 0.5mm;
         border-bottom: 1px solid #ddd;
-        font-size: 9.5pt;
+        font-size: 8pt;
       }
       
       .secondary-language {
         color: #777;
-        font-size: 8pt;
+        font-size: 7pt;
+      }
+      
+      /* Schedule table improvements */
+      .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2mm;
+        font-size: 7.5pt;
+      }
+      
+      .schedule-header-row {
+        font-weight: bold;
+        border-bottom: 2px solid #e74c3c;
+      }
+      
+      .schedule-header-cell {
+        padding: 0.5mm;
+        text-align: center;
+      }
+      
+      .schedule-date-group {
+        margin-bottom: 2mm;
+      }
+      
+      .schedule-row {
+        border-bottom: 1px solid #eee;
+      }
+      
+      .schedule-cell {
+        padding: 0.5mm;
+        vertical-align: top;
+      }
+      
+      .time-cell {
+        width: 20%;
+        text-align: center;
+      }
+      
+      .activity-cell {
+        width: 50%;
+        text-align: center;
+      }
+      
+      .location-cell {
+        width: 30%;
+        text-align: center;
       }
       
       /* Content items */
-      .schedule-entry {
-        margin-bottom: 1.5mm;
-        font-size: 8.5pt;
-      }
-      
-      .schedule-time {
-        font-weight: bold;
+      .content-block {
+        margin-bottom: 2mm;
       }
       
       .warning-item {
@@ -1923,16 +1970,17 @@ function generatePDFContent(instruction, trackDetails) {
         align-items: center;
         gap: 1mm;
         margin-bottom: 1mm;
-        font-size: 8.5pt;
+        font-size: 7.5pt;
       }
       
       .warning-image {
-        width: 10mm;
-        height: 10mm;
+        width: 8mm;
+        height: 8mm;
       }
       
       .note-entry {
-        margin-bottom: 2.5mm;
+        margin-bottom: 1.5mm;
+        font-size: 7.5pt;
       }
       
       .track-shape {
@@ -1940,282 +1988,193 @@ function generatePDFContent(instruction, trackDetails) {
         max-height: 280mm;
       }
       
-      .clearfix::after {
-        content: "";
-        display: table;
-        clear: both;
-      }
-      
       .track-logo {
-        max-height: 18mm !important;
+        max-height: 15mm !important;
+        margin-bottom: 1mm;
       }
       
       .footer-image {
-        max-height: 15mm !important;
+        max-height: 12mm !important;
       }
       
       .track-name {
-        font-size: 13pt !important;
+        font-size: 10pt !important;
         margin-bottom: 1mm;
+        font-weight: bold;
       }
       
       /* Grid for warnings */
       .warnings-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 1.5mm;
+        gap: 1mm;
       }
       
-      /* Content blocks with reduced margins */
-      .content-block {
-        margin-bottom: 3mm;
-      }
-
-      /* Schedule Entries Layout */
-      .schedule-entries {
-        width: 100%;
-        margin-bottom: 15mm;
-      }
-
-      .schedule-header {
-        display: flex;
-        font-weight: bold;
-        padding: 5px 0;
-        border-bottom: 2px solid #e74c3c;
-        margin-bottom: 5px;
-        text-align: center;
-      }
-
-      .schedule-date-group {
-        margin-bottom: 10mm;
-      }
-
-      .schedule-date-header {
-        font-weight: bold;
-        color: #e74c3c;
-        margin-bottom: 3mm;
-        padding-bottom: 1mm;
-        border-bottom: 1px solid #ddd;
-      }
-
-      .schedule-entry {
-        display: flex;
-        margin-bottom: 3mm;
-        align-items: flex-start;
-      }
-
-      .schedule-col {
-        padding: 0 2mm;
-      }
-
-      .time-col {
-        flex: 0 0 25%;
-        text-align: center;
-      }
-
-      .activity-col {
-        flex: 1;
-        text-align: center;
-      }
-
-      .location-col {
-        flex: 0 0 25%;
-        text-align: center;
-      }
-
-      .schedule-time {
-        font-weight: bold;
-        white-space: nowrap;
-      }
-
-      .schedule-time-text {
-        font-weight: bold;
-        margin-bottom: 1mm;
-      }
-
-      .schedule-activity div:first-child {
-        font-weight: bold;
-      }
-
-      .schedule-activity div:not(:first-child) {
-        margin-top: 1mm;
-      }
-
-      .schedule-location {
-        margin-top: 1mm;
-      }
-
-      /* For the header row */
-      .schedule-header .time-col,
-      .schedule-header .activity-col,
-      .schedule-header .location-col {
-        font-weight: bold;
-        text-transform: uppercase;
-        font-size: 0.9em;
-        color: #e74c3c;
-      }
-        
       .overtaking-rule {
-      font-weight: bold;
-      color: #e74c3c;
+        font-weight: bold;
+        color: #e74c3c;
+      }
+      
+      .noise-limit-value {
+        font-weight: bold;
+        margin-top: 0.5mm;
       }
     </style>
 
     <!-- Page 1 -->
-    <div class="page-one clearfix">
-      <!-- Left Section -->
-      <div class="left-section">
-        <!-- Track Logo -->
-        ${trackDetails?.logoUrl ? `
-          <div style="height: 18mm; margin-bottom: 2mm; text-align: center;">
-            <img src="${trackDetails.logoUrl}" alt="${trackDetails.name} Logo" class="track-logo" style="max-height: 100%; max-width: 100%;">
-          </div>
-        ` : ''}
-        
-        <!-- Schedule Section -->
-        <div class="content-block">
-          <div class="section-header red-bg">
-            <div>${instruction.scheduleLabel || 'Schedule'}</div>
-            ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
-          </div>
-          <div class="schedule-entries">
-                <div class="schedule-header">
-                  <div class="schedule-col time-col">Time</div>
-                  <div class="schedule-col activity-col">Activity</div>
-                  <div class="schedule-col location-col">Location</div>
-          </div>
-          ${groupByDate(instruction.schedule)
-            .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA))
-            .map(([date, items]) => `
-              <div style="margin-bottom: 2mm;">
-                <div class="section-subheader">
-                  ${new Date(date).toLocaleDateString()} • ${instruction.trackName} ${instruction.eventName || ''}
-                </div>
-                ${items.map(item => `
-                  <div class="schedule-entry" style="margin-bottom: 1mm;">
-                    <div class="schedule-col time-col">
-                      ${item.startText || item.startText2 ? `
-                        <div style="font-size: 8.5pt;">
-                          ${item.startText ? `<span>${item.startText}</span>` : ''}
-                          ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
-                          ${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}
-                        </div>
-                      ` : `
-                        <div class="schedule-time" style="font-size: 8.5pt;">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
-                      `}
-                    </div>
-                    <div style="font-size: 8.5pt;">
-                    <div class="schedule-col activity-col">
-                      ${item.activity ? `<div>${item.activity}</div>` : ''}
-                      ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
-                      </div>
-                      </div>
-                    <div class="schedule-col location-col">
-                    ${item.location ? `<div style="font-size: 8pt;">${item.location}</div>` : ''}
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            `).join('')}
-        </div>
-        
-        <!-- Important Locations Section -->
-        <div class="content-block">
-          <div class="section-header orange-bg">
-            <div>${instruction.locationsLabel || 'Important Locations'}</div>
-            ${instruction.locationsLabel2 ? `<div class="secondary-language">${instruction.locationsLabel2}</div>` : ''}
-          </div>
-          ${instruction.locations.map(location => `
-            <div style="margin-bottom: 1.5mm; font-size: 8.5pt;">
-              <div>
-                <strong>${location.name}</strong>
-                ${location.name2 ? `<span class="secondary-language"> / ${location.name2}</span>` : ''}
-              </div>
-              <div>${location.address}</div>
-            </div>
-          `).join('')}
-        </div>
-        
-        <!-- Overtaking Rules Section -->
-        <div class="content-block">
-          <div class="section-header green-bg">
-            <div>${instruction.overtakingRulesLabel || 'Overtaking Rules'}</div>
-            ${instruction.overtakingRulesLabel2 ? `<div class="secondary-language">${instruction.overtakingRulesLabel2}</div>` : ''}
-          </div>
-          <div style="font-size: 8.5pt;">
-             ${instruction.overtakingText1 ? `<div class="overtaking-text">${instruction.overtakingText1} <span class="overtaking-rule">${instruction.overtakingRules === 'leftSideOnly' ? 'Left Side Only' : 
-                  instruction.overtakingRules === 'rightSideOnly' ? 'Right Side Only' : 
-                  'Either Side'}</span> ${instruction.overtakingText2 || ''}</div>` : ''}
-              ${instruction.overtakingText1Second ? `<div class="overtaking-text secondary-language">${instruction.overtakingText1Second} <span class="overtaking-rule">${instruction.overtakingSecond || ''}</span> ${instruction.overtakingText2Second || ''}</div>` : ''}
-          </div>
-        </div>
-        
-        <!-- Track Warnings Section -->
-        <div class="content-block">
-          <div class="section-header yellow-bg">
-            <div>${instruction.warningsLabel || 'Track Warnings'}</div>
-            ${instruction.warningsLabel2 ? `<div class="secondary-language">${instruction.warningsLabel2}</div>` : ''}
-          </div>
-          <div class="warnings-grid">
-            ${instruction.warnings.map(warning => `
-              <div class="warning-item">
-                ${warning.imageUrl ? `
-                  <div class="warning-image">
-                    <img src="${warning.imageUrl}" alt="${warning.name || 'Warning flag'}" style="max-width: 100%; max-height: 100%;">
-                  </div>
-                ` : ''}
-                <div style="font-size: 8.5pt;">
-                  <div>${warning.name}</div>
-                  ${warning.name2 ? `<div class="secondary-language">${warning.name2}</div>` : ''}
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-        
-        <!-- Footer -->
-        <div style="margin-top: 2mm; text-align: center;">
-          ${instruction.footerImageUrl ? `
-            <img src="${instruction.footerImageUrl}" alt="Footer Image" class="footer-image" style="max-width: 100%;">
-          ` : ''}
-        </div>
-      </div>
-      
-      <!-- Right Section -->
-      <div class="right-section">
-        <!-- Top Area -->
-        <div style="margin-bottom: 2mm;">
-          <div class="track-name">${instruction.trackName} • ${instruction.instructionName} </div>
-          <div style="color: #777; font-size: 8.5pt;">${formattedDates}</div>
-        </div>
-        
-        <!-- Additional Notes Section -->
-        <div>
-          <div class="section-header blue-bg">
-            <div>${instruction.notesLabel || 'Additional Notes'}</div>
-            ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
-          </div>
-          <!-- Noise Limit -->
-          ${instruction.noiseLimit ? `
-            <div style="margin-bottom: 2mm; font-size: 8.5pt;">
-              ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''}
-              ${instruction.noiseLimitTextSecond ? `<div class="secondary-language">${instruction.noiseLimitTextSecond}</div>` : ''}
-              <div style="font-weight: bold;">${instruction.noiseLimit} dB</div>
+    <div class="page-one">
+      <div class="page-content">
+        <!-- Left Section -->
+        <div class="left-section">
+          <!-- Track Logo -->
+          ${trackDetails?.logoUrl ? `
+            <div style="text-align: center; margin-bottom: 1mm;">
+              <img src="${trackDetails.logoUrl}" alt="${trackDetails.name} Logo" class="track-logo" style="max-height: 15mm;">
             </div>
           ` : ''}
           
-          <!-- Additional Notes -->
-          ${instruction.notes.map(note => `
-            <div class="note-entry" style="font-size: 8.5pt;">
-              ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
-              ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
-              ${note.imageUrl ? `
-                <div style="margin-top: 1.5mm; text-align: center;">
-                  <img src="${note.imageUrl}" alt="Note image" style="max-width: 100%; max-height: 35mm;">
-                </div>
-              ` : ''}
+          <!-- Schedule Section -->
+          <div class="content-block">
+            <div class="section-header red-bg">
+              <div>${instruction.scheduleLabel || 'Schedule'}</div>
+              ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
             </div>
-          `).join('')}
+            <table class="schedule-table">
+              <thead>
+                <tr class="schedule-header-row">
+                  <th class="schedule-header-cell time-cell">Time</th>
+                  <th class="schedule-header-cell activity-cell">Activity</th>
+                  <th class="schedule-header-cell location-cell">Location</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${groupByDate(instruction.schedule)
+                  .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA))
+                  .map(([date, items]) => `
+                    <tr>
+                      <td colspan="3" class="section-subheader" style="padding-top: 1mm;">
+                        ${new Date(date).toLocaleDateString()} • ${instruction.trackName} ${instruction.eventName || ''}
+                      </td>
+                    </tr>
+                    ${items.map(item => `
+                      <tr class="schedule-row">
+                        <td class="schedule-cell time-cell">
+                          ${item.startText || item.startText2 ? `
+                            <div style="margin-bottom: 0.5mm;">
+                              ${item.startText ? `<div>${item.startText}</div>` : ''}
+                              ${item.startText2 ? `<div class="secondary-language">${item.startText2}</div>` : ''}
+                            </div>
+                          ` : ''}
+                          <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
+                        </td>
+                        <td class="schedule-cell activity-cell">
+                          ${item.activity ? `<div>${item.activity}</div>` : ''}
+                          ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                        </td>
+                        <td class="schedule-cell location-cell">
+                          ${item.location ? `<div>${item.location}</div>` : ''}
+                        </td>
+                      </tr>
+                    `).join('')}
+                  `).join('')}
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Important Locations Section -->
+          <div class="content-block">
+            <div class="section-header orange-bg">
+              <div>${instruction.locationsLabel || 'Important Locations'}</div>
+              ${instruction.locationsLabel2 ? `<div class="secondary-language">${instruction.locationsLabel2}</div>` : ''}
+            </div>
+            ${instruction.locations.map(location => `
+              <div style="margin-bottom: 1mm; font-size: 7.5pt;">
+                <div>
+                  <strong>${location.name}</strong>
+                  ${location.name2 ? `<span class="secondary-language"> / ${location.name2}</span>` : ''}
+                </div>
+                <div>${location.address}</div>
+              </div>
+            `).join('')}
+          </div>
+          
+          <!-- Overtaking Rules Section -->
+          <div class="content-block">
+            <div class="section-header green-bg">
+              <div>${instruction.overtakingRulesLabel || 'Overtaking Rules'}</div>
+              ${instruction.overtakingRulesLabel2 ? `<div class="secondary-language">${instruction.overtakingRulesLabel2}</div>` : ''}
+            </div>
+            <div style="font-size: 7.5pt;">
+              ${instruction.overtakingText1 ? `<div>${instruction.overtakingText1} <span class="overtaking-rule">${overtakingText}</span> ${instruction.overtakingText2 || ''}</div>` : ''}
+              ${instruction.overtakingText1Second ? `<div class="secondary-language">${instruction.overtakingText1Second} <span class="overtaking-rule">${instruction.overtakingSecond || ''}</span> ${instruction.overtakingText2Second || ''}</div>` : ''}
+            </div>
+          </div>
+          
+          <!-- Track Warnings Section -->
+          <div class="content-block">
+            <div class="section-header yellow-bg">
+              <div>${instruction.warningsLabel || 'Track Warnings'}</div>
+              ${instruction.warningsLabel2 ? `<div class="secondary-language">${instruction.warningsLabel2}</div>` : ''}
+            </div>
+            <div class="warnings-grid">
+              ${instruction.warnings.map(warning => `
+                <div class="warning-item">
+                  ${warning.imageUrl ? `
+                    <img src="${warning.imageUrl}" alt="${warning.name || 'Warning flag'}" class="warning-image">
+                  ` : ''}
+                  <div>
+                    <div>${warning.name}</div>
+                    ${warning.name2 ? `<div class="secondary-language">${warning.name2}</div>` : ''}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <div style="margin-top: 1mm; text-align: center;">
+            ${instruction.footerImageUrl ? `
+              <img src="${instruction.footerImageUrl}" alt="Footer Image" class="footer-image">
+            ` : ''}
+          </div>
+        </div>
+        
+        <!-- Right Section -->
+        <div class="right-section">
+          <!-- Top Area -->
+          <div style="margin-bottom: 1mm;">
+            <div class="track-name">${instruction.trackName} • ${instruction.instructionName}</div>
+            <div style="color: #777; font-size: 7.5pt;">${formattedDates}</div>
+          </div>
+          
+          <!-- Additional Notes Section -->
+          <div>
+            <div class="section-header blue-bg">
+              <div>${instruction.notesLabel || 'Additional Notes'}</div>
+              ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
+            </div>
+            <!-- Noise Limit -->
+            ${instruction.noiseLimit ? `
+              <div style="margin-bottom: 1mm; font-size: 7.5pt;">
+                ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''}
+                ${instruction.noiseLimitTextSecond ? `<div class="secondary-language">${instruction.noiseLimitTextSecond}</div>` : ''}
+                <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
+              </div>
+            ` : ''}
+            
+            <!-- Additional Notes -->
+            ${instruction.notes.map(note => `
+              <div class="note-entry">
+                ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
+                ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
+                ${note.imageUrl ? `
+                  <div style="margin-top: 1mm; text-align: center;">
+                    <img src="${note.imageUrl}" alt="Note image" style="max-width: 100%; max-height: 30mm;">
+                  </div>
+                ` : ''}
+              </div>
+            `).join('')}
+          </div>
         </div>
       </div>
     </div>
