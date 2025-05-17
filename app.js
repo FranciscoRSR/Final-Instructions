@@ -704,7 +704,7 @@ async function showInstructionModal(instructionId = null) {
     };
   }
 
-  const selectedDates = instruction.dates || [];
+  const selectedDates = initialSelectedDates || [];
   const modal = createModal('Final Instruction Details');
 
   modal.content.innerHTML = `
@@ -1193,8 +1193,6 @@ function getInstructionFormData(form, scheduleTableBody, locationsTableBody, sel
 }
 
 function getScheduleFromTable(tableBody) {
-  if (!tableBody) return [];
-
   return Array.from(tableBody.querySelectorAll('tr')).map(row => {
     return {
       date: row.querySelector('select[name="scheduleDate"]').value,
@@ -1221,11 +1219,6 @@ return Array.from(tableBody.querySelectorAll('tr')).map(row => {
 
 function renderScheduleTable(tableBody, scheduleItems, selectedDates) {
   tableBody.innerHTML = '';
-
-  // Ensure selectedDates is an array
-  if (!Array.isArray(selectedDates)) {
-    selectedDates = [];
-  }
 
   scheduleItems.forEach((item, index) => {
     const row = document.createElement('tr');
@@ -1426,56 +1419,52 @@ function initCalendar(container, selectedDatesContainer, initialSelectedDates = 
 }
 
 function updateSelectedDatesDisplay() {
-  const selectedDatesContainer = document.querySelector('#selectedDates');
   selectedDatesContainer.innerHTML = '';
   
   if (selectedDates.length === 0) {
     selectedDatesContainer.innerHTML = '<p>No dates selected.</p>';
-    return;
-  }
+    return;}
 
-  // Sort dates chronologically
-  selectedDates.sort();
-  
-  selectedDatesContainer.innerHTML = '<p><strong>Selected Dates:</strong></p>';
-  
-  selectedDates.forEach(dateStr => {
-    const datePill = document.createElement('span');
-    datePill.className = 'selected-date';
-    datePill.dataset.date = dateStr;
+    // Sort dates chronologically
+    selectedDates.sort();
     
-    const dateObj = new Date(dateStr);
-    datePill.textContent = dateObj.toLocaleDateString();
+    selectedDatesContainer.innerHTML = '<p><strong>Selected Dates:</strong></p>';
     
-    const removeBtn = document.createElement('button');
-    removeBtn.innerHTML = '&times;';
-    removeBtn.className = 'remove-date-btn';
-    removeBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const index = selectedDates.indexOf(dateStr);
-      if (index !== -1) {
-        selectedDates.splice(index, 1);
-        datePill.remove();
-        
-        // Update calendar UI
-        const calendarDate = container.querySelector(`.calendar-date[data-date="${dateStr}"]`);
-        if (calendarDate) {
-          calendarDate.classList.remove('selected');
+    selectedDates.forEach(dateStr => {
+      const datePill = document.createElement('span');
+      datePill.className = 'selected-date';
+      datePill.dataset.date = dateStr;
+      
+      const dateObj = new Date(dateStr);
+      datePill.textContent = dateObj.toLocaleDateString();
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.innerHTML = '&times;';
+      removeBtn.className = 'remove-date-btn';
+      removeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = selectedDates.indexOf(dateStr);
+        if (index !== -1) {
+          selectedDates.splice(index, 1);
+          datePill.remove();
+          
+          // Update calendar UI
+          const calendarDate = container.querySelector(`.calendar-date[data-date="${dateStr}"]`);
+          if (calendarDate) {
+            calendarDate.classList.remove('selected');
+          }
+          
+          updateSelectedDatesDisplay();
         }
-        
-        updateSelectedDatesDisplay();
-        // Update schedule table when dates change
-        const scheduleTableBody = document.querySelector('#scheduleTableBody');
-        if (scheduleTableBody) {
-          const currentSchedule = getScheduleFromTable(scheduleTableBody);
-          renderScheduleTable(scheduleTableBody, currentSchedule, selectedDates);
-        }
-      }
+      });
+      
+      datePill.appendChild(removeBtn);
+      selectedDatesContainer.appendChild(datePill);
     });
-    
-    datePill.appendChild(removeBtn);
-    selectedDatesContainer.appendChild(datePill);
-  });
+  }
+  
+  // Initialize calendar
+  renderCalendar();
 }
   
 async function showInstructionPreview(instruction) {
