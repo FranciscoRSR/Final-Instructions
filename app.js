@@ -1991,10 +1991,9 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .footer-image {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
       }
       
       .track-name {
