@@ -2017,6 +2017,11 @@ function generatePDFContent(instruction, trackDetails) {
         font-weight: bold;
         margin-top: 0.5mm;
       }
+        
+      .schedule-time-text {
+      font-weight: bold;
+      margin-bottom: 1mm;
+      }
     </style>
 
     <!-- Page 1 -->
@@ -2058,9 +2063,10 @@ function generatePDFContent(instruction, trackDetails) {
                       <tr class="schedule-row">
                         <td class="schedule-cell time-cell">
                           ${item.startText || item.startText2 ? `
-                            <div style="margin-bottom: 0.5mm;">
-                              ${item.startText ? `<div>${item.startText}</div>` : ''}
-                              ${item.startText2 ? `<div class="secondary-language">${item.startText2}</div>` : ''}
+                            <div style="margin-bottom: 0.5mm;" class="schedule-time-text">
+                              ${item.startText ? `<span>${item.startText}</span>` : ''}
+                              ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
+                              ${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}
                             </div>
                           ` : ''}
                           <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
