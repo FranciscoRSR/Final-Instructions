@@ -1878,7 +1878,7 @@ function generatePDFContent(instruction, trackDetails) {
       .page-content {
         display: grid;
         grid-template-columns: 48% 48%;
-        column-gap: 4%;
+        column-gap: 0%;
         width: 100%;
         padding: 0;
         margin: 0;
@@ -2052,10 +2052,9 @@ function generatePDFContent(instruction, trackDetails) {
       }
 
       .note-image-container img {
-        max-width: 90%;
+        max-width: 100%;
         max-height: 20mm;
         object-fit: contain;
-        align: center;
       }
       
       /* Page settings */
