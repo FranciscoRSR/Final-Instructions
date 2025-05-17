@@ -2052,9 +2052,10 @@ function generatePDFContent(instruction, trackDetails) {
       }
 
       .note-image-container img {
-        max-width: 100%;
+        max-width: 90%;
         max-height: 20mm;
         object-fit: contain;
+        align: center;
       }
       
       /* Page settings */
@@ -2179,7 +2180,7 @@ function generatePDFContent(instruction, trackDetails) {
         <!-- Right Section -->
         <div class="right-section">
           <!-- Top Area -->
-          <div style="margin-bottom: 10mm;" class="no-break">
+          <div style="margin-bottom: 11mm;" class="no-break">
             <div class="track-name">${instruction.trackName} • ${instruction.instructionName}</div>
             <div style="color: #777; font-size: 7.5pt;">${formattedDates}</div>
           </div>
