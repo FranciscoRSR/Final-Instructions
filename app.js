@@ -1850,20 +1850,16 @@ function generatePDFContent(instruction, trackDetails) {
       .a4-left-section {
         width: 50%;
         float: left;
-        padding-right: 5mm; /* Reduced padding */
         box-sizing: border-box;
       }
       .a4-right-section {
         width: 50%;
         float: right;
-        padding-left: 5mm; /* Reduced padding */
         box-sizing: border-box;
       }
       .section-header {
         color: white;
         font-weight: bold;
-        padding: 2mm; /* Reduced padding */
-        margin-bottom: 2mm; /* Reduced margin */
         font-size: 10pt; /* Slightly larger for headers */
       }
       .red-bg { background: #e74c3c; }
@@ -1874,8 +1870,6 @@ function generatePDFContent(instruction, trackDetails) {
       .section-subheader {
         color: #e74c3c;
         font-weight: bold;
-        margin-bottom: 3mm; /* Reduced margin */
-        padding-bottom: 1mm; /* Reduced padding */
         border-bottom: 1px solid #ddd;
         font-size: 9.5pt; /* Slightly larger for subheaders */
       }
@@ -1884,7 +1878,6 @@ function generatePDFContent(instruction, trackDetails) {
         font-size: 8pt; /* Smaller for secondary language */
       }
       .schedule-entry {
-        margin-bottom: 2mm; /* Reduced margin */
         font-size: 8.5pt; /* Slightly smaller for schedule */
       }
       .schedule-time {
@@ -1893,8 +1886,7 @@ function generatePDFContent(instruction, trackDetails) {
       .warning-item {
         display: flex;
         align-items: center;
-        gap: 1mm; /* Reduced gap */
-        margin-bottom: 1mm; /* Reduced margin */
+        gap: 0.5mm; /* Reduced gap */
         font-size: 8.5pt; /* Slightly smaller for warnings */
       }
       .warning-image {
@@ -1902,7 +1894,7 @@ function generatePDFContent(instruction, trackDetails) {
         height: 12mm; /* Reduced size */
       }
       .note-entry {
-        margin-bottom: 3mm; /* Reduced margin */
+        margin-bottom: 1mm; /* Reduced margin */
       }
       .track-shape {
         max-width: 100%;
@@ -1920,7 +1912,7 @@ function generatePDFContent(instruction, trackDetails) {
         max-height: 15mm !important; /* Smaller footer */
       }
       .right-top-area {
-        margin-bottom: 3mm !important; /* Reduced margin */
+        margin-bottom: 1mm !important; /* Reduced margin */
       }
       .track-name {
         font-size: 14pt !important; /* Smaller than before */
