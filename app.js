@@ -934,7 +934,7 @@ async function showInstructionModal(instructionId = null) {
   initCalendar(calendarContainer, selectedDatesContainer, selectedDates);
 
   // Populate schedule table
-  renderScheduleTable(scheduleTableBody, instruction.schedule || []);
+  renderScheduleTable(scheduleTableBody, instruction.schedule || [], selectedDates);
 
   // Populate locations table
   renderLocationsTable(locationsTableBody, instruction.locations || []);
@@ -1193,6 +1193,8 @@ function getInstructionFormData(form, scheduleTableBody, locationsTableBody, sel
 }
 
 function getScheduleFromTable(tableBody) {
+  if (!tableBody) return [];
+
   return Array.from(tableBody.querySelectorAll('tr')).map(row => {
     return {
       date: row.querySelector('select[name="scheduleDate"]').value,
@@ -1217,8 +1219,13 @@ return Array.from(tableBody.querySelectorAll('tr')).map(row => {
 });
 }
 
-function renderScheduleTable(tableBody, scheduleItems) {
+function renderScheduleTable(tableBody, scheduleItems, selectedDates) {
   tableBody.innerHTML = '';
+
+  // Ensure selectedDates is an array
+  if (!Array.isArray(selectedDates)) {
+    selectedDates = [];
+  }
 
   scheduleItems.forEach((item, index) => {
     const row = document.createElement('tr');
@@ -1419,52 +1426,56 @@ function initCalendar(container, selectedDatesContainer, initialSelectedDates = 
 }
 
 function updateSelectedDatesDisplay() {
+  const selectedDatesContainer = document.querySelector('#selectedDates');
   selectedDatesContainer.innerHTML = '';
   
   if (selectedDates.length === 0) {
     selectedDatesContainer.innerHTML = '<p>No dates selected.</p>';
-    return;}
-
-    // Sort dates chronologically
-    selectedDates.sort();
-    
-    selectedDatesContainer.innerHTML = '<p><strong>Selected Dates:</strong></p>';
-    
-    selectedDates.forEach(dateStr => {
-      const datePill = document.createElement('span');
-      datePill.className = 'selected-date';
-      datePill.dataset.date = dateStr;
-      
-      const dateObj = new Date(dateStr);
-      datePill.textContent = dateObj.toLocaleDateString();
-      
-      const removeBtn = document.createElement('button');
-      removeBtn.innerHTML = '&times;';
-      removeBtn.className = 'remove-date-btn';
-      removeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const index = selectedDates.indexOf(dateStr);
-        if (index !== -1) {
-          selectedDates.splice(index, 1);
-          datePill.remove();
-          
-          // Update calendar UI
-          const calendarDate = container.querySelector(`.calendar-date[data-date="${dateStr}"]`);
-          if (calendarDate) {
-            calendarDate.classList.remove('selected');
-          }
-          
-          updateSelectedDatesDisplay();
-        }
-      });
-      
-      datePill.appendChild(removeBtn);
-      selectedDatesContainer.appendChild(datePill);
-    });
+    return;
   }
+
+  // Sort dates chronologically
+  selectedDates.sort();
   
-  // Initialize calendar
-  renderCalendar();
+  selectedDatesContainer.innerHTML = '<p><strong>Selected Dates:</strong></p>';
+  
+  selectedDates.forEach(dateStr => {
+    const datePill = document.createElement('span');
+    datePill.className = 'selected-date';
+    datePill.dataset.date = dateStr;
+    
+    const dateObj = new Date(dateStr);
+    datePill.textContent = dateObj.toLocaleDateString();
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.innerHTML = '&times;';
+    removeBtn.className = 'remove-date-btn';
+    removeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = selectedDates.indexOf(dateStr);
+      if (index !== -1) {
+        selectedDates.splice(index, 1);
+        datePill.remove();
+        
+        // Update calendar UI
+        const calendarDate = container.querySelector(`.calendar-date[data-date="${dateStr}"]`);
+        if (calendarDate) {
+          calendarDate.classList.remove('selected');
+        }
+        
+        updateSelectedDatesDisplay();
+        // Update schedule table when dates change
+        const scheduleTableBody = document.querySelector('#scheduleTableBody');
+        if (scheduleTableBody) {
+          const currentSchedule = getScheduleFromTable(scheduleTableBody);
+          renderScheduleTable(scheduleTableBody, currentSchedule, selectedDates);
+        }
+      }
+    });
+    
+    datePill.appendChild(removeBtn);
+    selectedDatesContainer.appendChild(datePill);
+  });
 }
   
 async function showInstructionPreview(instruction) {
