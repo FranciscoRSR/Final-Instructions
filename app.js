@@ -1878,7 +1878,7 @@ function generatePDFContent(instruction, trackDetails) {
       .page-content {
         display: grid;
         grid-template-columns: 48% 48%;
-        column-gap: 4%;
+        column-gap: 2%;
         width: 100%;
         padding: 0;
         margin: 0;
@@ -2053,7 +2053,7 @@ function generatePDFContent(instruction, trackDetails) {
 
       .note-image-container img {
         max-width: 100%;
-        max-height: 30mm;
+        max-height: 20mm;
         object-fit: contain;
       }
       
@@ -2105,7 +2105,7 @@ function generatePDFContent(instruction, trackDetails) {
               </thead>
               <tbody>
                 ${groupByDate(instruction.schedule)
-                  .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA))
+                  .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
                   .map(([date, items]) => `
                     <tr>
                       <td colspan="3" class="section-subheader">
@@ -2179,7 +2179,7 @@ function generatePDFContent(instruction, trackDetails) {
         <!-- Right Section -->
         <div class="right-section">
           <!-- Top Area -->
-          <div style="margin-bottom: 5mm;" class="no-break">
+          <div style="margin-bottom: 12mm;" class="no-break">
             <div class="track-name">${instruction.trackName} • ${instruction.instructionName}</div>
             <div style="color: #777; font-size: 7.5pt;">${formattedDates}</div>
           </div>
