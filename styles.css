@@ -1316,3 +1316,41 @@ button {
   padding-bottom: 3px;
   border-bottom: 1px solid #ccc;
 }
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+}
+
+.schedule-table th {
+  text-align: center;
+  padding: 5px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+}
+
+.schedule-table td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  vertical-align: top;
+}
+
+.time-col {
+  width: 20%;
+  text-align: center;
+}
+
+.activity-col {
+  width: 60%;
+  text-align: center;
+}
+
+.location-col {
+  width: 20%;
+  text-align: center;
+}
+
+.schedule-entry div {
+  margin: 2px 0;
+}
