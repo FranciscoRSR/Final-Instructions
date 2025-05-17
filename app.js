@@ -1930,7 +1930,7 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .schedule-date-group {
-        margin-bottom: 2mm;
+        margin-bottom: 0mm;
       }
       
       .schedule-row {
@@ -1959,20 +1959,20 @@ function generatePDFContent(instruction, trackDetails) {
       
       /* Content items */
       .content-block {
-        margin-bottom: 2mm;
+        margin-bottom: 0mm;
       }
       
       .warning-item {
         display: flex;
         align-items: center;
         gap: 1mm;
-        margin-bottom: 1mm;
-        font-size: 7.5pt;
+        margin-bottom: 0mm;
+        font-size: 5pt;
       }
       
       .warning-image {
-        width: 8mm;
-        height: 8mm;
+        width: 6mm;
+        height: 6mm;
       }
       
       .note-entry {
@@ -2146,7 +2146,7 @@ function generatePDFContent(instruction, trackDetails) {
         <!-- Right Section -->
         <div class="right-section">
           <!-- Top Area -->
-          <div style="margin-bottom: 12mm;">
+          <div style="margin-bottom: 10mm;">
             <div class="track-name">${instruction.trackName} • ${instruction.instructionName}</div>
             <div style="color: #777; font-size: 7.5pt;">${formattedDates}</div>
           </div>
