@@ -1922,7 +1922,6 @@ function generatePDFContent(instruction, trackDetails) {
       
       .schedule-header-row {
         font-weight: bold;
-        border-bottom: 2px solid #e74c3c;
       }
       
       .schedule-header-cell {
@@ -2147,7 +2146,7 @@ function generatePDFContent(instruction, trackDetails) {
         <!-- Right Section -->
         <div class="right-section">
           <!-- Top Area -->
-          <div style="margin-bottom: 15mm;">
+          <div style="margin-bottom: 12mm;">
             <div class="track-name">${instruction.trackName} • ${instruction.instructionName}</div>
             <div style="color: #777; font-size: 7.5pt;">${formattedDates}</div>
           </div>
