@@ -1780,7 +1780,7 @@ async function downloadPDF(instructionId) {
     // Append to document temporarily for proper rendering
     document.body.appendChild(element);
     
-    // PDF options with very narrow margins to maximize content space
+    // PDF options with enhanced page break handling
     const opt = {
       margin: [3, 3, 3, 3], // Very narrow margins: [top, right, bottom, left] in mm
       filename: filename,
@@ -1798,8 +1798,8 @@ async function downloadPDF(instructionId) {
         compress: true // Enable compression
       },
       pagebreak: { 
-        mode: ['css', 'avoid-all'], // Changed order and removed 'legacy'
-        before: '.explicit-page-break', // More specific class name
+        mode: ['avoid-all', 'css'], // Changed order to prioritize avoid-all
+        before: '.page-break', // Simplified class name
         avoid: '.no-break' // Added a class for elements that shouldn't break
       }
     };
@@ -1828,6 +1828,9 @@ function generatePDFContent(instruction, trackDetails) {
     case 'eitherSide': overtakingText = 'Either Side'; break;
   }
 
+  // Check if track shape exists and should be displayed
+  const showTrackShape = trackDetails && trackDetails.trackShapeUrl;
+
   return `
     <style>
       /* Base styles with strict control to avoid unwanted page breaks */
@@ -1846,22 +1849,23 @@ function generatePDFContent(instruction, trackDetails) {
         width: 210mm;
         box-sizing: border-box;
         position: relative;
-        page-break-after: avoid;
-        break-after: avoid;
+        page-break-after: always !important;
+        break-after: page !important;
         padding: 0;
         margin: 0;
         display: block;
       }
       
-      /* Explicit page break element */
-      .explicit-page-break {
-        display: block;
-        page-break-before: always;
-        break-before: page;
-        height: 0;
+      /* Page break marker - simplified class name */
+      .page-break {
+        page-break-before: always !important;
+        break-before: page !important;
+        height: 1px;
         margin: 0;
         padding: 0;
+        visibility: hidden;
         clear: both;
+        display: block;
       }
       
       /* Second page container */
@@ -2037,8 +2041,11 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .track-shape {
-        max-width: 200mm;
-        max-height: 280mm;
+        max-width: 190mm;
+        max-height: 270mm;
+        object-fit: contain;
+        margin: 10mm auto;
+        display: block;
       }
       
       .track-logo {
@@ -2105,15 +2112,15 @@ function generatePDFContent(instruction, trackDetails) {
 
       /* No page breaks inside content blocks */
       .no-break {
-        page-break-inside: avoid;
-        break-inside: avoid;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
       }
       
       /* Force every part of content to avoid page breaks */
       .section-header, .content-block, .note-entry, .warning-item, 
       .schedule-row, .section-subheader, table, tr, td, th {
-        page-break-inside: avoid;
-        break-inside: avoid;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
       }
     </style>
 
@@ -2270,13 +2277,12 @@ function generatePDFContent(instruction, trackDetails) {
       </div>
     </div>
 
-    <!-- Only add the page break and second page if there's a track shape to display -->
-    ${trackDetails?.trackShapeUrl ? `
-      <!-- Explicit page break -->
-      <div class="explicit-page-break"></div>
+    ${showTrackShape ? `
+      <!-- Explicit page break - simplified class name -->
+      <div class="page-break"></div>
       
       <!-- Page 2 - Track Shape -->
-      <div class="page-two no-break">
+      <div class="page-two">
         <img src="${trackDetails.trackShapeUrl}" alt="${trackDetails.name} Track Shape" class="track-shape">
       </div>
     ` : ''}
