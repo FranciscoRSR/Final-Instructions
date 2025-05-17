@@ -2154,7 +2154,8 @@ function generatePDFContent(instruction, trackDetails) {
           <!-- Additional Notes Section -->
           <div>
             <div class="section-header blue-bg">
-              <div>${instruction.notesLabel || 'Additional Notes'}</div>${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
+              <div>${instruction.notesLabel || 'Additional Notes'}</div>
+              ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
             </div>
             <!-- Noise Limit -->
             ${instruction.noiseLimit ? `
@@ -2165,18 +2166,17 @@ function generatePDFContent(instruction, trackDetails) {
               </div>
             ` : ''}
             
-            <!-- Additional Notes -->
-            ${instruction.notes.map(note => `
-              <div class="note-entry">
-                ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
-                ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
-                ${note.imageUrl ? `
-                  <div style="margin-top: 1mm; text-align: center;">
-                    <img src="${note.imageUrl}" alt="Note image" style="max-width: 100%; max-height: 30mm;">
-                  </div>
-                ` : ''}
-              </div>
-            `).join('')}
+              <!-- Additional Notes -->
+              ${instruction.notes && instruction.notes.length ? instruction.notes.map(note => `
+                <div class="note-entry">
+                  ${note.text ? `<div>${note.text}${note.text2 ? ` <span class="secondary-language">/ ${note.text2}</span>` : ''}</div>` : ''}
+                </div>
+                  ${note.imageUrl ? `
+                    <div class="note-image-container">
+                      <img src="${note.imageUrl}" alt="Note image">
+                    </div>
+                  ` : ''}
+              `).join('') : ''}
           </div>
         </div>
       </div>
