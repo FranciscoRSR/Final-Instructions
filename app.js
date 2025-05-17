@@ -2154,8 +2154,7 @@ function generatePDFContent(instruction, trackDetails) {
           <!-- Additional Notes Section -->
           <div>
             <div class="section-header blue-bg">
-              <div>${instruction.notesLabel || 'Additional Notes'}</div>
-              ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
+              <div>${instruction.notesLabel || 'Additional Notes'}</div>${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
             </div>
             <!-- Noise Limit -->
             ${instruction.noiseLimit ? `
