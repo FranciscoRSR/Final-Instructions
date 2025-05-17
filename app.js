@@ -2021,6 +2021,17 @@ function generatePDFContent(instruction, trackDetails) {
       font-weight: bold;
       margin-bottom: 1mm;
       }
+
+      .note-image-container {
+      margin-top: 0mm;
+      }
+
+      .note-image-container img {
+          max-width: 100%;
+          max-height: 20mm;
+          object-fit: contain;
+      }
+
     </style>
 
     <!-- Page 1 -->
@@ -2062,7 +2073,7 @@ function generatePDFContent(instruction, trackDetails) {
                       <tr class="schedule-row">
                         <td class="schedule-cell time-cell">
                           ${item.startText || item.startText2 ? `
-                            <div style="margin-bottom: 0.5mm;" class="schedule-time-text">
+                            <div class="schedule-time-text">
                               ${item.startText ? `<span>${item.startText}</span>` : ''}
                               ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
                               ${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}
@@ -2160,11 +2171,10 @@ function generatePDFContent(instruction, trackDetails) {
             <!-- Noise Limit -->
             ${instruction.noiseLimit ? `
               <div style="margin-bottom: 1mm; font-size: 7.5pt;">
-                ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''}
-                ${instruction.noiseLimitTextSecond ? `<div class="secondary-language">${instruction.noiseLimitTextSecond}</div>` : ''}
-                <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
-              </div>
-            ` : ''}
+                  ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}${instruction.noiseLimitTextSecond ? ` <span class="secondary-language">/ ${instruction.noiseLimitTextSecond}</span>` : ''}</div>` : ''}
+                  <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
+                </div>
+              ` : ''}
             
               <!-- Additional Notes -->
               ${instruction.notes && instruction.notes.length ? instruction.notes.map(note => `
