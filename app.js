@@ -2068,8 +2068,9 @@ function generatePDFContent(instruction, trackDetails) {
                               ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
                               ${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}
                             </div>
-                          ` : ''}
-                          <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
+                          ` : `
+                            <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
+                          `}
                         </td>
                         <td class="schedule-cell activity-cell">
                           ${item.activity ? `<div>${item.activity}</div>` : ''}
@@ -2146,7 +2147,7 @@ function generatePDFContent(instruction, trackDetails) {
         <!-- Right Section -->
         <div class="right-section">
           <!-- Top Area -->
-          <div style="margin-bottom: 1mm;">
+          <div style="margin-bottom: 15mm;">
             <div class="track-name">${instruction.trackName} • ${instruction.instructionName}</div>
             <div style="color: #777; font-size: 7.5pt;">${formattedDates}</div>
           </div>
