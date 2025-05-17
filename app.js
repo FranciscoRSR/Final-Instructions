@@ -1991,7 +1991,7 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .footer-image {
-        max-height: 12mm !important;
+        max-height: 20mm !important;
       }
       
       .track-name {
@@ -2028,7 +2028,7 @@ function generatePDFContent(instruction, trackDetails) {
 
       .note-image-container img {
           max-width: 100%;
-          max-height: 20mm;
+          max-height: 30mm;
           object-fit: contain;
       }
 
@@ -2125,6 +2125,22 @@ function generatePDFContent(instruction, trackDetails) {
             </div>
           </div>
           
+          <!-- Footer -->
+          <div style="margin-top: 1mm; text-align: center;">
+            ${instruction.footerImageUrl ? `
+              <img src="${instruction.footerImageUrl}" alt="Footer Image" class="footer-image">
+            ` : ''}
+          </div>
+        </div>
+        
+        <!-- Right Section -->
+        <div class="right-section">
+          <!-- Top Area -->
+          <div style="margin-bottom: 10mm;">
+            <div class="track-name">${instruction.trackName} • ${instruction.instructionName}</div>
+            <div style="color: #777; font-size: 7.5pt;">${formattedDates}</div>
+          </div>
+
           <!-- Track Warnings Section -->
           <div class="content-block">
             <div class="section-header yellow-bg">
@@ -2144,22 +2160,6 @@ function generatePDFContent(instruction, trackDetails) {
                 </div>
               `).join('')}
             </div>
-          </div>
-          
-          <!-- Footer -->
-          <div style="margin-top: 1mm; text-align: center;">
-            ${instruction.footerImageUrl ? `
-              <img src="${instruction.footerImageUrl}" alt="Footer Image" class="footer-image">
-            ` : ''}
-          </div>
-        </div>
-        
-        <!-- Right Section -->
-        <div class="right-section">
-          <!-- Top Area -->
-          <div style="margin-bottom: 10mm;">
-            <div class="track-name">${instruction.trackName} • ${instruction.instructionName}</div>
-            <div style="color: #777; font-size: 7.5pt;">${formattedDates}</div>
           </div>
           
           <!-- Additional Notes Section -->
