@@ -1876,6 +1876,9 @@ function generatePDFContent(instruction, trackDetails) {
         padding-right: 2mm;
         box-sizing: border-box;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
       }
       
       .right-section {
@@ -1890,7 +1893,7 @@ function generatePDFContent(instruction, trackDetails) {
         color: white;
         font-weight: bold;
         padding: 1mm 1.5mm;
-        margin-bottom: 1mm;
+        margin-bottom: 0mm; /* Removed space after headers */
         font-size: 8.5pt;
       }
       
@@ -1918,6 +1921,8 @@ function generatePDFContent(instruction, trackDetails) {
       .schedule-table {
         width: 100%;
         font-size: 7.5pt;
+        margin-top: 0; /* Remove space before table */
+        margin-bottom: 0; /* Remove space after table */
       }
       
       .schedule-header-row {
@@ -1959,13 +1964,13 @@ function generatePDFContent(instruction, trackDetails) {
       
       /* Content items */
       .content-block {
-        margin-bottom: 0mm;
+        margin-bottom: 0mm; /* Remove any bottom margin */
       }
       
       .warning-item {
         display: flex;
         align-items: center;
-        gap: 0mm;
+        gap: 1mm;
         margin-bottom: 0mm;
         font-size: 5pt;
       }
@@ -1990,6 +1995,11 @@ function generatePDFContent(instruction, trackDetails) {
         margin-bottom: 1mm;
       }
       
+      .footer-container {
+        margin-top: auto; /* Push to bottom of flex container */
+        text-align: center;
+      }
+      
       .footer-image {
         max-height: 100%;
         max-width: 100%;
@@ -2006,7 +2016,7 @@ function generatePDFContent(instruction, trackDetails) {
       .warnings-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 0mm;
+        gap: 1mm;
       }
       
       .overtaking-rule {
@@ -2020,20 +2030,30 @@ function generatePDFContent(instruction, trackDetails) {
       }
         
       .schedule-time-text {
-      font-weight: bold;
-      margin-bottom: 1mm;
+        font-weight: bold;
+        margin-bottom: 1mm;
       }
 
       .note-image-container {
-      margin-top: 0mm;
+        margin-top: 0mm;
       }
 
       .note-image-container img {
-          max-width: 100%;
-          max-height: 30mm;
-          object-fit: contain;
+        max-width: 100%;
+        max-height: 30mm;
+        object-fit: contain;
+      }
+      
+      /* Remove any unwanted second pages */
+      @page {
+        size: A4;
+        margin: 0;
       }
 
+      /* Make sure only page breaks that are explicitly defined work */
+      * {
+        page-break-inside: avoid;
+      }
     </style>
 
     <!-- Page 1 -->
@@ -2127,8 +2147,8 @@ function generatePDFContent(instruction, trackDetails) {
             </div>
           </div>
           
-          <!-- Footer -->
-          <div style="margin-top: 1mm; text-align: center;">
+          <!-- Footer - placed at the bottom using flex -->
+          <div class="footer-container">
             ${instruction.footerImageUrl ? `
               <img src="${instruction.footerImageUrl}" alt="Footer Image" class="footer-image">
             ` : ''}
@@ -2163,8 +2183,8 @@ function generatePDFContent(instruction, trackDetails) {
             </div>
           </div>
           
-          <!-- Additional Notes Section -->
-          <div>
+          <!-- Additional Notes Section - No space after Track Warnings -->
+          <div style="margin-top: 0;">
             <div class="section-header blue-bg">
               <div>${instruction.notesLabel || 'Additional Notes'}</div>
               ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
@@ -2192,12 +2212,13 @@ function generatePDFContent(instruction, trackDetails) {
         </div>
       </div>
     </div>
-    
-    <!-- Explicit page break -->
-    <div class="page-break"></div>
-    
-    <!-- Page 2 - Track Shape -->
+
+    <!-- Only add the page break and second page if there's a track shape to display -->
     ${trackDetails?.trackShapeUrl ? `
+      <!-- Explicit page break -->
+      <div class="page-break"></div>
+      
+      <!-- Page 2 - Track Shape -->
       <div class="page-two">
         <img src="${trackDetails.trackShapeUrl}" alt="${trackDetails.name} Track Shape" class="track-shape">
       </div>
