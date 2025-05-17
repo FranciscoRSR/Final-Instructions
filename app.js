@@ -1795,7 +1795,8 @@ async function downloadPDF(instructionId) {
       },
       pagebreak: { 
         mode: ['avoid-all', 'css', 'legacy'],
-        before: '.page-break' // Force page break at specific element
+        before: '.page-break', // Force page break at specific element
+        avoid: 'img' // Avoid breaking inside images
       }
     };
 
@@ -1850,6 +1851,8 @@ function generatePDFContent(instruction, trackDetails) {
         page-break-before: always;
         break-before: page;
         height: 0;
+        margin: 0;
+        padding: 0;
       }
       
       /* Second page container */
@@ -1860,6 +1863,7 @@ function generatePDFContent(instruction, trackDetails) {
         display: flex;
         align-items: center;
         justify-content: center;
+        page-break-before: always;
       }
       
       /* Layout sections - using flexbox for better control */
@@ -1891,7 +1895,7 @@ function generatePDFContent(instruction, trackDetails) {
         color: white;
         font-weight: bold;
         padding: 1mm 1.5mm;
-        margin-bottom: 0mm; /* Removed space after headers */
+        margin: 0; /* Removed all margins */
         font-size: 8.5pt;
       }
       
@@ -2015,6 +2019,7 @@ function generatePDFContent(instruction, trackDetails) {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 1mm;
+        margin-bottom: 0mm; /* Remove bottom margin */
       }
       
       .overtaking-rule {
@@ -2182,8 +2187,8 @@ function generatePDFContent(instruction, trackDetails) {
           </div>
           
           <!-- Additional Notes Section - No space after Track Warnings -->
-          <div style="margin-top: 0;">
-            <div class="section-header blue-bg">
+          <div style="margin-top: 0; padding-top: 0;">
+            <div class="section-header blue-bg" style="margin-top: 0;">
               <div>${instruction.notesLabel || 'Additional Notes'}</div>
               ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
             </div>
