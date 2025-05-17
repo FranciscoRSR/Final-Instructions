@@ -1878,7 +1878,7 @@ function generatePDFContent(instruction, trackDetails) {
       .page-content {
         display: grid;
         grid-template-columns: 48% 48%;
-        column-gap: 2%;
+        column-gap: 1%;
         width: 100%;
         padding: 0;
         margin: 0;
