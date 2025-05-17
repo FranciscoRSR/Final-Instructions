@@ -1887,7 +1887,7 @@ function generatePDFContent(instruction, trackDetails) {
       .left-section {
         display: grid;
         grid-template-rows: auto auto auto auto 1fr;
-        row-gap: 0.5mm;
+        row-gap: 2mm;
         width: 100%;
         margin: 0;
         padding: 0;
