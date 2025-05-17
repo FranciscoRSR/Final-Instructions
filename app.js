@@ -2048,8 +2048,8 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .track-shape {
-        max-width: 200mm;
-        max-height: 287mm;
+        max-width: 210mm;
+        max-height: 297mm;
         object-fit: contain;
       }
       
