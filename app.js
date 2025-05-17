@@ -198,7 +198,7 @@ function showFullScreenPreview(instruction) {
                 <div class="schedule-col location-col">Location</div>
               </div>
               ${groupByDate(instruction.schedule)
-                .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA)) // Sort dates newest to oldest
+                .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB)) // Sort dates newest to oldest
                 .map(([date, items]) => `
                   <div class="schedule-date-group">
                     <div class="section-subheader">
