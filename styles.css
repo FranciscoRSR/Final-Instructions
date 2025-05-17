@@ -1317,40 +1317,107 @@ button {
   border-bottom: 1px solid #ccc;
 }
 
-.schedule-table {
+/* Add this to your styles.css file */
+
+/* Schedule Entries Layout */
+.schedule-entries {
   width: 100%;
-  border-collapse: collapse;
-  margin: 10px 0;
+  margin-bottom: 15mm;
 }
 
-.schedule-table th {
+.schedule-header {
+  display: flex;
+  font-weight: bold;
+  padding: 5px 0;
+  border-bottom: 2px solid #e74c3c;
+  margin-bottom: 5px;
   text-align: center;
-  padding: 5px;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
 }
 
-.schedule-table td {
-  padding: 8px;
-  border: 1px solid #ddd;
-  vertical-align: top;
+.schedule-date-group {
+  margin-bottom: 10mm;
+}
+
+.schedule-date-header {
+  font-weight: bold;
+  color: #e74c3c;
+  margin-bottom: 3mm;
+  padding-bottom: 1mm;
+  border-bottom: 1px solid #ddd;
+}
+
+.schedule-entry {
+  display: flex;
+  margin-bottom: 3mm;
+  align-items: flex-start;
+}
+
+.schedule-col {
+  padding: 0 2mm;
 }
 
 .time-col {
-  width: 20%;
+  flex: 0 0 25%;
   text-align: center;
 }
 
 .activity-col {
-  width: 60%;
+  flex: 1;
   text-align: center;
 }
 
 .location-col {
-  width: 20%;
+  flex: 0 0 25%;
   text-align: center;
 }
 
-.schedule-entry div {
-  margin: 2px 0;
+.schedule-time {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.schedule-time-text {
+  font-weight: bold;
+  margin-bottom: 1mm;
+}
+
+.schedule-activity div:first-child {
+  font-weight: bold;
+}
+
+.schedule-activity div:not(:first-child) {
+  margin-top: 1mm;
+}
+
+.schedule-location {
+  margin-top: 1mm;
+}
+
+/* For the header row */
+.schedule-header .time-col,
+.schedule-header .activity-col,
+.schedule-header .location-col {
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.9em;
+  color: #e74c3c;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .schedule-entry {
+    flex-direction: column;
+  }
+  
+  .schedule-col {
+    width: 100%;
+    text-align: left;
+    padding: 1mm 0;
+  }
+  
+  .time-col {
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 2mm;
+    margin-bottom: 1mm;
+  }
 }
