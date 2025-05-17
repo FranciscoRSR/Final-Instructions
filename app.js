@@ -299,8 +299,7 @@ function showFullScreenPreview(instruction) {
         <div class="a4-right-section">
           <!-- Top Area -->
           <div class="right-top-area">
-            <div class="track-name">${instruction.trackName}</div>
-            ${instruction.eventName ? `<div class="event-name">${instruction.eventName}</div>` : ''}
+            <div class="track-name">${instruction.trackName} • ${instruction.eventName} </div>
             <div class="event-dates">${formattedDates}</div>
           </div>
           
