@@ -1878,7 +1878,7 @@ function generatePDFContent(instruction, trackDetails) {
       .page-content {
         display: grid;
         grid-template-columns: 48% 48%;
-        column-gap: 0%;
+        column-gap: 2%;
         width: 100%;
         padding: 0;
         margin: 0;
@@ -2179,7 +2179,7 @@ function generatePDFContent(instruction, trackDetails) {
         <!-- Right Section -->
         <div class="right-section">
           <!-- Top Area -->
-          <div style="margin-bottom: 11mm;" class="no-break">
+          <div style="margin-bottom: 12mm;" class="no-break">
             <div class="track-name">${instruction.trackName} • ${instruction.instructionName}</div>
             <div style="color: #777; font-size: 7.5pt;">${formattedDates}</div>
           </div>
