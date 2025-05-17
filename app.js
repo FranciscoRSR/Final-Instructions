@@ -1870,12 +1870,12 @@ function generatePDFContent(instruction, trackDetails) {
         height: 297mm;
         box-sizing: border-box;
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 5mm;
+        padding: 5mm; /* Added padding to ensure content stays within printable area */
         margin: 0;
-        overflow: hidden; /* Prevent overflow beyond page */
+        text-align: center;
+        position: relative;
       }
       
       /* Layout sections */
@@ -2042,18 +2042,19 @@ function generatePDFContent(instruction, trackDetails) {
       
       .track-shape-container {
         width: 100%;
-        max-height: 287mm; /* Account for 5mm padding top and bottom */
+        height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
+        position: relative;
       }
       
       .track-shape {
-        max-width: 200mm;
-        max-height: 287mm;
+        max-width: 95%; /* Reduced from 100% to ensure it stays within margins */
+        max-height: 95%; /* Reduced from 100% to ensure it stays within margins */
+        width: auto;
+        height: auto;
         object-fit: contain;
-        display: block;
       }
       
       .track-logo {
