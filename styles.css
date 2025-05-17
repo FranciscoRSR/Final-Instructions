@@ -1305,3 +1305,14 @@ button {
   font-weight: bold;
   color: #e74c3c;
 }
+
+.schedule-date-group {
+  margin-bottom: 15px;
+}
+
+.schedule-date-header {
+  font-weight: bold;
+  margin-bottom: 5px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid #ccc;
+}
