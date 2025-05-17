@@ -206,7 +206,7 @@ function showFullScreenPreview(instruction) {
                           ${item.startTime}–${item.endTime}
                         </div>
                       ` : `
-                        <div class="schedule-time">${item.startTime}–${item.endTime}</div>
+                        <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
                       `}
                       <div class="schedule-activity">
                         ${item.activity ? `<div>${item.activity}</div>` : ''}
@@ -1499,14 +1499,11 @@ async function showInstructionPreview(instruction) {
                 <div>${instruction.scheduleLabel || 'Schedule'}</div>
                 ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
               </div>
-              <div class="section-subheader">
-                <div>${formattedDates} • ${instruction.trackName}</div>
-              </div>
               <div class="schedule-entries">
                 ${groupByDate(instruction.schedule).map(([date, items]) => `
                   <div class="schedule-date-group">
-                    <div class="schedule-date-header">
-                      ${new Date(date).toLocaleDateString()}
+                    <div class="section-subheader">
+                      ${new Date(date).toLocaleDateString()} • ${instruction.trackName}
                     </div>
                     ${items.map(item => `
                       <div class="schedule-entry">
@@ -1517,7 +1514,7 @@ async function showInstructionPreview(instruction) {
                             ${item.startTime}–${item.endTime}
                           </div>
                         ` : `
-                          <div class="schedule-time">${item.startTime}–${item.endTime}</div>
+                          <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
                         `}
                         <div class="schedule-activity">
                           ${item.activity ? `<div>${item.activity}</div>` : ''}
