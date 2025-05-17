@@ -351,19 +351,19 @@ function showFullScreenPreview(instruction) {
   previewContainer.appendChild(a4Container);
   
   // Add print button
-  const printButtonContainer = document.createElement('div');
-  printButtonContainer.className = 'print-button-container';
+  // const printButtonContainer = document.createElement('div');
+  // printButtonContainer.className = 'print-button-container';
   
-  const printButton = document.createElement('button');
-  printButton.className = 'print-button';
-  printButton.textContent = 'Download PDF';
+  // const printButton = document.createElement('button');
+  // printButton.className = 'print-button';
+  // printButton.textContent = 'Download PDF';
   
-  printButton.addEventListener('click', () => {
-    generatePDF();
-  });
+  // printButton.addEventListener('click', () => {
+  //   generatePDF();
+  // });
   
-  printButtonContainer.appendChild(printButton);
-  document.body.appendChild(printButtonContainer);
+  // printButtonContainer.appendChild(printButton);
+  // document.body.appendChild(printButtonContainer);
   
   // Set the body to preview mode
   document.body.classList.add('preview-mode');
@@ -380,85 +380,86 @@ function groupByDate(scheduleItems) {
   return Object.entries(groups);
 }
 
-function generatePDF() {
-  // Clone the preview element to modify for PDF without affecting the view
-  const element = document.querySelector('.a4-preview').cloneNode(true);
+// function generatePDF() {
+//   // Clone the preview element to modify for PDF without affecting the view
+//   const element = document.querySelector('.a4-preview').cloneNode(true);
   
-  // Apply PDF-specific styles to the clone
-  const pdfStyles = `
-    <style>
-      /* Reduce font sizes and spacing for PDF */
-      .a4-preview {
-        font-size: 10px !important;
-        line-height: 1.2 !important;
-      }
+//   // Apply PDF-specific styles to the clone
+//   const pdfStyles = `
+//     <style>
+//       /* Reduce font sizes and spacing for PDF */
+//       .a4-preview {
+//         font-size: 10px !important;
+//         line-height: 1.2 !important;
+//       }
       
-      /* Scale down images */
-      .track-logo {
-        max-height: 60px !important;
-      }
+//       /* Scale down images */
+//       .track-logo {
+//         max-height: 60px !important;
+//       }
       
-      .warning-image {
-        max-height: 30px !important;
-      }
+//       .warning-image {
+//         max-height: 30px !important;
+//       }
       
-      /* Adjust section spacing */
-      .preview-section {
-        margin-bottom: 8px !important;
-      }
+//       /* Adjust section spacing */
+//       .preview-section {
+//         margin-bottom: 8px !important;
+//       }
       
-      /* Make sure content fits on one page */
-      .a4-page-1 {
-        padding: 5mm !important;
-      }
+//       /* Make sure content fits on one page */
+//       .a4-page-1 {
+//         padding: 5mm !important;
+//       }
       
-      /* Hide the track shape from first page */
-      .a4-page-1 .track-shape-container {
-        display: none !important;
-      }
+//       /* Hide the track shape from first page */
+//       .a4-page-1 .track-shape-container {
+//         display: none !important;
+//       }
       
-      /* Show full track shape on second page */
-      .a4-page-2 .track-shape {
-        max-height: 270mm !important;
-        width: auto !important;
-      }
-    </style>
-  `;
+//       /* Show full track shape on second page */
+//       .a4-page-2 .track-shape {
+//         max-height: 270mm !important;
+//         width: auto !important;
+//       }
+//     </style>
+//   `;
   
-  // Insert the styles at the beginning of the cloned element
-  element.insertAdjacentHTML('afterbegin', pdfStyles);
+//   // Insert the styles at the beginning of the cloned element
+//   element.insertAdjacentHTML('afterbegin', pdfStyles);
   
-  const opt = {
-    margin: 0,
-    filename: 'instruction-sheet.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { 
-      scale: 2,
-      ignoreElements: (element) => {
-        // Ignore the print button in the PDF
-        return element.classList && element.classList.contains('print-button-container');
-      }
-    },
-    jsPDF: { 
-      unit: 'mm', 
-      format: 'a4', 
-      orientation: 'portrait',
-      // Create a two-page PDF
-      putOnlyUsedFonts: true,
-      hotfixes: ["px_scaling"]
-    },
-    // Split content between two pages
-    pagebreak: { 
-      mode: ['avoid-all', 'css', 'legacy'],
-      before: '.a4-page-2'
-    }
-  };
+//   const opt = {
+//     margin: 0,
+//     filename: 'instruction-sheet.pdf',
+//     image: { type: 'jpeg', quality: 0.98 },
+//     html2canvas: { 
+//       scale: 2,
+//       ignoreElements: (element) => {
+//         // Ignore the print button in the PDF
+//         return element.classList && element.classList.contains('print-button-container');
+//       }
+//     },
+//     jsPDF: { 
+//       unit: 'mm', 
+//       format: 'a4', 
+//       orientation: 'portrait',
+//       // Create a two-page PDF
+//       putOnlyUsedFonts: true,
+//       hotfixes: ["px_scaling"]
+//     },
+//     // Split content between two pages
+//     pagebreak: { 
+//       mode: ['avoid-all', 'css', 'legacy'],
+//       before: '.a4-page-2'
+//     }
+//   };
 
-  // Use html2pdf library
-  html2pdf().set(opt).from(element).save();
-}
+//   // Use html2pdf library
+//   html2pdf().set(opt).from(element).save();
+// }
 
 // Call this in your initApp function
+
 async function initApp() {
   loadTheme();
   
