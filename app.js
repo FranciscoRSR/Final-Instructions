@@ -1928,49 +1928,89 @@ function generatePDFContent(instruction, trackDetails) {
         font-size: 7pt;
       }
       
-      /* Schedule table improvements */
-      .schedule-table {
+      /* Schedule Entries Layout */
+      .schedule-entries {
         width: 100%;
+        margin-bottom: 2mm;
         font-size: 7.5pt;
-        margin: 0;
-        border-collapse: collapse;
       }
-      
-      .schedule-header-row {
+
+      .schedule-header {
+        display: flex;
+        font-weight: bold;
+        padding: 0.5mm 0;
+        border-bottom: 2px solid #e74c3c;
+        margin-bottom: 0.5mm;
+        text-align: center;
+      }
+
+      .schedule-date-group {
+        margin-bottom: 1mm;
+      }
+
+      .schedule-date-header {
+        font-weight: bold;
+        color: #e74c3c;
+        margin-bottom: 0.3mm;
+        padding-bottom: 0.1mm;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .schedule-entry {
+        display: flex;
+        margin-bottom: 0.3mm;
+        align-items: flex-start;
+      }
+
+      .schedule-col {
+        padding: 0 0.2mm;
+      }
+
+      .time-col {
+        flex: 0 0 25%;
+        text-align: center;
+      }
+
+      .activity-col {
+        flex: 1;
+        text-align: center;
+      }
+
+      .location-col {
+        flex: 0 0 25%;
+        text-align: center;
+      }
+
+      .schedule-time {
+        font-weight: bold;
+        white-space: nowrap;
+      }
+
+      .schedule-time-text {
+        font-weight: bold;
+        margin-bottom: 0.1mm;
+      }
+
+      .schedule-activity div:first-child {
         font-weight: bold;
       }
-      
-      .schedule-header-cell {
-        padding: 0.5mm;
-        text-align: center;
+
+      .schedule-activity div:not(:first-child) {
+        margin-top: 0.1mm;
       }
-      
-      .schedule-date-group {
-        margin: 0;
+
+      .schedule-location {
+        margin-top: 0.1mm;
       }
-      
-      .schedule-row {
-        border-bottom: 1px solid #eee;
-      }
-      
-      .schedule-cell {
-        padding: 0.5mm;
-        vertical-align: top;
-      }
-      
-      .time-cell {
-        width: 20%;
-        text-align: center;
-      }
-      
-      .activity-cell {
-        width: 50%;
-        text-align: center;
-      }
-      
-      .location-cell {
-        width: 30%;
-        text-align: center;
+
+      /* For the header row */
+      .schedule-header .time-col,
+      .schedule-header .activity-col,
+      .schedule-header .location-col {
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 7pt;
+        color: #e74c3c;
       }
       
       /* Content items */
@@ -2095,26 +2135,22 @@ function generatePDFContent(instruction, trackDetails) {
               <div>${instruction.scheduleLabel || 'Schedule'}</div>
               ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
             </div>
-            <table class="schedule-table">
-              <thead>
-                <tr class="schedule-header-row">
-                  <th class="schedule-header-cell time-cell">Time</th>
-                  <th class="schedule-header-cell activity-cell">Activity</th>
-                  <th class="schedule-header-cell location-cell">Location</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${groupByDate(instruction.schedule)
-                  .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
-                  .map(([date, items]) => `
-                    <tr>
-                      <td colspan="3" class="section-subheader">
-                        ${new Date(date).toLocaleDateString()} • ${instruction.trackName} ${instruction.eventName || ''}
-                      </td>
-                    </tr>
+            <div class="schedule-entries">
+              <div class="schedule-header">
+                <div class="schedule-col time-col">Time</div>
+                <div class="schedule-col activity-col">Activity</div>
+                <div class="schedule-col location-col">Location</div>
+              </div>
+              ${groupByDate(instruction.schedule)
+                .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
+                .map(([date, items]) => `
+                  <div class="schedule-date-group">
+                    <div class="schedule-date-header">
+                      ${new Date(date).toLocaleDateString()} • ${instruction.trackName} ${instruction.eventName || ''}
+                    </div>
                     ${items.map(item => `
-                      <tr class="schedule-row">
-                        <td class="schedule-cell time-cell">
+                      <div class="schedule-entry">
+                        <div class="schedule-col time-col">
                           ${item.startText || item.startText2 ? `
                             <div class="schedule-time-text">
                               ${item.startText ? `<span>${item.startText}</span>` : ''}
@@ -2124,19 +2160,19 @@ function generatePDFContent(instruction, trackDetails) {
                           ` : `
                             <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
                           `}
-                        </td>
-                        <td class="schedule-cell activity-cell">
+                        </div>
+                        <div class="schedule-col activity-col">
                           ${item.activity ? `<div>${item.activity}</div>` : ''}
                           ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
-                        </td>
-                        <td class="schedule-cell location-cell">
-                          ${item.location ? `<div>${item.location}</div>` : ''}
-                        </td>
-                      </tr>
+                        </div>
+                        <div class="schedule-col location-col">
+                          ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
+                        </div>
+                      </div>
                     `).join('')}
-                  `).join('')}
-              </tbody>
-            </table>
+                  </div>
+                `).join('')}
+            </div>
           </div>
           
           <!-- Important Locations Section -->
