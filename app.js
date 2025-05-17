@@ -192,32 +192,41 @@ function showFullScreenPreview(instruction) {
               ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
             </div>
             <div class="schedule-entries">
-              ${groupByDate(instruction.schedule).map(([date, items]) =>  `
-                <div class="schedule-date-group">
-                  <div class="section-subheader">
-                    ${new Date(date).toLocaleDateString()} • ${instruction.trackName} ${instruction.eventName || ''}
-                  </div>
-                  ${items.map(item => `
-                    <div class="schedule-entry">
-                      ${item.startText || item.startText2 ? `
-                        <div class="schedule-time-text">
-                          ${item.startText ? `<span>${item.startText}</span>` : ''}
-                          ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
-                          ${item.startTime}–${item.endTime}
-                        </div>
-                      ` : `
-                        <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
-                      `}
-                      <div class="schedule-activity">
-                        ${item.activity ? `<div>${item.activity}</div>` : ''}
-                        ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
-                      </div>
-                      ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
+                ${groupByDate(instruction.schedule).map(([date, items]) => `
+                  <div class="schedule-date-group">
+                    <div class="section-subheader">
+                      ${new Date(date).toLocaleDateString()} • ${instruction.trackName} ${instruction.eventName || ''}
                     </div>
-                  `).join('')}
-                </div>
-              `).join('')}
-            </div>
+                    <table class="schedule-table">
+                      <thead>
+                        <tr>
+                          <th class="time-col">Time</th>
+                          <th class="activity-col">Activity</th>
+                          <th class="location-col">Location</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${items.map(item => `
+                          <tr class="schedule-entry">
+                            <td class="time-col">
+                              ${item.startText ? `<div>${item.startText}</div>` : ''}
+                              ${item.startText2 ? `<div class="secondary-language">${item.startText2}</div>` : ''}
+                              ${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}
+                            </td>
+                            <td class="activity-col">
+                              ${item.activity ? `<div>${item.activity}</div>` : ''}
+                              ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                            </td>
+                            <td class="location-col">
+                              ${item.location ? `<div>${item.location}</div>` : ''}
+                            </td>
+                          </tr>
+                        `).join('')}
+                      </tbody>
+                    </table>
+                  </div>
+                `).join('')}
+              </div>
           </div>
           
           <!-- Important Locations Section -->
@@ -366,7 +375,10 @@ function groupByDate(scheduleItems) {
     }
     groups[item.date].push(item);
   });
-  return Object.entries(groups);
+  
+  // Convert to array and sort by date (newest first)
+  return Object.entries(groups)
+    .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA));
 }
 
 function generatePDF() {
@@ -1503,26 +1515,35 @@ async function showInstructionPreview(instruction) {
                 ${groupByDate(instruction.schedule).map(([date, items]) => `
                   <div class="schedule-date-group">
                     <div class="section-subheader">
-                      ${new Date(date).toLocaleDateString()} • ${instruction.trackName}
+                      ${new Date(date).toLocaleDateString()} • ${instruction.trackName} ${instruction.eventName || ''}
                     </div>
-                    ${items.map(item => `
-                      <div class="schedule-entry">
-                        ${item.startText || item.startText2 ? `
-                          <div class="schedule-time-text">
-                            ${item.startText ? `<span>${item.startText}</span>` : ''}
-                            ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
-                            ${item.startTime}–${item.endTime}
-                          </div>
-                        ` : `
-                          <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
-                        `}
-                        <div class="schedule-activity">
-                          ${item.activity ? `<div>${item.activity}</div>` : ''}
-                          ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
-                        </div>
-                        ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
-                      </div>
-                    `).join('')}
+                    <table class="schedule-table">
+                      <thead>
+                        <tr>
+                          <th class="time-col">Time</th>
+                          <th class="activity-col">Activity</th>
+                          <th class="location-col">Location</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${items.map(item => `
+                          <tr class="schedule-entry">
+                            <td class="time-col">
+                              ${item.startText ? `<div>${item.startText}</div>` : ''}
+                              ${item.startText2 ? `<div class="secondary-language">${item.startText2}</div>` : ''}
+                              ${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}
+                            </td>
+                            <td class="activity-col">
+                              ${item.activity ? `<div>${item.activity}</div>` : ''}
+                              ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                            </td>
+                            <td class="location-col">
+                              ${item.location ? `<div>${item.location}</div>` : ''}
+                            </td>
+                          </tr>
+                        `).join('')}
+                      </tbody>
+                    </table>
                   </div>
                 `).join('')}
               </div>
