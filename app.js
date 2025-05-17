@@ -195,21 +195,29 @@ function showFullScreenPreview(instruction) {
               <div>${formattedDates} • ${instruction.trackName} ${instruction.eventName || ''}</div>
             </div>
             <div class="schedule-entries">
-              ${instruction.schedule.map(item => `
-                <div class="schedule-entry">
-                  ${item.startText || item.startText2 ? `
-                    <div class="schedule-time-text">
-                      ${item.startText ? `<span>${item.startText}</span>` : ''}
-                      ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
-                      ${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}
-                    </div>
-                  ` : `
-                    <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
-                  `}
-                  <div class="schedule-activity">
-                    ${item.activity ? `<div>${item.activity}` : ''} ${item.activity2 ? `/ <span class="secondary-language">${item.activity2}</span></div>` : `</div>`}
+              ${groupByDate(instruction.schedule).map(([date, items]) => `
+                <div class="schedule-date-group">
+                  <div class="schedule-date-header">
+                    ${new Date(date).toLocaleDateString()}
                   </div>
-                  ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
+                  ${items.map(item => `
+                    <div class="schedule-entry">
+                      ${item.startText || item.startText2 ? `
+                        <div class="schedule-time-text">
+                          ${item.startText ? `<span>${item.startText}</span>` : ''}
+                          ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
+                          ${item.startTime}–${item.endTime}
+                        </div>
+                      ` : `
+                        <div class="schedule-time">${item.startTime}–${item.endTime}</div>
+                      `}
+                      <div class="schedule-activity">
+                        ${item.activity ? `<div>${item.activity}</div>` : ''}
+                        ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                      </div>
+                      ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
+                    </div>
+                  `).join('')}
                 </div>
               `).join('')}
             </div>
@@ -334,7 +342,7 @@ function showFullScreenPreview(instruction) {
   
   previewContainer.appendChild(a4Container);
   
-  // // Add print button
+  // Add print button
   const printButtonContainer = document.createElement('div');
   printButtonContainer.className = 'print-button-container';
   
@@ -343,7 +351,7 @@ function showFullScreenPreview(instruction) {
   printButton.textContent = 'Download PDF';
   
   printButton.addEventListener('click', () => {
-  generatePDF();
+    generatePDF();
   });
   
   printButtonContainer.appendChild(printButton);
@@ -351,6 +359,17 @@ function showFullScreenPreview(instruction) {
   
   // Set the body to preview mode
   document.body.classList.add('preview-mode');
+}
+
+function groupByDate(scheduleItems) {
+  const groups = {};
+  scheduleItems.forEach(item => {
+    if (!groups[item.date]) {
+      groups[item.date] = [];
+    }
+    groups[item.date].push(item);
+  });
+  return Object.entries(groups);
 }
 
 function generatePDF() {
@@ -1174,17 +1193,18 @@ function getInstructionFormData(form, scheduleTableBody, locationsTableBody, sel
 }
 
 function getScheduleFromTable(tableBody) {
-return Array.from(tableBody.querySelectorAll('tr')).map(row => {
-  return {
-    startText: row.querySelector('input[name="startText"]').value,
-    startText2: row.querySelector('input[name="startText2"]').value,
-    startTime: row.querySelector('input[name="startTime"]').value,
-    endTime: row.querySelector('input[name="endTime"]').value,
-    activity: row.querySelector('input[name="activity"]').value,
-    activity2: row.querySelector('input[name="activity2"]').value,
-    location: row.querySelector('input[name="location"]').value
-  };
-});
+  return Array.from(tableBody.querySelectorAll('tr')).map(row => {
+    return {
+      date: row.querySelector('select[name="scheduleDate"]').value,
+      startText: row.querySelector('input[name="startText"]').value,
+      startText2: row.querySelector('input[name="startText2"]').value,
+      startTime: row.querySelector('input[name="startTime"]').value,
+      endTime: row.querySelector('input[name="endTime"]').value,
+      activity: row.querySelector('input[name="activity"]').value,
+      activity2: row.querySelector('input[name="activity2"]').value,
+      location: row.querySelector('input[name="location"]').value
+    };
+  });
 }
 
 function getLocationsFromTable(tableBody) {
@@ -1198,56 +1218,74 @@ return Array.from(tableBody.querySelectorAll('tr')).map(row => {
 }
 
 function renderScheduleTable(tableBody, scheduleItems) {
-tableBody.innerHTML = '';
+  tableBody.innerHTML = '';
 
-scheduleItems.forEach((item, index) => {
-  const row = document.createElement('tr');
-  row.innerHTML = `
-    <td><input type="text" name="startText" class="form-input" value="${item.startText || ''}" placeholder="Optional text (EN)"></td>
-    <td><input type="text" name="startText2" class="form-input" value="${item.startText2 || ''}" placeholder="Optional text (2nd lang)"></td>
-    <td><input type="time" name="startTime" class="form-input" value="${item.startTime}" required></td>
-    <td><input type="time" name="endTime" class="form-input" value="${item.endTime}" placeholder="Optional"></td>
-    <td><input type="text" name="activity" class="form-input" value="${item.activity}" required placeholder="Activity (EN)"></td>
-    <td><input type="text" name="activity2" class="form-input" value="${item.activity2 || ''}" placeholder="Activity (2nd lang)"></td>
-    <td><input type="text" name="location" class="form-input" value="${item.location}" placeholder="Optional"></td>
-    <td>
-      <button type="button" class="delete-btn">Remove</button>
-    </td>
-  `;
-  
-  row.querySelector('.delete-btn').addEventListener('click', () => {
-    if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last schedule item?')) {
-      row.remove();
-    }
+  scheduleItems.forEach((item, index) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>
+        <select name="scheduleDate" class="form-input" required>
+          ${selectedDates.map(date => `
+            <option value="${date}" ${item.date === date ? 'selected' : ''}>
+              ${new Date(date).toLocaleDateString()}
+            </option>
+          `).join('')}
+        </select>
+      </td>
+      <td><input type="text" name="startText" class="form-input" value="${item.startText || ''}" placeholder="Optional text (EN)"></td>
+      <td><input type="text" name="startText2" class="form-input" value="${item.startText2 || ''}" placeholder="Optional text (2nd lang)"></td>
+      <td><input type="time" name="startTime" class="form-input" value="${item.startTime}" required></td>
+      <td><input type="time" name="endTime" class="form-input" value="${item.endTime}" placeholder="Optional"></td>
+      <td><input type="text" name="activity" class="form-input" value="${item.activity}" required placeholder="Activity (EN)"></td>
+      <td><input type="text" name="activity2" class="form-input" value="${item.activity2 || ''}" placeholder="Activity (2nd lang)"></td>
+      <td><input type="text" name="location" class="form-input" value="${item.location}" placeholder="Optional"></td>
+      <td>
+        <button type="button" class="delete-btn">Remove</button>
+      </td>
+    `;
+    
+    row.querySelector('.delete-btn').addEventListener('click', () => {
+      if (tableBody.querySelectorAll('tr').length > 1 || confirm('Remove the last schedule item?')) {
+        row.remove();
+      }
+    });
+    
+    tableBody.appendChild(row);
   });
-  
-  tableBody.appendChild(row);
-});
 
-// Add at least one row if empty
-if (tableBody.querySelectorAll('tr').length === 0) {
-  const row = document.createElement('tr');
-  row.innerHTML = `
-    <td><input type="text" name="startText" class="form-input" placeholder="Optional text (EN)"></td>
-    <td><input type="text" name="startText2" class="form-input" placeholder="Optional text (2nd lang)"></td>
-    <td><input type="time" name="startTime" class="form-input" value="09:00" required></td>
-    <td><input type="time" name="endTime" class="form-input" value="17:00" placeholder="Optional"></td>
-    <td><input type="text" name="activity" class="form-input" value="Track Session" required placeholder="Activity (EN)"></td>
-    <td><input type="text" name="activity2" class="form-input" placeholder="Activity (2nd lang)"></td>
-    <td><input type="text" name="location" class="form-input" placeholder="Optional"></td>
-    <td>
-      <button type="button" class="delete-btn">Remove</button>
-    </td>
-  `;
-  
-  row.querySelector('.delete-btn').addEventListener('click', () => {
-    if (confirm('Remove the last schedule item?')) {
-      row.remove();
-    }
-  });
-  
-  tableBody.appendChild(row);
-}
+  // Add at least one row if empty
+  if (tableBody.querySelectorAll('tr').length === 0 && selectedDates.length > 0) {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>
+        <select name="scheduleDate" class="form-input" required>
+          ${selectedDates.map(date => `
+            <option value="${date}">
+              ${new Date(date).toLocaleDateString()}
+            </option>
+          `).join('')}
+        </select>
+      </td>
+      <td><input type="text" name="startText" class="form-input" placeholder="Optional text (EN)"></td>
+      <td><input type="text" name="startText2" class="form-input" placeholder="Optional text (2nd lang)"></td>
+      <td><input type="time" name="startTime" class="form-input" value="09:00" required></td>
+      <td><input type="time" name="endTime" class="form-input" value="17:00" placeholder="Optional"></td>
+      <td><input type="text" name="activity" class="form-input" value="Track Session" required placeholder="Activity (EN)"></td>
+      <td><input type="text" name="activity2" class="form-input" placeholder="Activity (2nd lang)"></td>
+      <td><input type="text" name="location" class="form-input" placeholder="Optional"></td>
+      <td>
+        <button type="button" class="delete-btn">Remove</button>
+      </td>
+    `;
+    
+    row.querySelector('.delete-btn').addEventListener('click', () => {
+      if (confirm('Remove the last schedule item?')) {
+        row.remove();
+      }
+    });
+    
+    tableBody.appendChild(row);
+  }
 }
 
 function renderLocationsTable(tableBody, locations) {
@@ -1468,22 +1506,29 @@ async function showInstructionPreview(instruction) {
                 <div>${formattedDates} • ${instruction.trackName}</div>
               </div>
               <div class="schedule-entries">
-                ${instruction.schedule.map(item => `
-                  <div class="schedule-entry">
-                    ${item.startText || item.startText2 ? `
-                      <div class="schedule-time-text">
-                        ${item.startText ? `<span>${item.startText}</span>` : ''}
-                        ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
-                        ${item.startTime}–${item.endTime}
-                      </div>
-                    ` : `
-                      <div class="schedule-time">${item.startTime}–${item.endTime}</div>
-                    `}
-                    <div class="schedule-activity">
-                      ${item.activity ? `<div>${item.activity}</div>` : ''}
-                      ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                ${groupByDate(instruction.schedule).map(([date, items]) => `
+                  <div class="schedule-date-group">
+                    <div class="schedule-date-header">
+                      ${new Date(date).toLocaleDateString()}
                     </div>
-                    ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
+                    ${items.map(item => `
+                      <div class="schedule-entry">
+                        ${item.startText || item.startText2 ? `
+                          <div class="schedule-time-text">
+                            ${item.startText ? `<span>${item.startText}</span>` : ''}
+                            ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
+                            ${item.startTime}–${item.endTime}
+                          </div>
+                        ` : `
+                          <div class="schedule-time">${item.startTime}–${item.endTime}</div>
+                        `}
+                        <div class="schedule-activity">
+                          ${item.activity ? `<div>${item.activity}</div>` : ''}
+                          ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                        </div>
+                        ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
+                      </div>
+                    `).join('')}
                   </div>
                 `).join('')}
               </div>
