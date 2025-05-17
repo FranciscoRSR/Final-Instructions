@@ -704,7 +704,7 @@ async function showInstructionModal(instructionId = null) {
     };
   }
 
-  const selectedDates = initialSelectedDates || [];
+  const selectedDates = instruction.dates || [];
   const modal = createModal('Final Instruction Details');
 
   modal.content.innerHTML = `
