@@ -1872,7 +1872,7 @@ function generatePDFContent(instruction, trackDetails) {
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 5mm;
+        padding: 0mm;
         margin: 0;
         text-align: center;
       }
