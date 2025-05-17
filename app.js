@@ -527,17 +527,19 @@ function renderInstructions() {
         <button class="edit-btn" data-id="${id}">Edit</button>
         <button class="duplicate-btn" data-id="${id}">Duplicate</button>
         <button class="preview-btn" data-id="${id}">Preview</button>
+        <button class="download-btn" data-id="${id}">Download PDF</button>
         <button class="delete-btn" data-id="${id}">Delete</button>
       </td>
-  `;
-  
-  row.querySelector('.edit-btn').addEventListener('click', () => showInstructionModal(id));
-  row.querySelector('.duplicate-btn').addEventListener('click', () => duplicateInstruction(id));
-  row.querySelector('.preview-btn').addEventListener('click', () => previewInstruction(id));
-  row.querySelector('.delete-btn').addEventListener('click', () => confirmDeleteInstruction(id));
-  
-  instructionsTable.appendChild(row);
-});
+    `;
+    
+    row.querySelector('.edit-btn').addEventListener('click', () => showInstructionModal(id));
+    row.querySelector('.duplicate-btn').addEventListener('click', () => duplicateInstruction(id));
+    row.querySelector('.preview-btn').addEventListener('click', () => previewInstruction(id));
+    row.querySelector('.delete-btn').addEventListener('click', () => confirmDeleteInstruction(id));
+    row.querySelector('.download-btn').addEventListener('click', () => downloadPDF(id));
+    
+    instructionsTable.appendChild(row);
+  });
 }
 
 // Track Functions
@@ -1756,6 +1758,317 @@ Toastify({
   position: 'right',
   className: `toastify-${type}`,
 }).showToast();
+}
+
+async function downloadPDF(instructionId) {
+  if (!instructions[instructionId]) return;
+
+  try {
+    const instruction = instructions[instructionId];
+    const trackDetails = instruction.trackId ? tracks[instruction.trackId] : null;
+    
+    // Create a temporary container for PDF generation
+    const element = document.createElement('div');
+    element.className = 'pdf-container';
+    
+    // Format dates for filename
+    const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString('en-GB')).join('_');
+    const filename = `${instruction.instructionName || instruction.trackName}_${formattedDates}.pdf`.replace(/[^a-zA-Z0-9-_]/g, '_');
+    
+    // Generate the HTML content for the PDF
+    element.innerHTML = generatePDFContent(instruction, trackDetails);
+    
+    // PDF options
+    const opt = {
+      margin: 0,
+      filename: filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { 
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        allowTaint: true
+      },
+      jsPDF: { 
+        unit: 'mm', 
+        format: 'a4', 
+        orientation: 'portrait'
+      },
+      pagebreak: { 
+        mode: ['avoid-all', 'css', 'legacy'],
+        before: '.a4-page-2' // Force page break before page 2
+      }
+    };
+
+    // Generate and download the PDF
+    await html2pdf().set(opt).from(element).save();
+    
+    // Clean up
+    element.remove();
+    
+  } catch (error) {
+    showToast('Error generating PDF: ' + error.message, 'error');
+    console.error('PDF generation error:', error);
+  }
+}
+
+function generatePDFContent(instruction, trackDetails) {
+  // Format dates for display
+  const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString()).join(', ');
+  
+  // Overtaking rules text
+  let overtakingText = '';
+  switch (instruction.overtakingRules) {
+    case 'leftSideOnly': overtakingText = 'Left Side Only'; break;
+    case 'rightSideOnly': overtakingText = 'Right Side Only'; break;
+    case 'eitherSide': overtakingText = 'Either Side'; break;
+  }
+
+  return `
+    <style>
+      .pdf-container {
+        font-family: Arial, sans-serif;
+        width: 210mm;
+      }
+      .a4-page {
+        width: 210mm;
+        min-height: 297mm;
+        page-break-after: always;
+        margin: 0;
+        padding: 0;
+      }
+      .a4-page:last-child {
+        page-break-after: auto;
+      }
+      .a4-page-1, .a4-page-2 {
+        width: 100%;
+        height: 100%;
+        padding: 15mm;
+        box-sizing: border-box;
+      }
+      .a4-left-section {
+        width: 50%;
+        float: left;
+        padding-right: 10mm;
+        box-sizing: border-box;
+      }
+      .a4-right-section {
+        width: 50%;
+        float: right;
+        padding-left: 10mm;
+        box-sizing: border-box;
+      }
+      .section-header {
+        color: white;
+        font-weight: bold;
+        padding: 3mm;
+        margin-bottom: 3mm;
+      }
+      .red-bg { background: #e74c3c; }
+      .orange-bg { background: #f39c12; }
+      .green-bg { background: #2ecc71; }
+      .yellow-bg { background: #f1c40f; }
+      .blue-bg { background: #3498db; }
+      .section-subheader {
+        color: #e74c3c;
+        font-weight: bold;
+        margin-bottom: 5mm;
+        padding-bottom: 2mm;
+        border-bottom: 1px solid #ddd;
+      }
+      .secondary-language {
+        color: #777;
+        font-size: 0.9em;
+      }
+      .schedule-entry {
+        margin-bottom: 3mm;
+      }
+      .schedule-time {
+        font-weight: bold;
+      }
+      .warning-item {
+        display: flex;
+        align-items: center;
+        gap: 2mm;
+        margin-bottom: 2mm;
+      }
+      .warning-image {
+        width: 15mm;
+        height: 15mm;
+      }
+      .note-entry {
+        margin-bottom: 5mm;
+      }
+      .track-shape {
+        max-width: 100%;
+        max-height: 270mm;
+      }
+      .clearfix::after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+    </style>
+
+    <!-- Page 1 -->
+    <div class="a4-page">
+      <div class="a4-page-1 clearfix">
+        <!-- Left Section -->
+        <div class="a4-left-section">
+          <!-- Track Logo -->
+          ${trackDetails?.logoUrl ? `
+            <div style="height: 30mm; margin-bottom: 5mm;">
+              <img src="${trackDetails.logoUrl}" alt="${trackDetails.name} Logo" style="max-height: 100%; max-width: 100%;">
+            </div>
+          ` : ''}
+          
+          <!-- Schedule Section -->
+          <div>
+            <div class="section-header red-bg">
+              <div>${instruction.scheduleLabel || 'Schedule'}</div>
+              ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
+            </div>
+            ${groupByDate(instruction.schedule)
+              .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
+              .map(([date, items]) => `
+                <div style="margin-bottom: 5mm;">
+                  <div class="section-subheader">
+                    ${new Date(date).toLocaleDateString()} • ${instruction.trackName} ${instruction.eventName || ''}
+                  </div>
+                  ${items.map(item => `
+                    <div class="schedule-entry">
+                      <div>
+                        ${item.startText || item.startText2 ? `
+                          <div>
+                            ${item.startText ? `<span>${item.startText}</span>` : ''}
+                            ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
+                            ${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}
+                          </div>
+                        ` : `
+                          <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
+                        `}
+                      </div>
+                      <div>
+                        ${item.activity ? `<div>${item.activity}</div>` : ''}
+                        ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                      </div>
+                      ${item.location ? `<div>${item.location}</div>` : ''}
+                    </div>
+                  `).join('')}
+                </div>
+              `).join('')}
+          </div>
+          
+          <!-- Important Locations Section -->
+          <div style="margin-top: 10mm;">
+            <div class="section-header orange-bg">
+              <div>${instruction.locationsLabel || 'Important Locations'}</div>
+              ${instruction.locationsLabel2 ? `<div class="secondary-language">${instruction.locationsLabel2}</div>` : ''}
+            </div>
+            ${instruction.locations.map(location => `
+              <div style="margin-bottom: 3mm;">
+                <div>
+                  <strong>${location.name}</strong>
+                  ${location.name2 ? `<span class="secondary-language"> / ${location.name2}</span>` : ''}
+                </div>
+                <div>${location.address}</div>
+              </div>
+            `).join('')}
+          </div>
+          
+          <!-- Overtaking Rules Section -->
+          <div style="margin-top: 10mm;">
+            <div class="section-header green-bg">
+              <div>${instruction.overtakingRulesLabel || 'Overtaking Rules'}</div>
+              ${instruction.overtakingRulesLabel2 ? `<div class="secondary-language">${instruction.overtakingRulesLabel2}</div>` : ''}
+            </div>
+            <div>
+              ${instruction.overtakingText1 ? `<div>${instruction.overtakingText1} <strong>${overtakingText}</strong> ${instruction.overtakingText2 || ''}</div>` : ''}
+              ${instruction.overtakingText1Second ? `<div class="secondary-language">${instruction.overtakingText1Second} <strong>${overtakingText}</strong> ${instruction.overtakingText2Second || ''}</div>` : ''}
+            </div>
+          </div>
+          
+          <!-- Track Warnings Section -->
+          <div style="margin-top: 10mm;">
+            <div class="section-header yellow-bg">
+              <div>${instruction.warningsLabel || 'Track Warnings'}</div>
+              ${instruction.warningsLabel2 ? `<div class="secondary-language">${instruction.warningsLabel2}</div>` : ''}
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 3mm;">
+              ${instruction.warnings.map(warning => `
+                <div class="warning-item">
+                  ${warning.imageUrl ? `
+                    <div class="warning-image">
+                      <img src="${warning.imageUrl}" alt="${warning.name || 'Warning flag'}" style="max-width: 100%; max-height: 100%;">
+                    </div>
+                  ` : ''}
+                  <div>
+                    <div>${warning.name}</div>
+                    ${warning.name2 ? `<div class="secondary-language">${warning.name2}</div>` : ''}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <div style="margin-top: 10mm; text-align: center;">
+            ${instruction.footerImageUrl ? `
+              <img src="${instruction.footerImageUrl}" alt="Footer Image" style="max-width: 100%; max-height: 20mm;">
+            ` : ''}
+          </div>
+        </div>
+        
+        <!-- Right Section -->
+        <div class="a4-right-section">
+          <!-- Top Area -->
+          <div style="margin-bottom: 10mm;">
+            <div style="font-size: 18pt; font-weight: bold;">${instruction.trackName}</div>
+            ${instruction.eventName ? `<div style="font-size: 14pt; margin: 2mm 0;">${instruction.eventName}</div>` : ''}
+            <div style="color: #777;">${formattedDates}</div>
+          </div>
+          
+          <!-- Additional Notes Section -->
+          <div>
+            <div class="section-header blue-bg">
+              <div>${instruction.notesLabel || 'Additional Notes'}</div>
+              ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
+            </div>
+            <!-- Noise Limit -->
+            ${instruction.noiseLimit ? `
+              <div style="margin-bottom: 5mm;">
+                ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''}
+                ${instruction.noiseLimitTextSecond ? `<div class="secondary-language">${instruction.noiseLimitTextSecond}</div>` : ''}
+                <div style="font-weight: bold;">${instruction.noiseLimit} dB</div>
+              </div>
+            ` : ''}
+            
+            <!-- Additional Notes -->
+            ${instruction.notes.map(note => `
+              <div class="note-entry">
+                ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
+                ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
+                ${note.imageUrl ? `
+                  <div style="margin-top: 3mm; text-align: center;">
+                    <img src="${note.imageUrl}" alt="Note image" style="max-width: 100%; max-height: 50mm;">
+                  </div>
+                ` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Page 2 - Track Shape -->
+    ${trackDetails?.trackShapeUrl ? `
+      <div class="a4-page">
+        <div class="a4-page-2" style="display: flex; align-items: center; justify-content: center;">
+          <img src="${trackDetails.trackShapeUrl}" alt="${trackDetails.name} Track Shape" class="track-shape">
+        </div>
+      </div>
+    ` : ''}
+  `;
 }
 
 // Export functions for potential use in other modules
