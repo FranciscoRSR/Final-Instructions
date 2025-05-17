@@ -192,41 +192,43 @@ function showFullScreenPreview(instruction) {
               ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
             </div>
             <div class="schedule-entries">
-                ${groupByDate(instruction.schedule).map(([date, items]) => `
+              <div class="schedule-header">
+                <div class="schedule-col time-col">Time</div>
+                <div class="schedule-col activity-col">Activity</div>
+                <div class="schedule-col location-col">Location</div>
+              </div>
+              ${groupByDate(instruction.schedule)
+                .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA)) // Sort dates newest to oldest
+                .map(([date, items]) => `
                   <div class="schedule-date-group">
                     <div class="section-subheader">
                       ${new Date(date).toLocaleDateString()} • ${instruction.trackName} ${instruction.eventName || ''}
                     </div>
-                    <table class="schedule-table">
-                      <thead>
-                        <tr>
-                          <th class="time-col">Time</th>
-                          <th class="activity-col">Activity</th>
-                          <th class="location-col">Location</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        ${items.map(item => `
-                          <tr class="schedule-entry">
-                            <td class="time-col">
-                              ${item.startText ? `<div>${item.startText}</div>` : ''}
-                              ${item.startText2 ? `<div class="secondary-language">${item.startText2}</div>` : ''}
+                    ${items.map(item => `
+                      <div class="schedule-entry">
+                        <div class="schedule-col time-col">
+                          ${item.startText || item.startText2 ? `
+                            <div class="schedule-time-text">
+                              ${item.startText ? `<span>${item.startText}</span>` : ''}
+                              ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
                               ${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}
-                            </td>
-                            <td class="activity-col">
-                              ${item.activity ? `<div>${item.activity}</div>` : ''}
-                              ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
-                            </td>
-                            <td class="location-col">
-                              ${item.location ? `<div>${item.location}</div>` : ''}
-                            </td>
-                          </tr>
-                        `).join('')}
-                      </tbody>
-                    </table>
+                            </div>
+                          ` : `
+                            <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
+                          `}
+                        </div>
+                        <div class="schedule-col activity-col">
+                          ${item.activity ? `<div>${item.activity}</div>` : ''}
+                          ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                        </div>
+                        <div class="schedule-col location-col">
+                          ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
+                        </div>
+                      </div>
+                    `).join('')}
                   </div>
                 `).join('')}
-              </div>
+            </div>
           </div>
           
           <!-- Important Locations Section -->
@@ -375,10 +377,7 @@ function groupByDate(scheduleItems) {
     }
     groups[item.date].push(item);
   });
-  
-  // Convert to array and sort by date (newest first)
-  return Object.entries(groups)
-    .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA));
+  return Object.entries(groups);
 }
 
 function generatePDF() {
@@ -1512,40 +1511,42 @@ async function showInstructionPreview(instruction) {
                 ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
               </div>
               <div class="schedule-entries">
-                ${groupByDate(instruction.schedule).map(([date, items]) => `
-                  <div class="schedule-date-group">
-                    <div class="section-subheader">
-                      ${new Date(date).toLocaleDateString()} • ${instruction.trackName} ${instruction.eventName || ''}
+                <div class="schedule-header">
+                  <div class="schedule-col time-col">Time</div>
+                  <div class="schedule-col activity-col">Activity</div>
+                  <div class="schedule-col location-col">Location</div>
+                </div>
+                ${groupByDate(instruction.schedule)
+                  .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA)) // Sort dates newest to oldest
+                  .map(([date, items]) => `
+                    <div class="schedule-date-group">
+                      <div class="section-subheader">
+                        ${new Date(date).toLocaleDateString()} • ${instruction.trackName} ${instruction.eventName || ''}
+                      </div>
+                      ${items.map(item => `
+                        <div class="schedule-entry">
+                          <div class="schedule-col time-col">
+                            ${item.startText || item.startText2 ? `
+                              <div class="schedule-time-text">
+                                ${item.startText ? `<span>${item.startText}</span>` : ''}
+                                ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
+                                ${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}
+                              </div>
+                            ` : `
+                              <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
+                            `}
+                          </div>
+                          <div class="schedule-col activity-col">
+                            ${item.activity ? `<div>${item.activity}</div>` : ''}
+                            ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
+                          </div>
+                          <div class="schedule-col location-col">
+                            ${item.location ? `<div class="schedule-location">${item.location}</div>` : ''}
+                          </div>
+                        </div>
+                      `).join('')}
                     </div>
-                    <table class="schedule-table">
-                      <thead>
-                        <tr>
-                          <th class="time-col">Time</th>
-                          <th class="activity-col">Activity</th>
-                          <th class="location-col">Location</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        ${items.map(item => `
-                          <tr class="schedule-entry">
-                            <td class="time-col">
-                              ${item.startText ? `<div>${item.startText}</div>` : ''}
-                              ${item.startText2 ? `<div class="secondary-language">${item.startText2}</div>` : ''}
-                              ${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}
-                            </td>
-                            <td class="activity-col">
-                              ${item.activity ? `<div>${item.activity}</div>` : ''}
-                              ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
-                            </td>
-                            <td class="location-col">
-                              ${item.location ? `<div>${item.location}</div>` : ''}
-                            </td>
-                          </tr>
-                        `).join('')}
-                      </tbody>
-                    </table>
-                  </div>
-                `).join('')}
+                  `).join('')}
               </div>
             </div>
             
