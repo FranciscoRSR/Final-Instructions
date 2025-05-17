@@ -1614,7 +1614,7 @@ async function showInstructionPreview(instruction) {
           <div class="a4-right-section">
             <!-- Top Area -->
             <div class="right-top-area">
-              <div class="track-name">${instruction.trackName}</div>
+              <div class="track-name">${instruction.trackName} • ${instruction.instructionName} </div>
               <div class="event-dates">${formattedDates}</div>
             </div>
             
@@ -1774,12 +1774,12 @@ async function downloadPDF(instructionId) {
     const formattedDates = instruction.dates.map(date => new Date(date).toLocaleDateString('en-GB')).join('_');
     const filename = `${instruction.instructionName || instruction.trackName}_${formattedDates}.pdf`.replace(/[^a-zA-Z0-9-_]/g, '_');
     
-    // Generate the HTML content for the PDF
+    // Generate the HTML content for the PDF with compact styling
     element.innerHTML = generatePDFContent(instruction, trackDetails);
     
-    // PDF options
+    // PDF options with narrow margins
     const opt = {
-      margin: 0,
+      margin: [5, 5, 5, 5], // Narrow margins: [top, right, bottom, left] in mm
       filename: filename,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
@@ -1827,7 +1827,9 @@ function generatePDFContent(instruction, trackDetails) {
     <style>
       .pdf-container {
         font-family: Arial, sans-serif;
-        width: 210mm;
+        width: 200mm;
+        font-size: 9pt; /* Smaller base font size */
+        line-height: 1.2; /* Tighter line spacing */
       }
       .a4-page {
         width: 210mm;
@@ -1842,26 +1844,27 @@ function generatePDFContent(instruction, trackDetails) {
       .a4-page-1, .a4-page-2 {
         width: 100%;
         height: 100%;
-        padding: 15mm;
+        padding: 5mm; /* Reduced padding */
         box-sizing: border-box;
       }
       .a4-left-section {
         width: 50%;
         float: left;
-        padding-right: 10mm;
+        padding-right: 5mm; /* Reduced padding */
         box-sizing: border-box;
       }
       .a4-right-section {
         width: 50%;
         float: right;
-        padding-left: 10mm;
+        padding-left: 5mm; /* Reduced padding */
         box-sizing: border-box;
       }
       .section-header {
         color: white;
         font-weight: bold;
-        padding: 3mm;
-        margin-bottom: 3mm;
+        padding: 2mm; /* Reduced padding */
+        margin-bottom: 2mm; /* Reduced margin */
+        font-size: 10pt; /* Slightly larger for headers */
       }
       .red-bg { background: #e74c3c; }
       .orange-bg { background: #f39c12; }
@@ -1871,16 +1874,18 @@ function generatePDFContent(instruction, trackDetails) {
       .section-subheader {
         color: #e74c3c;
         font-weight: bold;
-        margin-bottom: 5mm;
-        padding-bottom: 2mm;
+        margin-bottom: 3mm; /* Reduced margin */
+        padding-bottom: 1mm; /* Reduced padding */
         border-bottom: 1px solid #ddd;
+        font-size: 9.5pt; /* Slightly larger for subheaders */
       }
       .secondary-language {
         color: #777;
-        font-size: 0.9em;
+        font-size: 8pt; /* Smaller for secondary language */
       }
       .schedule-entry {
-        margin-bottom: 3mm;
+        margin-bottom: 2mm; /* Reduced margin */
+        font-size: 8.5pt; /* Slightly smaller for schedule */
       }
       .schedule-time {
         font-weight: bold;
@@ -1888,24 +1893,40 @@ function generatePDFContent(instruction, trackDetails) {
       .warning-item {
         display: flex;
         align-items: center;
-        gap: 2mm;
-        margin-bottom: 2mm;
+        gap: 1mm; /* Reduced gap */
+        margin-bottom: 1mm; /* Reduced margin */
+        font-size: 8.5pt; /* Slightly smaller for warnings */
       }
       .warning-image {
-        width: 15mm;
-        height: 15mm;
+        width: 12mm; /* Reduced size */
+        height: 12mm; /* Reduced size */
       }
       .note-entry {
-        margin-bottom: 5mm;
+        margin-bottom: 3mm; /* Reduced margin */
       }
       .track-shape {
         max-width: 100%;
-        max-height: 270mm;
+        max-height: 287mm; /* Slightly reduced to fit page */
       }
       .clearfix::after {
         content: "";
         display: table;
         clear: both;
+      }
+      .track-logo {
+        max-height: 20mm !important; /* Smaller logo */
+      }
+      .footer-image {
+        max-height: 15mm !important; /* Smaller footer */
+      }
+      .right-top-area {
+        margin-bottom: 3mm !important; /* Reduced margin */
+      }
+      .track-name {
+        font-size: 14pt !important; /* Smaller than before */
+      }
+      .event-name {
+        font-size: 12pt !important; /* Smaller than before */
       }
     </style>
 
@@ -1916,13 +1937,13 @@ function generatePDFContent(instruction, trackDetails) {
         <div class="a4-left-section">
           <!-- Track Logo -->
           ${trackDetails?.logoUrl ? `
-            <div style="height: 30mm; margin-bottom: 5mm;">
-              <img src="${trackDetails.logoUrl}" alt="${trackDetails.name} Logo" style="max-height: 100%; max-width: 100%;">
+            <div style="height: 20mm; margin-bottom: 3mm; text-align: center;">
+              <img src="${trackDetails.logoUrl}" alt="${trackDetails.name} Logo" class="track-logo" style="max-height: 100%; max-width: 100%;">
             </div>
           ` : ''}
           
-          <!-- Schedule Section -->
-          <div>
+          <!-- Schedule Section - Made more compact -->
+          <div style="margin-bottom: 5mm;">
             <div class="section-header red-bg">
               <div>${instruction.scheduleLabel || 'Schedule'}</div>
               ${instruction.scheduleLabel2 ? `<div class="secondary-language">${instruction.scheduleLabel2}</div>` : ''}
@@ -1930,42 +1951,42 @@ function generatePDFContent(instruction, trackDetails) {
             ${groupByDate(instruction.schedule)
               .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
               .map(([date, items]) => `
-                <div style="margin-bottom: 5mm;">
+                <div style="margin-bottom: 3mm;">
                   <div class="section-subheader">
                     ${new Date(date).toLocaleDateString()} • ${instruction.trackName} ${instruction.eventName || ''}
                   </div>
                   ${items.map(item => `
-                    <div class="schedule-entry">
+                    <div class="schedule-entry" style="margin-bottom: 1mm;">
                       <div>
                         ${item.startText || item.startText2 ? `
-                          <div>
+                          <div style="font-size: 8.5pt;">
                             ${item.startText ? `<span>${item.startText}</span>` : ''}
                             ${item.startText2 ? `<span class="secondary-language">${item.startText2}</span>` : ''}
                             ${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}
                           </div>
                         ` : `
-                          <div class="schedule-time">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
+                          <div class="schedule-time" style="font-size: 8.5pt;">${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}</div>
                         `}
                       </div>
-                      <div>
+                      <div style="font-size: 8.5pt;">
                         ${item.activity ? `<div>${item.activity}</div>` : ''}
                         ${item.activity2 ? `<div class="secondary-language">${item.activity2}</div>` : ''}
                       </div>
-                      ${item.location ? `<div>${item.location}</div>` : ''}
+                      ${item.location ? `<div style="font-size: 8pt;">${item.location}</div>` : ''}
                     </div>
                   `).join('')}
                 </div>
               `).join('')}
           </div>
           
-          <!-- Important Locations Section -->
-          <div style="margin-top: 10mm;">
+          <!-- Important Locations Section - Made more compact -->
+          <div style="margin-bottom: 5mm;">
             <div class="section-header orange-bg">
               <div>${instruction.locationsLabel || 'Important Locations'}</div>
               ${instruction.locationsLabel2 ? `<div class="secondary-language">${instruction.locationsLabel2}</div>` : ''}
             </div>
             ${instruction.locations.map(location => `
-              <div style="margin-bottom: 3mm;">
+              <div style="margin-bottom: 2mm; font-size: 8.5pt;">
                 <div>
                   <strong>${location.name}</strong>
                   ${location.name2 ? `<span class="secondary-language"> / ${location.name2}</span>` : ''}
@@ -1975,25 +1996,25 @@ function generatePDFContent(instruction, trackDetails) {
             `).join('')}
           </div>
           
-          <!-- Overtaking Rules Section -->
-          <div style="margin-top: 10mm;">
+          <!-- Overtaking Rules Section - Made more compact -->
+          <div style="margin-bottom: 5mm;">
             <div class="section-header green-bg">
               <div>${instruction.overtakingRulesLabel || 'Overtaking Rules'}</div>
               ${instruction.overtakingRulesLabel2 ? `<div class="secondary-language">${instruction.overtakingRulesLabel2}</div>` : ''}
             </div>
-            <div>
+            <div style="font-size: 8.5pt;">
               ${instruction.overtakingText1 ? `<div>${instruction.overtakingText1} <strong>${overtakingText}</strong> ${instruction.overtakingText2 || ''}</div>` : ''}
               ${instruction.overtakingText1Second ? `<div class="secondary-language">${instruction.overtakingText1Second} <strong>${overtakingText}</strong> ${instruction.overtakingText2Second || ''}</div>` : ''}
             </div>
           </div>
           
-          <!-- Track Warnings Section -->
-          <div style="margin-top: 10mm;">
+          <!-- Track Warnings Section - Made more compact -->
+          <div style="margin-bottom: 5mm;">
             <div class="section-header yellow-bg">
               <div>${instruction.warningsLabel || 'Track Warnings'}</div>
               ${instruction.warningsLabel2 ? `<div class="secondary-language">${instruction.warningsLabel2}</div>` : ''}
             </div>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 3mm;">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2mm;">
               ${instruction.warnings.map(warning => `
                 <div class="warning-item">
                   ${warning.imageUrl ? `
@@ -2001,7 +2022,7 @@ function generatePDFContent(instruction, trackDetails) {
                       <img src="${warning.imageUrl}" alt="${warning.name || 'Warning flag'}" style="max-width: 100%; max-height: 100%;">
                     </div>
                   ` : ''}
-                  <div>
+                  <div style="font-size: 8.5pt;">
                     <div>${warning.name}</div>
                     ${warning.name2 ? `<div class="secondary-language">${warning.name2}</div>` : ''}
                   </div>
@@ -2010,24 +2031,23 @@ function generatePDFContent(instruction, trackDetails) {
             </div>
           </div>
           
-          <!-- Footer -->
-          <div style="margin-top: 10mm; text-align: center;">
+          <!-- Footer - Made smaller -->
+          <div style="margin-top: 3mm; text-align: center;">
             ${instruction.footerImageUrl ? `
-              <img src="${instruction.footerImageUrl}" alt="Footer Image" style="max-width: 100%; max-height: 20mm;">
+              <img src="${instruction.footerImageUrl}" alt="Footer Image" class="footer-image" style="max-width: 100%;">
             ` : ''}
           </div>
         </div>
         
-        <!-- Right Section -->
+        <!-- Right Section - Made more compact -->
         <div class="a4-right-section">
           <!-- Top Area -->
-          <div style="margin-bottom: 10mm;">
-            <div style="font-size: 18pt; font-weight: bold;">${instruction.trackName}</div>
-            ${instruction.eventName ? `<div style="font-size: 14pt; margin: 2mm 0;">${instruction.eventName}</div>` : ''}
-            <div style="color: #777;">${formattedDates}</div>
+          <div class="right-top-area">
+            <div class="track-name">${instruction.trackName} • ${instruction.instructionName} </div>
+            <div style="color: #777; font-size: 8.5pt;">${formattedDates}</div>
           </div>
           
-          <!-- Additional Notes Section -->
+          <!-- Additional Notes Section - Made more compact -->
           <div>
             <div class="section-header blue-bg">
               <div>${instruction.notesLabel || 'Additional Notes'}</div>
@@ -2035,7 +2055,7 @@ function generatePDFContent(instruction, trackDetails) {
             </div>
             <!-- Noise Limit -->
             ${instruction.noiseLimit ? `
-              <div style="margin-bottom: 5mm;">
+              <div style="margin-bottom: 3mm; font-size: 8.5pt;">
                 ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}</div>` : ''}
                 ${instruction.noiseLimitTextSecond ? `<div class="secondary-language">${instruction.noiseLimitTextSecond}</div>` : ''}
                 <div style="font-weight: bold;">${instruction.noiseLimit} dB</div>
@@ -2044,12 +2064,12 @@ function generatePDFContent(instruction, trackDetails) {
             
             <!-- Additional Notes -->
             ${instruction.notes.map(note => `
-              <div class="note-entry">
+              <div class="note-entry" style="font-size: 8.5pt;">
                 ${note.text ? `<div>${note.text.replace(/\n/g, '<br>')}</div>` : ''}
                 ${note.text2 ? `<div class="secondary-language">${note.text2.replace(/\n/g, '<br>')}</div>` : ''}
                 ${note.imageUrl ? `
-                  <div style="margin-top: 3mm; text-align: center;">
-                    <img src="${note.imageUrl}" alt="Note image" style="max-width: 100%; max-height: 50mm;">
+                  <div style="margin-top: 2mm; text-align: center;">
+                    <img src="${note.imageUrl}" alt="Note image" style="max-width: 100%; max-height: 40mm;">
                   </div>
                 ` : ''}
               </div>
