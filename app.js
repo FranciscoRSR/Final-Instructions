@@ -1828,7 +1828,7 @@ function generatePDFContent(instruction, trackDetails) {
       /* Base styles with tight spacing */
       .pdf-container {
         font-family: Arial, sans-serif;
-        max-width: 210mm;
+        max-width: 209mm;
         font-size: 8pt; /* Reduced from 9pt */
         line-height: 1.1; /* Reduced from 1.15 */
         margin: 0;
