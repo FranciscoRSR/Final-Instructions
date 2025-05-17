@@ -1827,6 +1827,24 @@ function generatePDFContent(instruction, trackDetails) {
     case 'rightSideOnly': overtakingText = 'Right Side Only'; break;
     case 'eitherSide': overtakingText = 'Either Side'; break;
   }
+  
+  // Helper function to group schedule by date
+  function groupByDate(schedule) {
+    const groups = {};
+    schedule.forEach(item => {
+      const date = item.date;
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(item);
+    });
+    return Object.entries(groups);
+  }
+
+  // Check if trackDetails is valid and has required properties
+  const hasTrackShape = trackDetails && trackDetails.trackShapeUrl && trackDetails.trackShapeUrl.trim() !== '';
+  const hasTrackLogo = trackDetails && trackDetails.logoUrl && trackDetails.logoUrl.trim() !== '';
+  const trackName = trackDetails && trackDetails.name ? trackDetails.name : 'Track';
 
   return `
     <style>
@@ -1869,15 +1887,13 @@ function generatePDFContent(instruction, trackDetails) {
         width: 210mm;
         height: 297mm;
         box-sizing: border-box;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 5mm;
+        display: block;
+        padding: 10mm;
         margin: 0;
         text-align: center;
       }
       
-      /* Layout sections */
+      /* Layout sections - Using grid instead of flexbox for better PDF rendering */
       .page-content {
         display: grid;
         grid-template-columns: 48% 48%;
@@ -1937,7 +1953,7 @@ function generatePDFContent(instruction, trackDetails) {
         margin-bottom: 2mm;
         font-size: 7.5pt;
       }
-      
+
       .schedule-header {
         display: flex;
         font-weight: bold;
@@ -1946,11 +1962,11 @@ function generatePDFContent(instruction, trackDetails) {
         margin-bottom: 0.5mm;
         text-align: center;
       }
-      
+
       .schedule-date-group {
         margin-bottom: 1mm;
       }
-      
+
       .schedule-date-header {
         font-weight: bold;
         color: #e74c3c;
@@ -1958,54 +1974,55 @@ function generatePDFContent(instruction, trackDetails) {
         padding-bottom: 0.1mm;
         border-bottom: 1px solid #ddd;
       }
-      
+
       .schedule-entry {
         display: flex;
         margin-bottom: 0.3mm;
         align-items: flex-start;
       }
-      
+
       .schedule-col {
         padding: 0 0.2mm;
       }
-      
+
       .time-col {
         flex: 0 0 25%;
         text-align: center;
       }
-      
+
       .activity-col {
         flex: 1;
         text-align: center;
       }
-      
+
       .location-col {
         flex: 0 0 25%;
         text-align: center;
       }
-      
+
       .schedule-time {
         font-weight: bold;
         white-space: nowrap;
       }
-      
+
       .schedule-time-text {
         font-weight: bold;
         margin-bottom: 0.1mm;
       }
-      
+
       .schedule-activity div:first-child {
         font-weight: bold;
       }
-      
+
       .schedule-activity div:not(:first-child) {
         margin-top: 0.1mm;
       }
-      
+
       .schedule-location {
         margin-top: 0.1mm;
       }
-      
+
+      /* For the header row */
       .schedule-header .time-col,
       .schedule-header .activity-col,
       .schedule-header .location-col {
@@ -2031,7 +2048,6 @@ function generatePDFContent(instruction, trackDetails) {
       .warning-image {
         width: 6mm;
         height: 6mm;
-        object-fit: contain;
       }
       
       .note-entry {
@@ -2039,22 +2055,16 @@ function generatePDFContent(instruction, trackDetails) {
         font-size: 7.5pt;
       }
       
-      .track-shape-container {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      
       .track-shape {
-        max-width: 200mm;
-        max-height: 287mm;
+        max-width: 190mm;
+        max-height: 277mm;
         object-fit: contain;
+        display: block;
+        margin: 0 auto;
       }
       
       .track-logo {
-        max-height: 15mm;
+        max-height: 15mm !important;
         margin-bottom: 1mm;
       }
       
@@ -2071,11 +2081,12 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .track-name {
-        font-size: 10pt;
+        font-size: 10pt !important;
         margin-bottom: 1mm;
         font-weight: bold;
       }
       
+      /* Grid for warnings */
       .warnings-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -2092,16 +2103,16 @@ function generatePDFContent(instruction, trackDetails) {
         font-weight: bold;
         margin-top: 0.5mm;
       }
-      
+        
       .schedule-time-text {
         font-weight: bold;
         margin-bottom: 1mm;
       }
-      
+
       .note-image-container {
         margin: 0;
       }
-      
+
       .note-image-container img {
         max-width: 100%;
         max-height: 20mm;
@@ -2113,16 +2124,23 @@ function generatePDFContent(instruction, trackDetails) {
         size: A4;
         margin: 0;
       }
-      
+
+      /* No page breaks inside content blocks */
       .no-break {
         page-break-inside: avoid;
         break-inside: avoid;
       }
       
+      /* Force every part of content to avoid page breaks */
       .section-header, .content-block, .note-entry, .warning-item, 
       .schedule-row, .section-subheader, table, tr, td, th {
         page-break-inside: avoid;
         break-inside: avoid;
+      }
+      
+      /* Debug borders for track shape container */
+      .track-shape-debug {
+        border: 1px dashed red;
       }
     </style>
 
@@ -2131,12 +2149,14 @@ function generatePDFContent(instruction, trackDetails) {
       <div class="page-content">
         <!-- Left Section -->
         <div class="left-section">
-          ${trackDetails?.logoUrl ? `
+          <!-- Track Logo -->
+          ${hasTrackLogo ? `
             <div style="text-align: center; margin-bottom: 1mm;">
-              <img src="${trackDetails.logoUrl}" alt="${trackDetails.name} Logo" class="track-logo no-break" style="max-height: 15mm;">
+              <img src="${trackDetails.logoUrl}" alt="${trackName} Logo" class="track-logo no-break" style="max-height: 15mm;">
             </div>
           ` : ''}
           
+          <!-- Schedule Section -->
           <div class="content-block no-break">
             <div class="section-header red-bg">
               <div>${instruction.scheduleLabel || 'Schedule'}</div>
@@ -2182,6 +2202,7 @@ function generatePDFContent(instruction, trackDetails) {
             </div>
           </div>
           
+          <!-- Important Locations Section -->
           <div class="content-block no-break">
             <div class="section-header orange-bg">
               <div>${instruction.locationsLabel || 'Important Locations'}</div>
@@ -2198,6 +2219,7 @@ function generatePDFContent(instruction, trackDetails) {
             `).join('')}
           </div>
           
+          <!-- Overtaking Rules Section -->
           <div class="content-block no-break">
             <div class="section-header green-bg">
               <div>${instruction.overtakingRulesLabel || 'Overtaking Rules'}</div>
@@ -2209,6 +2231,7 @@ function generatePDFContent(instruction, trackDetails) {
             </div>
           </div>
           
+          <!-- Footer - placed at the bottom using grid -->
           <div class="footer-container no-break">
             ${instruction.footerImageUrl ? `
               <img src="${instruction.footerImageUrl}" alt="Footer Image" class="footer-image">
@@ -2216,12 +2239,15 @@ function generatePDFContent(instruction, trackDetails) {
           </div>
         </div>
         
+        <!-- Right Section -->
         <div class="right-section">
+          <!-- Top Area -->
           <div style="margin-bottom: 12mm;" class="no-break">
             <div class="track-name">${instruction.trackName} • ${instruction.instructionName}</div>
             <div style="color: #777; font-size: 7.5pt;">${formattedDates}</div>
           </div>
-          
+
+          <!-- Track Warnings Section -->
           <div class="content-block no-break">
             <div class="section-header yellow-bg">
               <div>${instruction.warningsLabel || 'Track Warnings'}</div>
@@ -2241,39 +2267,51 @@ function generatePDFContent(instruction, trackDetails) {
             </div>
           </div>
           
+          <!-- Additional Notes Section -->
           <div style="margin-top: 2mm;" class="no-break">
             <div class="section-header blue-bg">
               <div>${instruction.notesLabel || 'Additional Notes'}</div>
               ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
             </div>
+            <!-- Noise Limit -->
             ${instruction.noiseLimit ? `
               <div style="margin-bottom: 1mm; font-size: 7.5pt;">
-                ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}${instruction.noiseLimitTextSecond ? ` <span class="secondary-language">/ ${instruction.noiseLimitTextSecond}</span>` : ''}</div>` : ''}
-                <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
-              </div>
-            ` : ''}
+                  ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}${instruction.noiseLimitTextSecond ? ` <span class="secondary-language">/ ${instruction.noiseLimitTextSecond}</span>` : ''}</div>` : ''}
+                  <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
+                </div>
+              ` : ''}
             
-            ${instruction.notes && instruction.notes.length ? instruction.notes.map(note => `
-              <div class="note-entry no-break">
-                ${note.text ? `<div>${note.text}${note.text2 ? ` <span class="secondary-language">/ ${note.text2}</span>` : ''}</div>` : ''}
-                ${note.imageUrl ? `
-                  <div class="note-image-container">
-                    <img src="${note.imageUrl}" alt="Note image">
-                  </div>
-                ` : ''}
-              </div>
-            `).join('') : ''}
+              <!-- Additional Notes -->
+              ${instruction.notes && instruction.notes.length ? instruction.notes.map(note => `
+                <div class="note-entry no-break">
+                  ${note.text ? `<div>${note.text}${note.text2 ? ` <span class="secondary-language">/ ${note.text2}</span>` : ''}</div>` : ''}
+                  ${note.imageUrl ? `
+                    <div class="note-image-container">
+                      <img src="${note.imageUrl}" alt="Note image">
+                    </div>
+                  ` : ''}
+                </div>
+              `).join('') : ''}
           </div>
         </div>
       </div>
     </div>
 
-    ${trackDetails?.trackShapeUrl ? `
+    <!-- Always add the page break and second page if there's a track shape to display -->
+    ${hasTrackShape ? `
+      <!-- Explicit page break -->
       <div class="explicit-page-break"></div>
       
-      <div class="page-two no-break">
-        <div class="track-shape-container">
-          <img src="${trackDetails.trackShapeUrl}" alt="${trackDetails.name} Track Shape" class="track-shape">
+      <!-- Page 2 - Track Shape -->
+      <div class="page-two">
+        <h2 style="margin-bottom: 10mm; color: #333;">${trackName} Track Layout</h2>
+        <div style="text-align: center; height: 250mm; display: flex; align-items: center; justify-content: center;">
+          <img 
+            src="${trackDetails.trackShapeUrl}" 
+            alt="${trackName} Track Shape" 
+            class="track-shape" 
+            onerror="this.onerror=null; this.src=''; this.alt='Track shape not available'; this.parentElement.innerHTML += '<p>Track image could not be loaded</p>';"
+          >
         </div>
       </div>
     ` : ''}
