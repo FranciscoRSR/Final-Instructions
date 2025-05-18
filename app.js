@@ -1798,9 +1798,9 @@ async function downloadPDF(instructionId) {
         compress: true // Enable compression
       },
       pagebreak: { 
-        mode: ['css', 'avoid-all'], // Changed order and removed 'legacy'
+        mode: ['avoid-all','css'], // Changed order and removed 'legacy'
         before: '.explicit-page-break', // More specific class name
-        avoid: '.no-break' // Added a class for elements that shouldn't break
+        avoid: ['.no-break', 'page-one','page-two'] // Added a class for elements that shouldn't break
       }
     };
 
