@@ -2067,12 +2067,20 @@ function generatePDFContent(instruction, trackDetails) {
         justify-content: center;
         align-items: center;
         border: 1px solid blue;
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
       }
-      
+
       .track-shape {
         width: 100%;
         height: auto;
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
         border: 1px dashed green;
+        margin: 0;
+        padding: 0;
       }
       
       .track-logo {
@@ -2307,6 +2315,7 @@ function generatePDFContent(instruction, trackDetails) {
 
     <!-- Always add the page break and second page if there's a track shape to display -->
     ${hasTrackShape ? `
+      <div class="explicit-page-break"></div>
       <div class="page-two">
         <div class="track-shape-container">
           <img src="${trackDetails.trackShapeUrl}" alt="${trackName} Track Shape" class="track-shape">
