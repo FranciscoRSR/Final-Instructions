@@ -1880,6 +1880,7 @@ function generatePDFContent(instruction, trackDetails) {
         margin: 0;
         padding: 0;
         clear: both;
+        border: 1px solid red;
       }
       
       /* Second page container - Modified for full page track shape */
