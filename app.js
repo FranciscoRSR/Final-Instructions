@@ -1886,10 +1886,10 @@ function generatePDFContent(instruction, trackDetails) {
       
       /* Second page container - Modified for full page track shape */
       .page-two {
-        width: 209mm;
-        height: 296mm;
+        width: 210mm;
+        height: 297mm;
         display: block;
-        padding: 10mm;
+        padding: 0mm;
         margin: 0;
         text-align: center;
         box-sizing: border-box;
@@ -2066,7 +2066,6 @@ function generatePDFContent(instruction, trackDetails) {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 0mm;
         border: 1px solid blue;
       }
       
