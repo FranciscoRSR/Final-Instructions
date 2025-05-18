@@ -1912,7 +1912,6 @@ function generatePDFContent(instruction, trackDetails) {
         width: 100%;
         margin: 0;
         padding-left: 2mm;
-        border: 1px solid red;
       }
       
       .right-section {
@@ -2282,14 +2281,14 @@ function generatePDFContent(instruction, trackDetails) {
           </div>
           
           <!-- Additional Notes Section -->
-          <div style="margin-top: 2mm;" class="no-break">
+          <div class="no-break">
             <div class="section-header blue-bg">
               <div>${instruction.notesLabel || 'Additional Notes'}</div>
               ${instruction.notesLabel2 ? `<div class="secondary-language">${instruction.notesLabel2}</div>` : ''}
             </div>
             <!-- Noise Limit -->
             ${instruction.noiseLimit ? `
-              <div style="margin-bottom: 1mm; font-size: 7.5pt;">
+              <div style="margin-bottom: 1mm; margin-top: 2mm; font-size: 7.5pt;">
                   ${instruction.noiseLimitText ? `<div>${instruction.noiseLimitText}${instruction.noiseLimitTextSecond ? ` <span class="secondary-language">/ ${instruction.noiseLimitTextSecond}</span>` : ''}</div>` : ''}
                   <div class="noise-limit-value">${instruction.noiseLimit} dB</div>
                 </div>
