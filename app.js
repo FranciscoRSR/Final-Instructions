@@ -2315,7 +2315,6 @@ function generatePDFContent(instruction, trackDetails) {
 
     <!-- Always add the page break and second page if there's a track shape to display -->
     ${hasTrackShape ? `
-      <div class="explicit-page-break"></div>
       <div class="page-two">
         <div class="track-shape-container">
           <img src="${trackDetails.trackShapeUrl}" alt="${trackName} Track Shape" class="track-shape">
