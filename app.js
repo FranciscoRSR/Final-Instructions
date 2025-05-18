@@ -1895,7 +1895,6 @@ function generatePDFContent(instruction, trackDetails) {
         margin: 0;
         text-align: center;
         box-sizing: border-box;
-        page-break-before: always;
         break-before: page;
         border: 1px solid red; /* For debugging */
       }
@@ -2310,6 +2309,7 @@ function generatePDFContent(instruction, trackDetails) {
           </div>
         </div>
       </div>
+      <div class="explicit-page-break"></div>
     </div>
 
     <!-- Always add the page break and second page if there's a track shape to display -->
