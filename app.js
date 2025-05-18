@@ -1852,6 +1852,7 @@ function generatePDFContent(instruction, trackDetails) {
       .pdf-container {
         font-family: Arial, sans-serif;
         width: 210mm;
+        height: 297mm;
         font-size: 8pt;
         line-height: 1.1;
         margin: 0;
@@ -1862,6 +1863,7 @@ function generatePDFContent(instruction, trackDetails) {
       /* First page container with fixed dimensions */
       .page-one {
         width: 210mm;
+        height: 297mm;
         box-sizing: border-box;
         position: relative;
         page-break-after: avoid;
@@ -1887,6 +1889,7 @@ function generatePDFContent(instruction, trackDetails) {
       /* Second page container - Modified for full page track shape */
       .page-two {
         width: 210mm;
+        height: 297mm;
         display: block;
         padding: 0;
         margin-top: 0mm;
@@ -2315,16 +2318,10 @@ function generatePDFContent(instruction, trackDetails) {
 
     <!-- Always add the page break and second page if there's a track shape to display -->
     ${hasTrackShape ? `
-      <div class="explicit-page-break"></div>
       <!-- Page 2 - Full page Track Shape -->
       <div class="page-two">
         <div class="track-shape-container">
-          <img 
-            src="${trackDetails.trackShapeUrl}" 
-            alt="${trackName} Track Shape" 
-            class="track-shape"
-            style="width: 100%; height: 100%; object-fit: contain;"
-          >
+          <img src="${trackDetails.trackShapeUrl}" alt="${trackName} Track Shape" class="track-shape">
         </div>
       </div>
     ` : ''}
