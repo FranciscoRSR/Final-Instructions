@@ -1888,11 +1888,10 @@ function generatePDFContent(instruction, trackDetails) {
       /* Second page container - Modified for full page track shape */
       .page-two {
         width: 210mm;
-        height: 297mm;
-        box-sizing: border-box;
+        height: 296mm;
         display: block;
         padding: 0;
-        margin: 0;
+        margin-top: 0.5;
         text-align: center;
         position: relative;
         overflow: hidden;
@@ -2077,30 +2076,17 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .track-shape {
-        max-width: 95%;
-        max-height: 95%;
+        max-width: 100%;
+        max-height: 100%;
         width: auto;
         height: auto;
         object-fit: contain;
       }
       
-      .track-title {
-        position: absolute;
-        top: 5mm;
-        left: 0;
-        width: 100%;
-        text-align: center;
-        margin: 0;
-        padding: 0;
-        font-size: 14pt;
-        font-weight: bold;
-        color: #333;
-        z-index: 1;
-      }
-      
       .track-logo {
         max-height: 15mm !important;
         margin-bottom: 1mm;
+        margin-top: 1mm;
       }
       
       .footer-container {
@@ -2325,11 +2311,11 @@ function generatePDFContent(instruction, trackDetails) {
           </div>
         </div>
       </div>
+      <div class="explicit-page-break"></div>
     </div>
 
     <!-- Always add the page break and second page if there's a track shape to display -->
     ${hasTrackShape ? `
-      <div class="explicit-page-break"></div>
       <!-- Page 2 - Full page Track Shape -->
       <div class="page-two">
         <div class="track-shape-container">
