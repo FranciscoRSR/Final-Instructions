@@ -2070,10 +2070,10 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .track-shape {
-        width: 100%;
-        object-fit: contain;
-        border: 1px dashed green;
-      }
+      width: 100%;
+      height: auto;
+      border: 1px dashed green;
+    }
       
       .track-logo {
         max-height: 15mm !important;
