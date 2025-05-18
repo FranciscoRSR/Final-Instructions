@@ -1915,7 +1915,7 @@ function generatePDFContent(instruction, trackDetails) {
         row-gap: 1mm;
         width: 100%;
         margin: 0;
-        padding: 0;
+        padding-left: 2mm;
       }
       
       .right-section {
@@ -2087,7 +2087,7 @@ function generatePDFContent(instruction, trackDetails) {
       .track-logo {
         max-height: 15mm !important;
         margin-bottom: 1mm;
-        margin-top: 1mm;
+        margin-top: 2mm;
       }
       
       .footer-container {
@@ -2259,7 +2259,7 @@ function generatePDFContent(instruction, trackDetails) {
         <!-- Right Section -->
         <div class="right-section">
           <!-- Top Area -->
-          <div style="margin-bottom: 12mm;" class="no-break">
+          <div style="margin-bottom: 10mm; margin-top: 2mm" class="no-break">
             <div class="track-name">${instruction.trackName} • ${instruction.instructionName}</div>
             <div style="color: #777; font-size: 7.5pt;">${formattedDates}</div>
           </div>
