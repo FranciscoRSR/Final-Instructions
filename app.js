@@ -1782,7 +1782,7 @@ async function downloadPDF(instructionId) {
     
     // PDF options with very narrow margins to maximize content space
     const opt = {
-      margin: [0, 0, 0, 0], // Very narrow margins: [top, right, bottom, left] in mm
+      margin: [0.5, 0, 0, 0], // Very narrow margins: [top, right, bottom, left] in mm
       filename: filename,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
