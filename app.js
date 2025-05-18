@@ -2325,9 +2325,6 @@ function generatePDFContent(instruction, trackDetails) {
 
     <!-- Always add the page break and second page if there's a track shape to display -->
     ${hasTrackShape ? `
-      <!-- Explicit page break -->
-      <div class="explicit-page-break"></div>
-      
       <!-- Page 2 - Full page Track Shape -->
       <div class="page-two">
         <h2 class="track-title">${trackName} Track Layout</h2>
