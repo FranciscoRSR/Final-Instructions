@@ -1892,13 +1892,12 @@ function generatePDFContent(instruction, trackDetails) {
         height: 297mm;
         display: block;
         padding: 0;
-        margin-top: 0mm;
+        margin: 0;
         text-align: center;
         box-sizing: border-box;
         page-break-before: always;
-        position: relative;
-        overflow: hidden;
-        border: 1px solid red;
+        break-before: page;
+        border: 1px solid red; /* For debugging */
       }
       
       /* Layout sections - Using grid instead of flexbox for better PDF rendering */
@@ -2066,9 +2065,6 @@ function generatePDFContent(instruction, trackDetails) {
       
       /* Modified track shape styling for full page */
       .track-shape-container {
-        position: absolute;
-        top: 0;
-        left: 0;
         width: 100%;
         height: 100%;
         display: flex;
@@ -2079,8 +2075,8 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .track-shape {
-        max-width: 100%;
-        max-height: 100%;
+        max-width: 200mm; /* Slightly less than page width to avoid clipping */
+        max-height: 287mm; /* Slightly less than page height to avoid clipping */
         width: auto;
         height: auto;
         object-fit: contain;
