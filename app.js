@@ -1784,7 +1784,7 @@ async function downloadPDF(instructionId) {
     const opt = {
       margin: [0, 0, 0, 0], // Very narrow margins: [top, right, bottom, left] in mm
       filename: filename,
-      image: { type: 'jpeg', quality: 0.98 },
+      image: { type: 'jpeg', quality: 1 },
       html2canvas: { 
         scale: 2,
         logging: true, // Enable logging for debugging
@@ -1988,7 +1988,7 @@ function generatePDFContent(instruction, trackDetails) {
       }
 
       .time-col {
-        flex: 0 0 20%;
+        flex: 0 0 25%;
         text-align: center;
       }
 
@@ -1998,7 +1998,7 @@ function generatePDFContent(instruction, trackDetails) {
       }
 
       .location-col {
-        flex: 0 0 20%;
+        flex: 0 0 25%;
         text-align: center;
       }
 
