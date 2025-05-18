@@ -1876,14 +1876,13 @@ function generatePDFContent(instruction, trackDetails) {
       
       /* Explicit page break element */
       .explicit-page-break {
-        display: block;
-        position: relative;
         page-break-before: always;
         break-before: page;
-        height: 0;
+        display: block;
+        height: 1px;
         margin: 0;
         padding: 0;
-        clear: both;
+        border: none;
       }
       
       /* Second page container - Modified for full page track shape */
@@ -1891,12 +1890,13 @@ function generatePDFContent(instruction, trackDetails) {
         width: 210mm;
         height: 297mm;
         display: block;
-        padding: 0;
+        padding: 10mm;
         margin: 0;
         text-align: center;
         box-sizing: border-box;
+        page-break-before: always;
         break-before: page;
-        border: 1px solid red; /* For debugging */
+        border: 1px solid red;
       }
       
       /* Layout sections - Using grid instead of flexbox for better PDF rendering */
@@ -2069,16 +2069,17 @@ function generatePDFContent(instruction, trackDetails) {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 0;
-        margin: 0;
+        padding: 10mm;
+        border: 1px solid blue;
       }
       
       .track-shape {
-        max-width: 200mm; /* Slightly less than page width to avoid clipping */
-        max-height: 287mm; /* Slightly less than page height to avoid clipping */
+        max-width: 180mm;
+        max-height: 260mm;
         width: auto;
         height: auto;
         object-fit: contain;
+        border: 1px dashed green;
       }
       
       .track-logo {
@@ -2314,7 +2315,6 @@ function generatePDFContent(instruction, trackDetails) {
     <!-- Always add the page break and second page if there's a track shape to display -->
     ${hasTrackShape ? `
       <div class="explicit-page-break"></div>
-      <!-- Page 2 - Full page Track Shape -->
       <div class="page-two">
         <div class="track-shape-container">
           <img src="${trackDetails.trackShapeUrl}" alt="${trackName} Track Shape" class="track-shape">
