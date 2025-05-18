@@ -2070,8 +2070,7 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .track-shape {
-        max-width: 100%;
-        max-height: 100%;
+        width: 100%;
         object-fit: contain;
         border: 1px dashed green;
       }
