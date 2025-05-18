@@ -1782,7 +1782,7 @@ async function downloadPDF(instructionId) {
     
     // PDF options with very narrow margins to maximize content space
     const opt = {
-      margin: [3, 3, 3, 3], // Very narrow margins: [top, right, bottom, left] in mm
+      margin: [0, 0, 0, 0], // Very narrow margins: [top, right, bottom, left] in mm
       filename: filename,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
@@ -1852,6 +1852,7 @@ function generatePDFContent(instruction, trackDetails) {
       .pdf-container {
         font-family: Arial, sans-serif;
         width: 210mm;
+        height: 297mm;
         font-size: 8pt;
         line-height: 1.1;
         margin: 0;
@@ -1863,6 +1864,7 @@ function generatePDFContent(instruction, trackDetails) {
       .page-one {
         width: 210mm;
         height: 297mm;
+        box-sizing: border-box;
         position: relative;
         page-break-after: avoid;
         break-after: avoid;
@@ -1887,6 +1889,7 @@ function generatePDFContent(instruction, trackDetails) {
       .page-two {
         width: 210mm;
         height: 297mm;
+        box-sizing: border-box;
         display: block;
         padding: 0;
         margin: 0;
