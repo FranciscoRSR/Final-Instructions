@@ -2022,7 +2022,7 @@ function generatePDFContent(instruction, trackDetails) {
       }
 
       .schedule-location {
-        font-size: 5pt;
+        font-size: 6pt;
         margin-top: 0.1mm;
       }
 
@@ -2223,7 +2223,7 @@ function generatePDFContent(instruction, trackDetails) {
               ${instruction.locationsLabel2 ? `<div class="secondary-language">${instruction.locationsLabel2}</div>` : ''}
             </div>
             ${instruction.locations.map(location => `
-              <div style="margin-bottom: 1mm; font-size: 7.5pt;">
+              <div style="margin-bottom: 1mm; margin-top: 2mm; font-size: 7.5pt;">
                 <div>
                   <strong>${location.name}</strong>
                   ${location.name2 ? `<span class="secondary-language"> / ${location.name2}</span>` : ''}
@@ -2239,7 +2239,7 @@ function generatePDFContent(instruction, trackDetails) {
               <div>${instruction.overtakingRulesLabel || 'Overtaking Rules'}</div>
               ${instruction.overtakingRulesLabel2 ? `<div class="secondary-language">${instruction.overtakingRulesLabel2}</div>` : ''}
             </div>
-            <div style="font-size: 7.5pt;">
+            <div style="font-size: 7.5pt; margin-top: 2mm;">
               ${instruction.overtakingText1 ? `<div>${instruction.overtakingText1} <span class="overtaking-rule">${overtakingText}</span> ${instruction.overtakingText2 || ''}</div>` : ''}
               ${instruction.overtakingText1Second ? `<div class="secondary-language">${instruction.overtakingText1Second} <span class="overtaking-rule">${instruction.overtakingSecond || ''}</span> ${instruction.overtakingText2Second || ''}</div>` : ''}
             </div>
@@ -2297,7 +2297,7 @@ function generatePDFContent(instruction, trackDetails) {
             
               <!-- Additional Notes -->
               ${instruction.notes && instruction.notes.length ? instruction.notes.map(note => `
-                <div class="note-entry no-break">
+                <div style="margin-top: 2mm;" class="note-entry no-break">
                   ${note.text ? `<div>${note.text}${note.text2 ? ` <span class="secondary-language">/ ${note.text2}</span>` : ''}</div>` : ''}
                   ${note.imageUrl ? `
                     <div class="note-image-container">
