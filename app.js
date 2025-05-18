@@ -2066,7 +2066,7 @@ function generatePDFContent(instruction, trackDetails) {
       
       /* Modified track shape styling for full page */
       .track-shape-container {
-        position: absolute;
+        position: relative;
         top: 0;
         left: 0;
         width: 100%;
@@ -2261,7 +2261,7 @@ function generatePDFContent(instruction, trackDetails) {
         <!-- Right Section -->
         <div class="right-section">
           <!-- Top Area -->
-          <div style="margin-bottom: 9mm; margin-top: 5mm; text-align: center" class="no-break">
+          <div style="margin-bottom: 8mm; margin-top: 5mm; text-align: center" class="no-break">
             <div class="track-name">${instruction.trackName} • ${instruction.instructionName}</div>
             <div style="color: #777; font-size: 7.5pt;">${formattedDates}</div>
           </div>
