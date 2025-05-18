@@ -1862,7 +1862,7 @@ function generatePDFContent(instruction, trackDetails) {
       /* First page container with fixed dimensions */
       .page-one {
         width: 210mm;
-        box-sizing: border-box;
+        height: 297mm;
         position: relative;
         page-break-after: avoid;
         break-after: avoid;
@@ -1887,7 +1887,6 @@ function generatePDFContent(instruction, trackDetails) {
       .page-two {
         width: 210mm;
         height: 297mm;
-        box-sizing: border-box;
         display: block;
         padding: 0;
         margin: 0;
@@ -1968,13 +1967,12 @@ function generatePDFContent(instruction, trackDetails) {
 
       .schedule-date-group {
         margin-bottom: 1mm;
-        vertical-align: middle
       }
 
       .schedule-date-header {
         font-weight: bold;
         color: #e74c3c;
-        margin-bottom: 0.3mm;
+        margin-bottom: 1mm;
         padding-bottom: 0.1mm;
       }
 
@@ -1987,7 +1985,7 @@ function generatePDFContent(instruction, trackDetails) {
       .schedule-col {
         padding: 0 0.2mm;
         text-align: center;
-
+        vertical-align: middle
       }
 
       .time-col {
@@ -2076,8 +2074,8 @@ function generatePDFContent(instruction, trackDetails) {
       }
       
       .track-shape {
-        max-width: 100%;
-        max-height: 100%;
+        max-width: 95%;
+        max-height: 95%;
         width: auto;
         height: auto;
         object-fit: contain;
@@ -2332,12 +2330,7 @@ function generatePDFContent(instruction, trackDetails) {
       <!-- Page 2 - Full page Track Shape -->
       <div class="page-two">
         <div class="track-shape-container">
-          <img 
-            src="${trackDetails.trackShapeUrl}" 
-            alt="${trackName} Track Shape" 
-            class="track-shape"
-            style="width: 100%; height: 100%; object-fit: contain;"
-          >
+          <img src="${trackDetails.trackShapeUrl}" alt="${trackName} Track Shape" class="track-shape">
         </div>
       </div>
     ` : ''}
