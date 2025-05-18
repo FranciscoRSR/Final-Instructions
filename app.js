@@ -1886,8 +1886,8 @@ function generatePDFContent(instruction, trackDetails) {
       
       /* Second page container - Modified for full page track shape */
       .page-two {
-        width: 210mm;
-        height: 297mm;
+        width: 209mm;
+        height: 296mm;
         display: block;
         padding: 10mm;
         margin: 0;
@@ -2066,13 +2066,13 @@ function generatePDFContent(instruction, trackDetails) {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 10mm;
+        padding: 0mm;
         border: 1px solid blue;
       }
       
       .track-shape {
-        max-width: 180mm;
-        max-height: 260mm;
+        max-width: 100%;
+        max-height: 100%;
         width: auto;
         height: auto;
         object-fit: contain;
