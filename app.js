@@ -1787,7 +1787,7 @@ async function downloadPDF(instructionId) {
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
         scale: 2,
-        logging: false,
+        logging: true, // Enable logging for debugging
         useCORS: true,
         allowTaint: true
       },
@@ -1795,12 +1795,11 @@ async function downloadPDF(instructionId) {
         unit: 'mm', 
         format: 'a4', 
         orientation: 'portrait',
-        compress: true // Enable compression
+        compress: true
       },
       pagebreak: { 
-        mode: ['avoid-all','css'], // Changed order and removed 'legacy'
-        before: '.explicit-page-break', // More specific class name
-        avoid: ['.no-break', 'page-one','page-two'] // Added a class for elements that shouldn't break
+        mode: 'css',
+        before: '.explicit-page-break'
       }
     };
 
