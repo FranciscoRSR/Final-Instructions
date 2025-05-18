@@ -1870,7 +1870,6 @@ function generatePDFContent(instruction, trackDetails) {
         padding: 0;
         margin: 0;
         display: block;
-        border: 1px solid red;
       }
       
       /* Explicit page break element */
@@ -1893,7 +1892,6 @@ function generatePDFContent(instruction, trackDetails) {
         margin: 0;
         text-align: center;
         box-sizing: border-box;
-        border: 1px solid red;
       }
       
       /* Layout sections - Using grid instead of flexbox for better PDF rendering */
@@ -1913,6 +1911,7 @@ function generatePDFContent(instruction, trackDetails) {
         width: 100%;
         margin: 0;
         padding-left: 2mm;
+        border: 1px solid red;
       }
       
       .right-section {
@@ -2066,7 +2065,6 @@ function generatePDFContent(instruction, trackDetails) {
         display: flex;
         justify-content: center;
         align-items: center;
-        border: 1px solid blue;
         padding: 0;
         margin: 0;
         box-sizing: border-box;
@@ -2078,7 +2076,6 @@ function generatePDFContent(instruction, trackDetails) {
         max-width: 100%;
         max-height: 100%;
         object-fit: contain;
-        border: 1px dashed green;
         margin: 0;
         padding: 0;
       }
