@@ -1892,7 +1892,7 @@ function generatePDFContent(instruction, trackDetails) {
         padding: 0;
         margin: 0;
         text-align: center;
-        position: relative;
+        position: absolute;
         overflow: hidden;
         border: 1px solid red;
       }
@@ -2063,7 +2063,7 @@ function generatePDFContent(instruction, trackDetails) {
       
       /* Modified track shape styling for full page */
       .track-shape-container {
-        position: relative;
+        position: absolute;
         top: 0;
         left: 0;
         width: 100%;
@@ -2081,6 +2081,20 @@ function generatePDFContent(instruction, trackDetails) {
         width: auto;
         height: auto;
         object-fit: contain;
+      }
+      
+      .track-title {
+        position: absolute;
+        top: 5mm;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        font-size: 14pt;
+        font-weight: bold;
+        color: #333;
+        z-index: 1;
       }
       
       .track-logo {
