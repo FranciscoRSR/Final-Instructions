@@ -2063,7 +2063,7 @@ function generatePDFContent(instruction, trackDetails) {
       
       /* Modified track shape styling for full page */
       .track-shape-container {
-        position: relative;
+        position: absolute;
         top: 0;
         left: 0;
         width: 100%;
@@ -2319,7 +2319,12 @@ function generatePDFContent(instruction, trackDetails) {
       <!-- Page 2 - Full page Track Shape -->
       <div class="page-two">
         <div class="track-shape-container">
-          <img src="${trackDetails.trackShapeUrl}" alt="${trackName} Track Shape" class="track-shape">
+          <img 
+            src="${trackDetails.trackShapeUrl}" 
+            alt="${trackName} Track Shape" 
+            class="track-shape"
+            style="width: 100%; height: 100%; object-fit: contain;"
+          >
         </div>
       </div>
     ` : ''}
