@@ -1798,8 +1798,9 @@ async function downloadPDF(instructionId) {
         compress: true
       },
       pagebreak: { 
-        mode: 'css',
-        before: '.explicit-page-break'
+        mode: ['avoid-all', 'css', 'legacy'],
+        before: '.page-break',
+        after: '.page-break-after'
       }
     };
 
@@ -1851,7 +1852,6 @@ function generatePDFContent(instruction, trackDetails) {
       .pdf-container {
         font-family: Arial, sans-serif;
         width: 210mm;
-        height: 297mm;
         font-size: 8pt;
         line-height: 1.1;
         margin: 0;
