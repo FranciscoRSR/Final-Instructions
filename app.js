@@ -1889,7 +1889,7 @@ function generatePDFContent(instruction, trackDetails) {
         width: 210mm;
         height: 297mm;
         display: block;
-        padding: 0mm;
+        padding: 2mm;
         margin: 0;
         text-align: center;
         box-sizing: border-box;
