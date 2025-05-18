@@ -1892,8 +1892,10 @@ function generatePDFContent(instruction, trackDetails) {
         height: 296mm;
         display: block;
         padding: 0;
-        margin-top: 297mm;
+        margin-top: 0mm;
         text-align: center;
+        box-sizing: border-box;
+        page-break-before: always;
         position: relative;
         overflow: hidden;
         border: 1px solid red;
@@ -2259,7 +2261,7 @@ function generatePDFContent(instruction, trackDetails) {
         <!-- Right Section -->
         <div class="right-section">
           <!-- Top Area -->
-          <div style="margin-bottom: 7mm; margin-top: 5mm; text-align: center" class="no-break">
+          <div style="margin-bottom: 9mm; margin-top: 5mm; text-align: center" class="no-break">
             <div class="track-name">${instruction.trackName} • ${instruction.instructionName}</div>
             <div style="color: #777; font-size: 7.5pt;">${formattedDates}</div>
           </div>
