@@ -1909,7 +1909,7 @@ function generatePDFContent(instruction, trackDetails) {
       .left-section {
         display: grid;
         grid-template-rows: auto auto auto auto 1fr;
-        row-gap: 2mm;
+        row-gap: 1mm;
         width: 100%;
         margin: 0;
         padding: 0;
@@ -1941,7 +1941,6 @@ function generatePDFContent(instruction, trackDetails) {
         font-weight: bold;
         margin: 1mm 0;
         padding-bottom: 0.5mm;
-        border-bottom: 1px solid #ddd;
         font-size: 8pt;
       }
       
@@ -1962,12 +1961,13 @@ function generatePDFContent(instruction, trackDetails) {
         font-weight: bold;
         padding: 0.5mm 0;
         border-bottom: 2px solid #e74c3c;
-        margin-bottom: 0.5mm;
+        margin-bottom: 1mm;
         text-align: center;
       }
 
       .schedule-date-group {
         margin-bottom: 1mm;
+        vertical-align: middle
       }
 
       .schedule-date-header {
@@ -1975,21 +1975,22 @@ function generatePDFContent(instruction, trackDetails) {
         color: #e74c3c;
         margin-bottom: 0.3mm;
         padding-bottom: 0.1mm;
-        border-bottom: 1px solid #ddd;
       }
 
       .schedule-entry {
         display: flex;
-        margin-bottom: 0.3mm;
+        margin-bottom: 1mm;
         align-items: flex-start;
       }
 
       .schedule-col {
         padding: 0 0.2mm;
+        text-align: center;
+
       }
 
       .time-col {
-        flex: 0 0 25%;
+        flex: 0 0 20%;
         text-align: center;
       }
 
@@ -1999,7 +2000,7 @@ function generatePDFContent(instruction, trackDetails) {
       }
 
       .location-col {
-        flex: 0 0 25%;
+        flex: 0 0 20%;
         text-align: center;
       }
 
@@ -2022,6 +2023,7 @@ function generatePDFContent(instruction, trackDetails) {
       }
 
       .schedule-location {
+        font-size: 5pt;
         margin-top: 0.1mm;
       }
 
@@ -2060,7 +2062,7 @@ function generatePDFContent(instruction, trackDetails) {
       
       /* Modified track shape styling for full page */
       .track-shape-container {
-        position: absolute;
+        position: relative;
         top: 0;
         left: 0;
         width: 100%;
@@ -2078,20 +2080,6 @@ function generatePDFContent(instruction, trackDetails) {
         width: auto;
         height: auto;
         object-fit: contain;
-      }
-      
-      .track-title {
-        position: absolute;
-        top: 5mm;
-        left: 0;
-        width: 100%;
-        text-align: center;
-        margin: 0;
-        padding: 0;
-        font-size: 14pt;
-        font-weight: bold;
-        color: #333;
-        z-index: 1;
       }
       
       .track-logo {
@@ -2321,13 +2309,13 @@ function generatePDFContent(instruction, trackDetails) {
           </div>
         </div>
       </div>
+      <div class="explicit-page-break"></div>
     </div>
 
     <!-- Always add the page break and second page if there's a track shape to display -->
     ${hasTrackShape ? `
       <!-- Page 2 - Full page Track Shape -->
       <div class="page-two">
-        <h2 class="track-title">${trackName} Track Layout</h2>
         <div class="track-shape-container">
           <img 
             src="${trackDetails.trackShapeUrl}" 
