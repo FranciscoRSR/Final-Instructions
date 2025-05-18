@@ -1877,6 +1877,7 @@ function generatePDFContent(instruction, trackDetails) {
       /* Explicit page break element */
       .explicit-page-break {
         display: block;
+        position: relative;
         page-break-before: always;
         break-before: page;
         height: 0;
