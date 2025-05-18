@@ -1869,6 +1869,7 @@ function generatePDFContent(instruction, trackDetails) {
         padding: 0;
         margin: 0;
         display: block;
+        border: 1px solid red;
       }
       
       /* Explicit page break element */
@@ -1880,7 +1881,6 @@ function generatePDFContent(instruction, trackDetails) {
         margin: 0;
         padding: 0;
         clear: both;
-        border: 1px solid red;
       }
       
       /* Second page container - Modified for full page track shape */
@@ -1894,6 +1894,7 @@ function generatePDFContent(instruction, trackDetails) {
         text-align: center;
         position: relative;
         overflow: hidden;
+        border: 1px solid red;
       }
       
       /* Layout sections - Using grid instead of flexbox for better PDF rendering */
